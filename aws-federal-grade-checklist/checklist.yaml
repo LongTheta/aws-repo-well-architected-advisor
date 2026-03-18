@@ -1,0 +1,238 @@
+# AWS Federal-Grade Checklist
+# Machine-readable evaluation criteria. Use with aws-federal-grade-checklist skill.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# EVALUATION CATEGORIES
+# -----------------------------------------------------------------------------
+categories:
+  1_identity_access:
+    name: "Identity and Access Management"
+    nist: [AC, IA]
+    checks:
+      - id: IAM-01
+        description: "No long-lived IAM user credentials"
+        pass: "Use roles; temporary credentials"
+      - id: IAM-02
+        description: "IAM roles used for workloads"
+        pass: "Task roles; instance profiles"
+      - id: IAM-03
+        description: "Least privilege policies enforced"
+        pass: "No excessive permissions"
+      - id: IAM-04
+        description: "No wildcard permissions"
+        pass: "No '*' in Action or Resource"
+      - id: IAM-05
+        description: "MFA for privileged users"
+        pass: "Root + admin users"
+      - id: IAM-06
+        description: "AWS IAM Identity Center / SSO"
+        pass: "For human access where appropriate"
+    fail_critical:
+      - "Wildcard admin access exists"
+      - "Hardcoded AWS credentials found"
+
+  2_secrets_management:
+    name: "Secrets Management"
+    nist: [IA, SC]
+    checks:
+      - id: SEC-01
+        description: "Secrets in Secrets Manager or SSM Parameter Store SecureString"
+        pass: "No .env, variables.tf with secrets"
+      - id: SEC-02
+        description: "KMS usage where appropriate"
+        pass: "Customer-managed keys"
+      - id: SEC-03
+        description: "No plaintext secrets in repo, env files, manifests, or pipeline"
+        pass: "No API keys, passwords in code"
+    fail_critical:
+      - "Secrets exist in code or plaintext config"
+
+  3_logging_audit:
+    name: "Logging and Audit"
+    nist: [AU]
+    checks:
+      - id: LOG-01
+        description: "CloudTrail expected/enabled"
+        pass: "Organization trail or per-account"
+      - id: LOG-02
+        description: "Audit logging signals exist"
+        pass: "Centralized logs; S3"
+      - id: LOG-03
+        description: "Logs retained appropriately"
+        pass: "Per retention policy"
+      - id: LOG-04
+        description: "Monitoring for suspicious access or privilege escalation"
+        pass: "Alarms; GuardDuty"
+    fail_high:
+      - "No audit trail evidence exists"
+
+  4_network_security:
+    name: "Network Security"
+    nist: [SC]
+    checks:
+      - id: NET-01
+        description: "Public exposure minimized"
+        pass: "Backend in private subnets"
+      - id: NET-02
+        description: "Security groups are narrow"
+        pass: "No 0.0.0.0/0 without justification"
+      - id: NET-03
+        description: "Private subnets for sensitive services"
+        pass: "DB, app servers private"
+      - id: NET-04
+        description: "Databases not publicly exposed"
+        pass: "No public RDS/DB"
+      - id: NET-05
+        description: "WAF considered for public-facing apps"
+        pass: "Web Application Firewall"
+      - id: NET-06
+        description: "VPC endpoints considered"
+        pass: "S3, ECR, SSM"
+    fail_critical:
+      - "Unrestricted SSH/RDP (22, 3389 to 0.0.0.0/0)"
+      - "Public database exposure"
+
+  5_data_protection:
+    name: "Data Protection"
+    nist: [SC, CP]
+    checks:
+      - id: DAT-01
+        description: "Encryption at rest"
+        pass: "KMS; RDS, S3, EBS"
+      - id: DAT-02
+        description: "Encryption in transit"
+        pass: "HTTPS/TLS"
+      - id: DAT-03
+        description: "Backup strategy exists"
+        pass: "RDS snapshots; S3 versioning"
+      - id: DAT-04
+        description: "Data classification considered"
+        pass: "Tagged; handling defined"
+      - id: DAT-05
+        description: "Restore/recovery approach defined"
+        pass: "RTO/RPO documented"
+    fail_critical:
+      - "Sensitive data lacks encryption"
+      - "No backup strategy for important data"
+
+  6_vulnerability_management:
+    name: "Vulnerability Management"
+    nist: [SI]
+    checks:
+      - id: VUL-01
+        description: "Dependency scanning in CI/CD"
+        pass: "pip audit, npm audit, Snyk, Dependabot"
+      - id: VUL-02
+        description: "Container scanning if containers used"
+        pass: "ECR scan; Trivy"
+      - id: VUL-03
+        description: "Patch/update process exists"
+        pass: "Documented; automated"
+      - id: VUL-04
+        description: "Amazon Inspector / ECR scanning"
+        pass: "Where applicable"
+
+  7_devsecops_pipeline:
+    name: "DevSecOps Pipeline"
+    nist: []
+    dod: true
+    checks:
+      - id: PIP-01
+        description: "CI/CD exists"
+        pass: "GitHub Actions, GitLab CI, CodePipeline"
+      - id: PIP-02
+        description: "Infrastructure as Code used"
+        pass: "Terraform, CDK, CloudFormation"
+      - id: PIP-03
+        description: "Security scanning integrated"
+        pass: "SAST, dependency, container"
+      - id: PIP-04
+        description: "Artifact versioning present"
+        pass: "Immutable; traceable"
+      - id: PIP-05
+        description: "Manual production deployment minimized"
+        pass: "Automated; approval gates"
+    fail_high:
+      - "Production depends on manual deployment"
+      - "No scanning exists in pipeline"
+
+  8_zero_trust:
+    name: "Zero Trust Alignment"
+    nist: [AC, SC]
+    dod: true
+    checks:
+      - id: ZT-01
+        description: "Identity-based access"
+        pass: "Not network-based trust"
+      - id: ZT-02
+        description: "Least privilege"
+        pass: "Minimal permissions"
+      - id: ZT-03
+        description: "Segmentation between services"
+        pass: "Security groups; no flat network"
+      - id: ZT-04
+        description: "No implicit network trust"
+        pass: "Explicit allow; deny by default"
+
+  9_tagging_governance:
+    name: "Tagging and Governance"
+    nist: []
+    finops: true
+    required_tags:
+      - Project
+      - Environment
+      - Owner
+      - CostCenter
+      - ManagedBy
+      - Purpose
+      - DataClassification
+      - Lifecycle
+    fail_high:
+      - "Ownership or cost attribution tags missing"
+
+  10_resilience_recovery:
+    name: "Resilience and Recovery"
+    nist: [CP]
+    checks:
+      - id: RES-01
+        description: "Multi-AZ awareness for production"
+        pass: "No single point of failure"
+      - id: RES-02
+        description: "Backups defined"
+        pass: "RDS snapshots; S3 versioning"
+      - id: RES-03
+        description: "Restore approach defined"
+        pass: "RTO/RPO documented"
+      - id: RES-04
+        description: "Failover/health checks considered"
+        pass: "ALB; auto-recovery"
+      - id: RES-05
+        description: "DR posture documented or inferable"
+        pass: "Strategy defined"
+
+# -----------------------------------------------------------------------------
+# SCORING
+# -----------------------------------------------------------------------------
+scoring:
+  compliant: [9, 10]
+  minor_gaps: [7, 8]
+  moderate_risk: [5, 6]
+  high_risk: [3, 4]
+  critical_failure: [0, 2]
+
+# -----------------------------------------------------------------------------
+# VERDICT
+# -----------------------------------------------------------------------------
+verdict:
+  NOT_READY: "Critical failures; do not deploy"
+  CONDITIONAL: "High-risk findings; fix before prod or accept documented risk"
+  READY: "No critical failures; minor gaps acceptable with plan"
+
+# -----------------------------------------------------------------------------
+# EVIDENCE CLASSIFICATION
+# -----------------------------------------------------------------------------
+evidence_type: [observed, inferred, missing, contradictory]
+severity: [critical, high, medium, low]
+confidence: [high, medium, low]

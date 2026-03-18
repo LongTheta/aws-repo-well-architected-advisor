@@ -148,6 +148,7 @@ file_triggers:
       - "**/roles/**/*.yaml"
     skills:
       - nist-compliance-evaluator
+      - aws-federal-grade-checklist
     additional_logic:
       - iam_security_review
 
@@ -204,6 +205,7 @@ content_triggers:
     priority: 1
     skills:
       - nist-compliance-evaluator
+      - aws-federal-grade-checklist
     additional_logic:
       - high_priority_secret_handling_review
 
@@ -262,6 +264,7 @@ execution_priority:
 
   tier_2:
     - nist-compliance-evaluator
+    - aws-federal-grade-checklist
     - aws-architecture-pattern-advisor
     - finops-cost-optimizer
     - devops-operability-review

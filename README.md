@@ -131,6 +131,7 @@ aws-repo-well-architected-advisor/
 │   └── samples/                       # Sample repos and reports
 │
 ├── aws-architecture-pattern-advisor   # Service selection, anti-patterns
+├── aws-federal-grade-checklist        # Federal-grade evaluation (NIST, FedRAMP, DoD)
 ├── nist-compliance-evaluator          # NIST, Zero Trust, CIS, FedRAMP
 ├── observability-grafana-advisor      # CloudWatch, Grafana, Golden Signals
 ├── finops-cost-optimizer              # Cost optimization, savings

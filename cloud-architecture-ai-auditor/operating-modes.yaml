@@ -49,6 +49,7 @@ repo_driven:
     - architecture-inference
     - well-architected-scoring-engine
     - aws-architecture-pattern-advisor
+    - aws-federal-grade-checklist
     - nist-compliance-evaluator
     - finops-cost-optimizer
     - devops-operability-review
