@@ -21,6 +21,13 @@ Rules that map repo contents and user requests to specific skills. Deterministic
 - **Tag evidence** — Observed / Inferred / Missing Evidence / Contradictory Evidence
 - **Match skills to repo** — Use only relevant skills; avoid running every skill
 
+## aws-federal-grade-checklist Rules
+
+- **Critical findings** — If aws-federal-grade-checklist returns any critical finding → mark as **NOT READY**
+- **High findings** — If it returns high findings → require remediation before recommending production readiness
+- **Missing required tags** — Treated as governance failure; must be remediated
+- **Missing evidence** — Must NOT be treated as compliant; flag explicitly and may raise risk
+
 ---
 
 ## Rule-Based Skill Routing

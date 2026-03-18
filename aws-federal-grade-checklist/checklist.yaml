@@ -136,7 +136,7 @@ categories:
 
   7_devsecops_pipeline:
     name: "DevSecOps Pipeline"
-    nist: []
+    nist: [CM]
     dod: true
     checks:
       - id: PIP-01
@@ -213,6 +213,22 @@ categories:
         pass: "Strategy defined"
 
 # -----------------------------------------------------------------------------
+# SEVERITY GUIDANCE
+# -----------------------------------------------------------------------------
+severity_guidance:
+  critical:
+    - "Secrets in code or plaintext"
+    - "Wildcard admin IAM"
+    - "Public database exposure"
+    - "Unrestricted SSH/RDP to 0.0.0.0/0"
+    - "Sensitive data unencrypted"
+  high:
+    - "No audit trail evidence"
+    - "Missing ownership or cost tags"
+    - "Manual production deployment"
+    - "No scanning in pipeline"
+
+# -----------------------------------------------------------------------------
 # SCORING
 # -----------------------------------------------------------------------------
 scoring:
@@ -236,3 +252,28 @@ verdict:
 evidence_type: [observed, inferred, missing, contradictory]
 severity: [critical, high, medium, low]
 confidence: [high, medium, low]
+
+# -----------------------------------------------------------------------------
+# NIST FRAMEWORK MAPPINGS (SP 800-53 control families)
+# -----------------------------------------------------------------------------
+framework_mappings:
+  AC: "Access Control"
+  IA: "Identification and Authentication"
+  AU: "Audit and Accountability"
+  SC: "System and Communications Protection"
+  CM: "Configuration Management"
+  SI: "System and Information Integrity"
+  CP: "Contingency Planning"
+  IR: "Incident Response"
+
+category_to_nist:
+  1_identity_access: [AC, IA]
+  2_secrets_management: [IA, SC]
+  3_logging_audit: [AU]
+  4_network_security: [SC]
+  5_data_protection: [SC, CP]
+  6_vulnerability_management: [SI]
+  7_devsecops_pipeline: [CM]
+  8_zero_trust: [AC, SC]
+  9_tagging_governance: []
+  10_resilience_recovery: [CP]

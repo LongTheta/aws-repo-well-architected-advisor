@@ -40,6 +40,24 @@ always_on:
     - well-architected-scoring-engine
 
 # -----------------------------------------------------------------------------
+# PRODUCTION-READINESS GATE (runs late; strict compliance)
+# aws-federal-grade-checklist runs last among specialist skills, before scoring.
+# -----------------------------------------------------------------------------
+production_readiness_gate:
+  skill: aws-federal-grade-checklist
+  run_order: "After architecture/security/cost/networking reviews; before well-architected-scoring-engine"
+  priority: high
+  triggers:
+    - Terraform
+    - CloudFormation
+    - CDK
+    - IAM
+    - security
+    - compliance
+    - production-readiness
+    - regulated-workload
+
+# -----------------------------------------------------------------------------
 # FILE-BASED TRIGGERS
 # Maps path/glob patterns to skills. Skills run only when matching files exist.
 # -----------------------------------------------------------------------------
@@ -53,6 +71,7 @@ file_triggers:
       - aws-architecture-pattern-advisor
       - finops-cost-optimizer
       - nist-compliance-evaluator
+      - aws-federal-grade-checklist
 
   iac_cdk:
     patterns:
@@ -63,6 +82,7 @@ file_triggers:
       - aws-architecture-pattern-advisor
       - finops-cost-optimizer
       - nist-compliance-evaluator
+      - aws-federal-grade-checklist
 
   iac_cloudformation:
     patterns:
@@ -75,6 +95,7 @@ file_triggers:
       - aws-architecture-pattern-advisor
       - finops-cost-optimizer
       - nist-compliance-evaluator
+      - aws-federal-grade-checklist
 
   kubernetes:
     patterns:
@@ -89,6 +110,7 @@ file_triggers:
       - observability-grafana-advisor
       - nist-compliance-evaluator
       - aws-architecture-pattern-advisor
+      - aws-federal-grade-checklist
     additional_logic:
       - networking_review
 
@@ -191,6 +213,7 @@ content_triggers:
     skills:
       - nist-compliance-evaluator
       - aws-architecture-pattern-advisor
+      - aws-federal-grade-checklist
     additional_logic:
       - high_priority_network_exposure_review
 
@@ -251,9 +274,25 @@ content_triggers:
     additional_logic:
       - resilience_gap_analysis
 
+  compliance_regulated:
+    description: "Compliance, production-readiness, or regulated workload signals"
+    patterns:
+      - "fedramp"
+      - "hipaa"
+      - "pci"
+      - "compliance"
+      - "zero.trust"
+      - "production.readiness"
+      - "regulated"
+      - "nist.800"
+    priority: 1
+    skills:
+      - aws-federal-grade-checklist
+      - nist-compliance-evaluator
+
 # -----------------------------------------------------------------------------
 # EXECUTION PRIORITY ORDER (for tie-breaking when multiple skills apply)
-# Lower number = higher priority. Skills in same tier can run in parallel.
+# Order: repo discovery first → architecture/security/cost/networking → aws-federal-grade-checklist last (gate) → scoring
 # -----------------------------------------------------------------------------
 execution_priority:
   tier_1:
@@ -264,7 +303,6 @@ execution_priority:
 
   tier_2:
     - nist-compliance-evaluator
-    - aws-federal-grade-checklist
     - aws-architecture-pattern-advisor
     - finops-cost-optimizer
     - devops-operability-review
@@ -279,6 +317,9 @@ execution_priority:
     - observability_gap_analysis
 
   tier_4:
+    - aws-federal-grade-checklist
+
+  tier_5:
     - well-architected-scoring-engine
     - questionnaire_generation
     - target_state_recommendation

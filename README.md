@@ -1,22 +1,101 @@
 # AWS Repo Well-Architected Advisor
 
-**The canonical AWS-specific implementation** of a multi-cloud platform design system for the LongTheta ecosystem. Production-grade platform design and review for AWS workloads.
+**The AWS-specific implementation** of a broader architecture review and platform design concept. Production-grade platform design and review for AWS workloads.
+
+**Scope:** AWS only. No Azure or GCP logic. See [AWS-SCOPE.md](AWS-SCOPE.md).
 
 ---
 
-## Purpose
+## What This Repo Is
 
-This repository is the **AWS-first** platform design and review system. It supports:
+This repository is an **AWS-first architecture review and platform design system** that supports:
 
 | Capability | Description |
 |------------|-------------|
-| **Repo-Driven AWS Platform Review** | Analyze existing repos; infer current-state AWS architecture; identify gaps |
-| **Spec-Driven AWS Platform Design** | Design the cheapest safe AWS platform from requirements |
-| **Cost-Aware Architecture Recommendations** | Default to cost-effective baseline; avoid over-engineering |
-| **Governance and Tagging Enforcement** | Mandatory tagging; cost allocation; compliance |
-| **Production-Readiness Reporting** | Executive summary, risks, remediation backlog, target-state |
+| **Repo-Driven Mode** | Analyze existing repos; infer AWS architecture; identify gaps |
+| **Spec-Driven Mode** | Design the cheapest safe AWS platform from requirements |
+| **Federal-Grade Compliance** | Strict production-readiness gate (aws-federal-grade-checklist) |
+| **Cost-Aware Recommendations** | Default to cost-effective baseline; avoid over-engineering |
+| **Governance and Tagging** | Mandatory tagging; cost allocation; compliance |
 
-**Scope:** AWS only. AWS Well-Architected is the primary framework. AWS-native services and terminology only. No Azure or GCP logic in this repo.
+---
+
+## Repository Structure (Actual Layout)
+
+```
+aws-repo-well-architected-advisor/
+│
+├── cloud-architecture-ai-auditor/     # Core orchestration, rules, prompts
+│   ├── well-architected-scoring-engine
+│   ├── repo-discovery
+│   ├── architecture-inference
+│   ├── devops-operability-review
+│   ├── operating-modes.yaml
+│   ├── aws-architecture-decision-engine.md
+│   ├── aws-app-platform-questionnaire.md
+│   ├── tagging-compliance.yaml
+│   └── samples/
+│
+├── aws-architecture-pattern-advisor   # Service selection, anti-patterns
+├── aws-federal-grade-checklist       # Federal-grade compliance gate (strict)
+├── nist-compliance-evaluator         # NIST, Zero Trust, CIS, FedRAMP
+├── observability-grafana-advisor     # CloudWatch, Grafana, Golden Signals
+├── finops-cost-optimizer             # Cost optimization, savings
+├── security-review                  # IAM, secrets, encryption
+├── networking-review                 # VPC, subnets, SGs, NAT
+├── devops-review                     # CI/CD, GitOps
+│
+├── RULES.md                          # Rule-based routing
+├── .cursorrules                      # Condensed rules for Cursor
+├── skill-trigger-matrix.yaml         # (in cloud-architecture-ai-auditor)
+└── review-workflow.md               # Structured workflow prompts
+```
+
+---
+
+## Specialist Modules
+
+| Module | Purpose |
+|--------|---------|
+| **aws-architecture-pattern-advisor** | Service selection (Lambda/ECS/EKS/EC2); anti-patterns; right-sizing |
+| **aws-federal-grade-checklist** | **Strict production-readiness gate** — NIST, FedRAMP, DoD DevSecOps, Zero Trust, FinOps tagging |
+| **cloud-architecture-ai-auditor** | Orchestration; Repo-Driven/Spec-Driven modes; decision engine; report synthesis |
+| **nist-compliance-evaluator** | NIST 800-53, 800-207 (Zero Trust), CIS, FedRAMP |
+| **observability-grafana-advisor** | CloudWatch, Grafana, Golden Signals, DORA |
+| **finops-cost-optimizer** | Cost optimization, savings, tagging |
+| **security-review** | IAM, secrets, encryption |
+| **networking-review** | VPC, subnets, security groups, NAT |
+| **devops-review** | CI/CD, GitOps |
+
+---
+
+## How the Modules Work Together
+
+```
+1. REPO DISCOVERY (repo-discovery)
+   └── Inventory IaC, CI/CD, K8s, configs
+
+2. ARCHITECTURE INFERENCE (architecture-inference)
+   └── Infer current-state AWS architecture
+
+3. SPECIALIST REVIEWS (file/content triggered)
+   └── aws-architecture-pattern-advisor
+   └── nist-compliance-evaluator
+   └── finops-cost-optimizer
+   └── devops-operability-review
+   └── observability-grafana-advisor
+   └── security-review, networking-review (as needed)
+
+4. FEDERAL-GRADE GATE (aws-federal-grade-checklist) — RUNS LAST
+   └── Strict production-readiness evaluation
+   └── Triggers: Terraform, CDK, CloudFormation, IAM, security, compliance, regulated
+   └── Verdict: NOT READY / CONDITIONAL / READY
+
+5. REPORT SYNTHESIS (well-architected-scoring-engine)
+   └── Aggregate findings; produce final report
+```
+
+**Rule-driven routing** uses `RULES.md`, `.cursorrules`, and `cloud-architecture-ai-auditor/skill-trigger-matrix.yaml` to select skills based on repo contents and user requests.
 
 ---
 
@@ -26,18 +105,9 @@ This repository is the **AWS-first** platform design and review system. It suppo
 
 **Trigger:** Repos provided; user asks for analysis, review, or improvements.
 
-**Artifacts inspected:** Terraform, CDK, CloudFormation, Docker, CI/CD (GitHub Actions, GitLab CI, CodeBuild), Kubernetes manifests.
+**Flow:** Repo discovery → architecture inference → specialist reviews → **aws-federal-grade-checklist** (if triggered) → report synthesis.
 
-**Gaps identified:**
-- Networking (VPC, subnets, NAT, endpoints)
-- IAM (roles, policies, least privilege)
-- Secrets (hardcoded creds, Secrets Manager, Parameter Store)
-- Compute/runtime fit (Lambda vs ECS vs EKS vs EC2)
-- Observability (logs, metrics, traces, alarms)
-- Tagging (required tag set)
-- Cost posture (NAT, over-provisioning, cheaper alternatives)
-
-**Output:** Audit-style report, remediation backlog, optimized target-state AWS architecture.
+**Artifacts inspected:** Terraform, CDK, CloudFormation, Docker, CI/CD, Kubernetes (EKS).
 
 ---
 
@@ -45,139 +115,41 @@ This repository is the **AWS-first** platform design and review system. It suppo
 
 **Trigger:** No repo; user asks to design a system or provides requirements.
 
-**Flow:** Application questionnaire → decision engine (rule-based) → platform blueprint.
+**Flow:** Application questionnaire → decision engine → platform blueprint.
 
-**Recommendations cover:**
-- Compute (Lambda, ECS/Fargate, EKS only when justified, EC2 for legacy)
-- Data layer (RDS/Postgres, DynamoDB, S3, ElastiCache)
-- Networking (VPC, ALB, Route 53, CloudFront)
-- IAM (roles, Cognito, SSO)
-- Observability (CloudWatch, X-Ray)
-- CI/CD (CodePipeline, GitHub Actions, etc.)
-- Growth path (initial → moderate → high scale)
+**Output:** Architecture decisions, cost estimate, implementation plan.
 
-**Output:** Platform blueprint, architecture decisions, cost estimate, implementation plan.
+---
+
+## aws-federal-grade-checklist (Production-Readiness Gate)
+
+The **aws-federal-grade-checklist** skill acts as the strict compliance and production-readiness gate. It evaluates against:
+
+- AWS Well-Architected Framework
+- NIST SP 800-53 control families (AC, IA, AU, SC, CM, SI, CP, IR)
+- FedRAMP-style cloud expectations
+- DoD DevSecOps / Zero Trust principles
+- FinOps governance and tagging
+
+**Runs last** in the review flow. **Critical findings → NOT READY.** **High findings → require remediation before production.**
 
 ---
 
 ## Mandatory Tagging
 
-All AWS resources must include these tags. Missing tags = **HIGH severity**.
+All AWS resources must include: Project, Environment, Owner, CostCenter, ManagedBy, Purpose, DataClassification, Lifecycle.
 
-| Tag | Purpose |
-|-----|---------|
-| Project | Cost allocation; project grouping |
-| Environment | dev, test, prod |
-| Owner | Team or person responsible |
-| CostCenter | Finance / chargeback |
-| ManagedBy | terraform, cloudformation, manual, other |
-| Purpose | What the resource does |
-| DataClassification | public, internal, confidential, restricted |
-| Lifecycle | active, deprecated, experimental |
-
-See `cloud-architecture-ai-auditor/tagging-compliance.yaml`.
+**Missing required tags = governance failure.** See `cloud-architecture-ai-auditor/tagging-compliance.yaml`.
 
 ---
 
-## AWS Decision Logic
+## Rule-Based Routing
 
-| Workload | Recommendation | When |
-|----------|----------------|------|
-| Low-traffic, bursty, stateless | **Lambda** | Event-driven; scale to zero |
-| Moderate containerized | **ECS Fargate** | Managed; no node management |
-| K8s ecosystem required | **EKS** | Only when clearly justified |
-| Legacy, long-running | **EC2** | Reserved/Spot; full control |
-| Relational + transactions | **RDS (Postgres)** | ACID; managed |
-| Key-value, document, scale | **DynamoDB** | Serverless; on-demand |
-| File / object storage | **S3** | Durable; lifecycle |
-| Async / event patterns | **SQS, EventBridge, Step Functions** | Right tool per pattern |
-
-**Rule:** Do NOT recommend EKS unless justified. Prefer Lambda or ECS for most workloads.
-
----
-
-## Output (Both Modes)
-
-Every report includes:
-
-1. Executive summary
-2. Current or proposed AWS architecture
-3. Cost snapshot
-4. Security baseline
-5. Observability plan
-6. Tagging compliance
-7. Top risks
-8. Remediation backlog
-9. Target-state AWS architecture
-
----
-
-## Repository Structure
-
-```
-aws-repo-well-architected-advisor/
-│
-├── cloud-architecture-ai-auditor/     # Core orchestration and rules
-│   ├── well-architected-scoring-engine # Report synthesis
-│   ├── repo-discovery                 # Inventory IaC, CI/CD, K8s
-│   ├── architecture-inference         # Infer current-state AWS architecture
-│   ├── devops-operability-review      # CI/CD, deployment safety
-│   ├── operating-modes.yaml           # Repo-Driven vs Spec-Driven
-│   ├── architect-mindset.md           # Constraints first; 5 core areas
-│   ├── aws-architecture-decision-engine.md  # Questionnaire → decisions
-│   ├── aws-app-platform-questionnaire.md    # 12-question platform design
-│   ├── aws-platform-blueprint-for-app.md   # Full platform design prompt
-│   ├── tagging-compliance.yaml       # Mandatory tag set
-│   └── samples/                       # Sample repos and reports
-│
-├── aws-architecture-pattern-advisor   # Service selection, anti-patterns
-├── aws-federal-grade-checklist        # Federal-grade evaluation (NIST, FedRAMP, DoD)
-├── nist-compliance-evaluator          # NIST, Zero Trust, CIS, FedRAMP
-├── observability-grafana-advisor      # CloudWatch, Grafana, Golden Signals
-├── finops-cost-optimizer              # Cost optimization, savings
-├── security-review                   # IAM, secrets, encryption
-├── networking-review                 # VPC, subnets, SGs, NAT
-└── devops-review                     # CI/CD, GitOps
-```
-
----
-
-## Frameworks
-
-| Framework | Scope |
-|-----------|-------|
-| **AWS Well-Architected** | 6 pillars; primary architecture framework |
-| **NIST / CIS** | NIST 800-53, 800-207 (Zero Trust), CIS Benchmarks |
-| **Federal-grade** | aws-federal-grade-checklist (FedRAMP, DoD DevSecOps) |
-| **FinOps** | Cost optimization, tagging, cost allocation |
-| **Observability** | SRE Golden Signals, CloudWatch, DORA |
-
----
-
-## Usage
-
-**Repo-Driven:**
-```
-Review my application repo for AWS Well-Architected compliance.
-Focus on security, cost, and reliability.
-```
-
-**Spec-Driven:**
-```
-Design an AWS platform for a web app. I'll answer the questionnaire.
-```
-
-**Invocation:**
-```
-Run a full cloud architecture review on my repository.
-Use the cloud-architecture-ai-auditor system.
-```
-
----
-
-## AWS Scope
-
-This repo is **AWS-only**. No Azure or GCP logic. See [AWS-SCOPE.md](AWS-SCOPE.md).
+| File | Purpose |
+|------|---------|
+| `RULES.md` | Rule-based skill routing; production-readiness rules |
+| `.cursorrules` | Condensed rules for Cursor IDE |
+| `cloud-architecture-ai-auditor/skill-trigger-matrix.yaml` | File/content patterns → skills; execution order |
 
 ---
 
@@ -185,19 +157,17 @@ This repo is **AWS-only**. No Azure or GCP logic. See [AWS-SCOPE.md](AWS-SCOPE.m
 
 | File | Purpose |
 |------|---------|
-| `AWS-SCOPE.md` | AWS-only scope; no Azure/GCP |
+| `AWS-SCOPE.md` | AWS-only scope |
 | `CONTRIBUTING.md` | Contribution guidelines |
-| `CHANGELOG.md` | Version history |
-| `LICENSE` | MIT |
+| `RULES.md` | Rule-based routing; aws-federal-grade-checklist rules |
+| `.cursorrules` | Condensed rules for Cursor |
 | `cloud-architecture-ai-auditor/README.md` | Full system documentation |
 | `cloud-architecture-ai-auditor/orchestrator-prompt.md` | Coordination prompt |
-| `cloud-architecture-ai-auditor/OPERATING_MODES.md` | Mode selection |
-| `cloud-architecture-ai-auditor/RULES.md` | Project rules |
-| `RULES.md` | Rule-based routing |
-| `review-workflow.md` | Structured workflow |
+| `cloud-architecture-ai-auditor/skill-trigger-matrix.yaml` | File/content patterns → skills; execution order |
+| `aws-federal-grade-checklist/README.md` | Federal-grade checklist documentation |
 
 ---
 
 ## End Goal
 
-This repository is the **AWS-first, production-grade platform design and review system** in the LongTheta ecosystem — supporting both evaluation of existing implementations and design of new platforms from scratch.
+This repository functions as the **AWS-first architecture review and platform design system**, with **aws-federal-grade-checklist** acting as the strict compliance and production-readiness gate.

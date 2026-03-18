@@ -2,17 +2,18 @@
 
 Rule-driven skill selection. Skills = expertise modules. Rules = conditions that trigger them.
 
-## File Triggers (skill-trigger-matrix.yaml)
-- IaC → security-evaluator, ai-devsecops-policy-enforcement, tool-evaluator
-- K8s, Helm, ArgoCD → zero-trust-gitops-enforcement, dod-zero-trust-architect, security-evaluator
-- Dockerfiles, dependency manifests → cve-detect-and-remediate, security-evaluator
-- CI/CD → ai-devsecops-policy-enforcement, zero-trust-gitops-enforcement, security-evaluator
+## File Triggers (cloud-architecture-ai-auditor/skill-trigger-matrix.yaml)
+- IaC (Terraform, CDK, CloudFormation) → aws-architecture-pattern-advisor, finops-cost-optimizer, nist-compliance-evaluator, aws-federal-grade-checklist
+- K8s, Helm, ArgoCD → observability-grafana-advisor, nist-compliance-evaluator, aws-architecture-pattern-advisor, aws-federal-grade-checklist
+- IAM, security, compliance, regulated → aws-federal-grade-checklist
+- CI/CD → devops-operability-review, observability-grafana-advisor
 
-## Request Triggers
-- Tool/platform evaluation → tool-evaluator
-- New rule → create-rule
-- New skill → create-skill
-- Decompose into specialist workflows → create-subagent
+## aws-federal-grade-checklist (Production-Readiness Gate)
+- Runs LAST among specialist skills (tier 4)
+- Critical findings → NOT READY
+- High findings → require remediation before production
+- Missing required tags = governance failure
+- Missing evidence ≠ compliant
 
 ## Output
 - Prioritize security findings

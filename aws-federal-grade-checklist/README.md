@@ -28,7 +28,7 @@ Evaluate AWS repositories, infrastructure-as-code (Terraform, CDK, CloudFormatio
 
 ## What It Inspects
 
-- Infrastructure as Code (Terraform, CDK, CloudFormation)
+- Infrastructure as Code (Terraform, Terragrunt, CDK, CloudFormation)
 - IAM roles, policies, and trust relationships
 - Networking configurations (VPC, subnets, security groups)
 - Secrets handling
@@ -36,6 +36,7 @@ Evaluate AWS repositories, infrastructure-as-code (Terraform, CDK, CloudFormatio
 - Logging and monitoring signals
 - Backup and recovery patterns
 - Resource tagging and governance
+- EKS-related manifests (if present)
 
 ---
 
