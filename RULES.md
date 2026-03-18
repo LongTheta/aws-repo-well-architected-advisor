@@ -2,6 +2,8 @@
 
 Rules that map repo contents and user requests to specific skills. Deterministic, maintainable, no agent dependency.
 
+**Scope:** AWS only. See `AWS-SCOPE.md`. Primary system: `cloud-architecture-ai-auditor/` with Repo-Driven and Spec-Driven modes.
+
 ---
 
 ## Model

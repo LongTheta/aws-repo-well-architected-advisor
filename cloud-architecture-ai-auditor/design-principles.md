@@ -2,6 +2,8 @@
 
 Foundational principles for the rule-driven architecture review platform.
 
+**Scope:** AWS only. See `../AWS-SCOPE.md` in the repo root.
+
 ---
 
 ## 0. Constraints, Risks, and Tradeoffs First (Spec-Driven)

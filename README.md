@@ -1,156 +1,198 @@
 # AWS Repo Well-Architected Advisor
 
-An AI skill that reviews application repositories, infrastructure-as-code, CI/CD pipelines, Kubernetes manifests, and deployment configs using a **multi-framework evaluation layer** combining AWS Well-Architected, CompTIA Cloud+, NIST/CIS security controls, DevOps maturity, and FinOps cost optimization.
+**The canonical AWS-specific implementation** of a multi-cloud platform design system for the LongTheta ecosystem. Production-grade platform design and review for AWS workloads.
 
-## Cloud Architecture AI Auditor (Full System)
+---
 
-For a **comprehensive cloud architecture review**, use the [cloud-architecture-ai-auditor](cloud-architecture-ai-auditor/) system. It applies specialist skills and produces a consulting-grade report:
+## Purpose
+
+This repository is the **AWS-first** platform design and review system. It supports:
+
+| Capability | Description |
+|------------|-------------|
+| **Repo-Driven AWS Platform Review** | Analyze existing repos; infer current-state AWS architecture; identify gaps |
+| **Spec-Driven AWS Platform Design** | Design the cheapest safe AWS platform from requirements |
+| **Cost-Aware Architecture Recommendations** | Default to cost-effective baseline; avoid over-engineering |
+| **Governance and Tagging Enforcement** | Mandatory tagging; cost allocation; compliance |
+| **Production-Readiness Reporting** | Executive summary, risks, remediation backlog, target-state |
+
+**Scope:** AWS only. AWS Well-Architected is the primary framework. AWS-native services and terminology only. No Azure or GCP logic in this repo.
+
+---
+
+## Operating Modes
+
+### Repo-Driven Mode
+
+**Trigger:** Repos provided; user asks for analysis, review, or improvements.
+
+**Artifacts inspected:** Terraform, CDK, CloudFormation, Docker, CI/CD (GitHub Actions, GitLab CI, CodeBuild), Kubernetes manifests.
+
+**Gaps identified:**
+- Networking (VPC, subnets, NAT, endpoints)
+- IAM (roles, policies, least privilege)
+- Secrets (hardcoded creds, Secrets Manager, Parameter Store)
+- Compute/runtime fit (Lambda vs ECS vs EKS vs EC2)
+- Observability (logs, metrics, traces, alarms)
+- Tagging (required tag set)
+- Cost posture (NAT, over-provisioning, cheaper alternatives)
+
+**Output:** Audit-style report, remediation backlog, optimized target-state AWS architecture.
+
+---
+
+### Spec-Driven Mode
+
+**Trigger:** No repo; user asks to design a system or provides requirements.
+
+**Flow:** Application questionnaire → decision engine (rule-based) → platform blueprint.
+
+**Recommendations cover:**
+- Compute (Lambda, ECS/Fargate, EKS only when justified, EC2 for legacy)
+- Data layer (RDS/Postgres, DynamoDB, S3, ElastiCache)
+- Networking (VPC, ALB, Route 53, CloudFront)
+- IAM (roles, Cognito, SSO)
+- Observability (CloudWatch, X-Ray)
+- CI/CD (CodePipeline, GitHub Actions, etc.)
+- Growth path (initial → moderate → high scale)
+
+**Output:** Platform blueprint, architecture decisions, cost estimate, implementation plan.
+
+---
+
+## Mandatory Tagging
+
+All AWS resources must include these tags. Missing tags = **HIGH severity**.
+
+| Tag | Purpose |
+|-----|---------|
+| Project | Cost allocation; project grouping |
+| Environment | dev, test, prod |
+| Owner | Team or person responsible |
+| CostCenter | Finance / chargeback |
+| ManagedBy | terraform, cloudformation, manual, other |
+| Purpose | What the resource does |
+| DataClassification | public, internal, confidential, restricted |
+| Lifecycle | active, deprecated, experimental |
+
+See `cloud-architecture-ai-auditor/tagging-compliance.yaml`.
+
+---
+
+## AWS Decision Logic
+
+| Workload | Recommendation | When |
+|----------|----------------|------|
+| Low-traffic, bursty, stateless | **Lambda** | Event-driven; scale to zero |
+| Moderate containerized | **ECS Fargate** | Managed; no node management |
+| K8s ecosystem required | **EKS** | Only when clearly justified |
+| Legacy, long-running | **EC2** | Reserved/Spot; full control |
+| Relational + transactions | **RDS (Postgres)** | ACID; managed |
+| Key-value, document, scale | **DynamoDB** | Serverless; on-demand |
+| File / object storage | **S3** | Durable; lifecycle |
+| Async / event patterns | **SQS, EventBridge, Step Functions** | Right tool per pattern |
+
+**Rule:** Do NOT recommend EKS unless justified. Prefer Lambda or ECS for most workloads.
+
+---
+
+## Output (Both Modes)
+
+Every report includes:
+
+1. Executive summary
+2. Current or proposed AWS architecture
+3. Cost snapshot
+4. Security baseline
+5. Observability plan
+6. Tagging compliance
+7. Top risks
+8. Remediation backlog
+9. Target-state AWS architecture
+
+---
+
+## Repository Structure
 
 ```
-cloud-architecture-ai-auditor/
-├── well-architected-scoring-engine   # Report synthesis
-├── repo-discovery
-├── architecture-inference
-├── devops-operability-review
-└── [references sibling skills: aws-architecture-pattern-advisor, nist-compliance-evaluator, etc.]
+aws-repo-well-architected-advisor/
+│
+├── cloud-architecture-ai-auditor/     # Core orchestration and rules
+│   ├── well-architected-scoring-engine # Report synthesis
+│   ├── repo-discovery                 # Inventory IaC, CI/CD, K8s
+│   ├── architecture-inference         # Infer current-state AWS architecture
+│   ├── devops-operability-review      # CI/CD, deployment safety
+│   ├── operating-modes.yaml           # Repo-Driven vs Spec-Driven
+│   ├── architect-mindset.md           # Constraints first; 5 core areas
+│   ├── aws-architecture-decision-engine.md  # Questionnaire → decisions
+│   ├── aws-app-platform-questionnaire.md    # 12-question platform design
+│   ├── aws-platform-blueprint-for-app.md   # Full platform design prompt
+│   ├── tagging-compliance.yaml       # Mandatory tag set
+│   └── samples/                       # Sample repos and reports
+│
+├── aws-architecture-pattern-advisor   # Service selection, anti-patterns
+├── nist-compliance-evaluator          # NIST, Zero Trust, CIS, FedRAMP
+├── observability-grafana-advisor      # CloudWatch, Grafana, Golden Signals
+├── finops-cost-optimizer              # Cost optimization, savings
+├── security-review                   # IAM, secrets, encryption
+├── networking-review                 # VPC, subnets, SGs, NAT
+└── devops-review                     # CI/CD, GitOps
 ```
 
-## Overview
+---
 
-This skill applies a **5-layer evaluation model** — an automated cloud architecture review engine with enterprise + federal alignment:
+## Frameworks
 
-| Layer | Framework | What It Covers |
-|-------|-----------|----------------|
-| 1 | **AWS Well-Architected** | Cloud design best practices (6 pillars) |
-| 2 | **CompTIA Cloud+** | Operational best practices — can it run in production? Is it maintainable? |
-| 3 | **Security / Compliance** | NIST, CIS, OWASP alignment |
-| 4 | **DevOps Maturity** | CI/CD, GitOps, observability |
-| 5 | **FinOps** | Cost efficiency, resource utilization |
+| Framework | Scope |
+|-----------|-------|
+| **AWS Well-Architected** | 6 pillars; primary architecture framework |
+| **NIST / CIS** | NIST 800-53, 800-207 (Zero Trust), CIS Benchmarks |
+| **FinOps** | Cost optimization, tagging, cost allocation |
+| **Observability** | SRE Golden Signals, CloudWatch, DORA |
 
-**CompTIA Cloud+** maps to CV0-004 domains (Architecture, Security, Deployment, Operations, Troubleshooting, DevOps) and 8 best practices. **RTO/RPO, restore testing, and troubleshooting visibility** are flagged hard when missing — common gaps in most repos.
+---
 
-All findings are tagged as **Observed** / **Inferred** / **Missing Evidence**.
+## Usage
 
-## Key Features
+**Repo-Driven:**
+```
+Review my application repo for AWS Well-Architected compliance.
+Focus on security, cost, and reliability.
+```
 
-- **5-layer evaluation** — AWS, CompTIA, Security/Compliance, DevOps, FinOps
-- **CompTIA Cloud+ CV0-004** — Maps to Architecture, Security, Deployment, Operations, Troubleshooting, DevOps
-- **CompTIA 8 best practices** — IaC, CI/CD, Backup/DR (RTO/RPO + restore testing), Networking, Security, Monitoring, Cost, Troubleshooting
-- **Flag hard** — RTO/RPO, restore testing, and troubleshooting visibility (common gaps)
-- **Additional frameworks** — OWASP (Top 10, API Security), CIS, Kubernetes best practices, DORA signals
-- **Evidence-based findings** — Every finding tagged: Observed / Inferred / Missing Evidence
-- **Role-based output** — Findings for Architect, Developer, Security
-- **Compliance gaps** — NIST/CIS control mapping with remediation
-- **Cost-effective target architecture** — Quick wins, medium-term, strategic
+**Spec-Driven:**
+```
+Design an AWS platform for a web app. I'll answer the questionnaire.
+```
 
-## When to Use
+**Invocation:**
+```
+Run a full cloud architecture review on my repository.
+Use the cloud-architecture-ai-auditor system.
+```
 
-- Review AWS workloads, Terraform, CDK, CloudFormation, EKS, ECS, Lambda configs
-- Assess VPC design, IAM posture, cost optimization, security compliance
-- Evaluate Well-Architected, CompTIA Cloud+, NIST, CIS, or FinOps alignment
-- Get role-specific guidance for architecture, development, or security teams
+---
 
-## Review Modules
+## AWS Scope
 
-| Module | Purpose |
-|--------|---------|
-| Repo Discovery | Inventory IaC, CI/CD, K8s manifests, deployment configs |
-| Architecture Inference | Infer current-state AWS architecture from artifacts |
-| Networking Review | VPC, ingress/egress, hybrid connectivity |
-| IAM/Security Review | Roles, trust boundaries, secrets, encryption |
-| Reliability/Resilience Review | Multi-AZ, DR, failover, health checks |
-| Performance/Cost Review | Compute, storage, cost drivers, optimization |
-| DevOps/Operability Review | CI/CD, logging, metrics, tracing, tagging |
-| CompTIA Cloud+ Review | 7 operational validation checks |
-| Multi-Framework Scoring | Aggregate scores, compliance gaps, final report |
+This repo is **AWS-only**. No Azure or GCP logic. See [AWS-SCOPE.md](AWS-SCOPE.md).
 
-## Output
+---
 
-1. Executive summary  
-2. Inferred architecture  
-3. Multi-framework scorecard (AWS pillars + CompTIA, Security, DevOps, FinOps)  
-4. Top 10 risks (with evidence tags)  
-5. Role-based findings (Architect, Developer, Security)  
-6. Prioritized remediation backlog  
-7. Cost-effective target architecture  
-8. Compliance gaps (NIST/CIS)  
-9. Suggested next implementation steps by repo  
-
-## Scoring
-
-- **AWS pillars**: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability
-- **Framework scores**: CompTIA operational, Security/Compliance, DevOps maturity, Cost optimization (FinOps)
-- **Severity**: Critical / High / Medium / Low
-- **Confidence**: Confirmed / Strongly Inferred / Assumed
-- **Evidence**: Observed / Inferred / Missing Evidence
-
-## Rule-Based Skill Routing
-
-Rule-driven skill selection per `RULES.md` and `skill-trigger-matrix.yaml`:
-
-- **Skills** — Reusable expertise modules
-- **Rules** — File patterns and user requests trigger specific skills
-- **Prompts** — Structured workflows (see `review-workflow.md`)
-
-| Repo Type | Skills |
-|------------|--------|
-| IaC | security-evaluator, ai-devsecops-policy-enforcement, tool-evaluator |
-| Kubernetes / GitOps | zero-trust-gitops-enforcement, dod-zero-trust-architect, security-evaluator |
-| CI/CD | ai-devsecops-policy-enforcement, zero-trust-gitops-enforcement, security-evaluator |
-| Containerized apps | cve-detect-and-remediate, security-evaluator |
-
-## Files in This Skill
+## Key Files
 
 | File | Purpose |
 |------|---------|
-| `RULES.md` | **Rule-based routing** — conditions that trigger skills |
-| `.cursorrules` | Condensed rules for Cursor |
-| `skill-trigger-matrix.yaml` | File patterns and requests → skills |
-| `review-workflow.md` | Structured workflow prompts |
-| `SKILL.md` | Main skill instructions |
-| `README.md` | This overview |
-| `prompt-template.md` | Invocation prompt template |
-| `reference.md` | Skill definition, module specs, dimension details |
-| `scoring-rubric.md` | Per-pillar scoring criteria |
-| `sample-input-repo-structure.md` | Expected repo layout for review |
-| `sample-output-report.md` | Full example report |
-| `production-readiness-checklist.md` | Pre-production checklist |
+| `AWS-SCOPE.md` | AWS-only scope; no Azure/GCP |
+| `cloud-architecture-ai-auditor/README.md` | Full system documentation |
+| `cloud-architecture-ai-auditor/orchestrator-prompt.md` | Coordination prompt |
+| `cloud-architecture-ai-auditor/OPERATING_MODES.md` | Mode selection |
+| `cloud-architecture-ai-auditor/RULES.md` | Project rules |
+| `RULES.md` | Rule-based routing |
+| `review-workflow.md` | Structured workflow |
 
-## Skill Hierarchy
+---
 
-```
-aws-repo-well-architected-advisor
-│
-├── aws-architecture-pattern-advisor — Service selection, anti-patterns, right-sizing
-├── nist-compliance-evaluator       — NIST 800-53, Zero Trust, CIS, FedRAMP
-├── observability-grafana-advisor   — Grafana dashboards, Golden Signals, DORA
-├── finops-cost-optimizer           — Cost optimization, FinOps, savings
-├── security-review                — IAM, secrets, encryption, compliance
-├── networking-review               — VPC, subnets, SGs, NAT, hybrid
-└── devops-review                   — CI/CD, GitOps, observability
-```
+## End Goal
 
-## Specialist Skills
-
-| Skill | Purpose |
-|-------|---------|
-| [aws-architecture-pattern-advisor](aws-architecture-pattern-advisor/) | Service selection (Lambda/ECS/EKS/EC2), anti-patterns, right-sized architecture |
-| [nist-compliance-evaluator](nist-compliance-evaluator/) | NIST 800-53, 800-207 (Zero Trust), 800-190, CIS; FedRAMP readiness |
-| [observability-grafana-advisor](observability-grafana-advisor/) | Grafana dashboards, SRE Golden Signals, DORA, GitOps telemetry |
-| [finops-cost-optimizer](finops-cost-optimizer/) | Cost inefficiencies, FinOps, savings opportunities |
-| [security-review](security-review/) | IAM, secrets, encryption, audit |
-| [networking-review](networking-review/) | VPC, subnets, security groups, NAT, VPC endpoints |
-| [devops-review](devops-review/) | CI/CD, GitOps, deployment safety, observability |
-
-## Installation
-
-This skill is stored in `~/.cursor/skills/aws-repo-well-architected-advisor/`. Cursor loads it automatically when the description matches your request (e.g., "review my AWS repo for Well-Architected compliance").
-
-## Usage Example
-
-```
-Review my application repo for AWS Well-Architected compliance. 
-Focus on security, cost, and reliability. I'm a Solutions Architect.
-```
-
-Apply the skill, run the review modules, and produce the structured report.
+This repository is the **AWS-first, production-grade platform design and review system** in the LongTheta ecosystem — supporting both evaluation of existing implementations and design of new platforms from scratch.

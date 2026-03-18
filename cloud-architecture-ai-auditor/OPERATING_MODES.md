@@ -18,16 +18,22 @@ The system supports two operating modes. Select based on whether the user provid
 
 **Trigger when:** Repos are provided; user asks for analysis, review, or improvements.
 
+### Artifacts Inspected
+
+Terraform, CDK, CloudFormation, Docker, CI/CD (GitHub Actions, GitLab CI, CodeBuild), Kubernetes manifests.
+
 ### Behavior
 
 1. Run repo discovery
-2. Infer architecture from artifacts
-3. Identify:
-   - Security gaps
-   - Cost issues
-   - Missing tagging
-   - Observability gaps
-   - Over-engineering
+2. Infer current-state AWS architecture from artifacts
+3. Identify gaps:
+   - Networking (VPC, subnets, NAT, endpoints)
+   - IAM (roles, policies, least privilege)
+   - Secrets (hardcoded creds, Secrets Manager, Parameter Store)
+   - Compute/runtime fit (Lambda vs ECS vs EKS vs EC2)
+   - Observability (logs, metrics, traces, alarms)
+   - Tagging (required tag set)
+   - Cost posture (NAT, over-provisioning, cheaper alternatives)
 4. Generate:
    - Current-state architecture
    - Findings

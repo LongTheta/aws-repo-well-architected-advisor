@@ -110,11 +110,12 @@ Surface which tradeoff drove each major decision in the output.
 
 ---
 
-### 5. Background Processing
+### 5. Background Processing / Async / Event Patterns
 
 | Condition | Recommendation | Reasoning |
 |-----------|----------------|-----------|
 | Light async | **SQS + Lambda** | Event-driven; scale to zero |
+| Event routing / fan-out | **EventBridge** | Schema registry; event bus; decoupling |
 | Moderate | **SQS + ECS workers** | Longer jobs; more control |
 | Heavy pipelines | **Step Functions / Batch** | Orchestration; batch jobs; fault-tolerant |
 

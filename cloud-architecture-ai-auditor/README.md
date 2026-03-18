@@ -2,6 +2,8 @@
 
 An **AI-powered Cloud Architecture Review Board** that analyzes repositories (application code, IaC, CI/CD, Kubernetes manifests) and produces a full-stack, enterprise-grade assessment for AWS-based infrastructure.
 
+**Scope:** AWS only. AWS Well-Architected is the primary framework. AWS-native services and terminology only. No Azure or GCP logic.
+
 ## Purpose
 
 Guide **Solutions Architects**, **Developers/Platform Engineers**, and **Security Engineers** toward a cost-effective, secure, reliable, and observable architecture—from networking to IAM and everything in between.
@@ -23,16 +25,19 @@ Guide **Solutions Architects**, **Developers/Platform Engineers**, and **Securit
 cloud-architecture-ai-auditor
 │
 ├── well-architected-scoring-engine   # Orchestrator — aggregates all modules
-├── repo-discovery                    # Inventory IaC, CI/CD, K8s, configs
-├── architecture-inference            # Infer current-state from artifacts
-├── aws-architecture-pattern-advisor  # Service selection, anti-patterns
-├── nist-compliance-evaluator         # NIST, Zero Trust, CIS, FedRAMP
-├── observability-grafana-advisor      # Grafana, Golden Signals, DORA
-├── finops-cost-optimizer             # Cost optimization, savings
-└── devops-operability-review         # CI/CD, GitOps, deployment safety
+├── repo-discovery                    # Inventory Terraform, CDK, CloudFormation, Docker, CI/CD, K8s
+├── architecture-inference            # Infer current-state AWS architecture
+├── devops-operability-review         # CI/CD, GitOps, deployment safety
+│
+└── (sibling skills in parent repo)
+    ├── aws-architecture-pattern-advisor  # Service selection, anti-patterns
+    ├── nist-compliance-evaluator         # NIST, Zero Trust, CIS, FedRAMP
+    ├── observability-grafana-advisor     # CloudWatch, Grafana, Golden Signals
+    ├── finops-cost-optimizer             # Cost optimization, savings
+    ├── security-review                   # IAM, secrets, encryption
+    ├── networking-review                 # VPC, subnets, SGs, NAT
+    └── devops-review                     # CI/CD, GitOps
 ```
-
-*Note: aws-architecture-pattern-advisor, nist-compliance-evaluator, observability-grafana-advisor, finops-cost-optimizer are sibling skills in the parent repo.*
 
 ## Analysis Capabilities
 
@@ -65,18 +70,22 @@ cloud-architecture-ai-auditor
 
 ## AWS Decision Engine
 
-| Rule | Recommendation |
-|------|----------------|
-| Event-driven, stateless | Lambda |
-| Containerized, moderate complexity | ECS |
-| K8s orchestration justified | EKS |
-| AWS service egress | VPC endpoints over NAT |
-| General | Prefer managed services |
-| Over-engineered | Suggest simpler alternative |
+| Workload | Recommendation | When |
+|----------|----------------|------|
+| Low-traffic, bursty, stateless | Lambda | Event-driven; scale to zero |
+| Moderate containerized | ECS Fargate | Managed; no node management |
+| K8s ecosystem required | EKS | Only when clearly justified |
+| Legacy, long-running | EC2 | Reserved/Spot; full control |
+| Relational + transactions | RDS (Postgres) | ACID; managed |
+| Key-value, document, scale | DynamoDB | Serverless; on-demand |
+| File / object storage | S3 | Durable; lifecycle |
+| Async / event patterns | SQS, EventBridge, Step Functions | Right tool per pattern |
+
+**Rule:** Do NOT recommend EKS unless justified. Prefer Lambda or ECS for most workloads.
 
 **Anti-patterns detected**: Public backend exposure, K8s overuse, hardcoded secrets, no autoscaling, missing logging, excessive NAT cost.
 
-See [aws-decision-engine.md](aws-decision-engine.md) for full rule-based logic.
+See [aws-architecture-decision-engine.md](aws-architecture-decision-engine.md) and [aws-decision-engine.md](aws-decision-engine.md) for full rule-based logic.
 
 ## Cost-Aware Refinement System
 

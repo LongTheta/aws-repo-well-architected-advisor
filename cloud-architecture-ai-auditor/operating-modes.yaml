@@ -16,11 +16,28 @@ repo_driven:
     - "User asks for analysis, review, or improvements"
     - "User says 'review my repo', 'audit', 'analyze', 'improve'"
 
+  artifacts_inspected:
+    - Terraform
+    - CDK
+    - CloudFormation
+    - Docker
+    - CI/CD
+    - Kubernetes
+
   behavior:
     1: "Run repo discovery"
-    2: "Infer architecture"
-    3: "Identify: security gaps, cost issues, missing tagging, observability gaps, over-engineering"
+    2: "Infer current-state AWS architecture"
+    3: "Identify gaps: networking, IAM, secrets, compute/runtime fit, observability, tagging, cost posture"
     4: "Generate: current-state architecture, findings, improved platform recommendation"
+
+  gap_categories:
+    - networking
+    - iam
+    - secrets
+    - compute_runtime_fit
+    - observability
+    - tagging
+    - cost_posture
 
   output:
     - "Audit-style report"
@@ -109,7 +126,10 @@ output_consistency:
     - cost_snapshot
     - security_baseline
     - observability_plan
+    - tagging_compliance
     - risks
+    - remediation_backlog
+    - target_state_architecture
     - recommendations
 
   architecture:

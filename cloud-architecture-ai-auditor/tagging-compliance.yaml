@@ -30,12 +30,12 @@ required_tags:
     example: "api-backend"
   DataClassification:
     description: "Data sensitivity level"
-    allowed_values: [public, internal, confidential]
+    allowed_values: [public, internal, confidential, restricted]
     example: "internal"
   Lifecycle:
     description: "Resource lifecycle"
-    allowed_values: [ephemeral, persistent]
-    example: "persistent"
+    allowed_values: [active, deprecated, experimental, ephemeral, persistent]
+    example: "active"
 
 # -----------------------------------------------------------------------------
 # VALIDATION RULES
