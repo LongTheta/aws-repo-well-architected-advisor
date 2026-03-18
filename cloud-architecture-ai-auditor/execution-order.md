@@ -1,6 +1,23 @@
 # Cloud Architecture AI Auditor — Execution Order
 
-Defines sequencing and tie-breaking rules for skill execution when multiple skills are triggered.
+Defines the strict sequence for skill execution. See `skill-trigger-matrix.yaml` for `execution_order`.
+
+---
+
+## Review Execution Order
+
+| Step | Skill | Purpose |
+|------|-------|---------|
+| 1 | `repo-discovery` | Build artifact inventory |
+| 2 | `architecture-inference` | Infer current-state from inventory |
+| 3 | `security-review` | IAM, secrets, encryption |
+| 4 | `networking-review` | VPC, subnets, security groups, NAT |
+| 5 | `finops-cost-optimizer` | Cost optimization, savings, tagging |
+| 6 | `observability-grafana-advisor` | CloudWatch, Grafana, Golden Signals |
+| 7 | `devops-review` | CI/CD, GitOps |
+| 8 | `nist-compliance-evaluator` | NIST, Zero Trust, CIS, FedRAMP |
+| 9 | `aws-federal-grade-checklist` | **FINAL GATE** — production-readiness |
+| 10 | `well-architected-scoring-engine` | Aggregate findings; produce report |
 
 ---
 
@@ -32,41 +49,58 @@ After `repo-discovery` and `architecture-inference`, determine workload mode per
 
 ---
 
-### 2. Priority Tiers (After Discovery)
+### 2. Specialist Reviews (Steps 3–8)
 
-Skills run in priority order. Within a tier, skills can run in parallel or in any order unless dependencies exist.
+Run in strict order. Skills run only when file or content triggers match (see `skill-trigger-matrix.yaml`).
 
-| Tier | Priority | Skills | When |
-|------|----------|--------|------|
-| **P1** | Highest | Secret exposure detection, public exposure detection | Run immediately after architecture-inference if content triggers match |
-| **P2** | High | `nist-compliance-evaluator`, `aws-architecture-pattern-advisor`, `finops-cost-optimizer`, `devops-operability-review`, networking review, IAM review, resilience gap | Run when file triggers match |
-| **P3** | Medium | `observability-grafana-advisor`, over-engineering detection, cost refinement, observability gap | Run when file triggers match |
-| **P4** | Final | `well-architected-scoring-engine`, questionnaire generation, target-state recommendation | Always run last |
+| Step | Skill |
+|------|-------|
+| 3 | `security-review` |
+| 4 | `networking-review` |
+| 5 | `finops-cost-optimizer` |
+| 6 | `observability-grafana-advisor` |
+| 7 | `devops-review` |
+| 8 | `nist-compliance-evaluator` |
 
 ---
 
-### 3. Tie-Breaking Rules
+### 3. Final Gate (Step 9)
+
+| Step | Skill | Purpose |
+|------|-------|---------|
+| 9 | `aws-federal-grade-checklist` | **FINAL GATE** — Critical → NOT READY; High → require remediation |
+
+---
+
+### 4. Report Synthesis (Step 10)
+
+| Step | Skill | Purpose |
+|------|-------|---------|
+| 10 | `well-architected-scoring-engine` | Aggregate findings; produce final report |
+
+---
+
+### 5. Tie-Breaking Rules
 
 When multiple skills are triggered:
 
-1. **Security over cost** — If both P1 (security) and P2 (cost) apply, run P1 first
-2. **Deduplication** — If multiple skills report the same issue, merge into one finding with: combined evidence, strongest severity, cross-framework mapping; attribute to primary skill
-3. **Skill order within tier** — Use `skill-trigger-matrix.yaml` order: NIST before FinOps before observability when all apply
-4. **Content triggers override** — If a content trigger (e.g. wildcard IAM) fires, ensure that skill runs even if file trigger didn't fire
+1. **Security over cost** — Security findings take precedence
+2. **Deduplication** — Merge duplicate findings: combined evidence, strongest severity, cross-framework mapping
+3. **Content triggers override** — If a content trigger (e.g. wildcard IAM) fires, ensure that skill runs even if file trigger didn't fire
 
 ---
 
-### 4. Dependency Rules
+### 6. Dependency Rules
 
 | Skill | Depends On |
 |-------|------------|
 | `architecture-inference` | `repo-discovery` |
-| All other skills | `architecture-inference` |
-| `well-architected-scoring-engine` | All triggered skills |
+| Steps 3–9 | `architecture-inference` |
+| `well-architected-scoring-engine` | All triggered skills (steps 3–9) |
 
 ---
 
-### 5. Conditional Execution
+### 7. Conditional Execution
 
 **Do NOT run a skill if:**
 - No file triggers match AND no content triggers match
@@ -74,45 +108,29 @@ When multiple skills are triggered:
 
 **Run a skill if:**
 - Any file trigger matches OR any content trigger matches
-- Skill is in `always_on.last` (well-architected-scoring-engine)
+- Skill is in `always_on` (repo-discovery, architecture-inference, well-architected-scoring-engine)
 
 ---
 
-### 6. Fallback When No Triggers Match
-
-If repo discovery finds nothing (empty repo, minimal files):
-
-1. Still run `repo-discovery` → `architecture-inference` → `well-architected-scoring-engine`
-2. Report: "Minimal artifacts detected. Recommend adding IaC, CI/CD, or config for full analysis."
-3. Produce baseline architecture from assumptions
-4. Present 6 refinement questions
-
----
-
-### 7. Summary Flow
+### 8. Summary Flow
 
 ```
-repo-discovery
-    ↓
-architecture-inference
-    ↓
-[Content triggers: P1 security checks]  ← Run immediately if patterns match
-    ↓
-[File triggers: resolve skills for P2, P3]
-    ↓
-[Run P2 skills]
-    ↓
-[Run P3 skills]
-    ↓
-well-architected-scoring-engine (aggregate, score, report)
-    ↓
-[If context unknown: present 6 questions]
+1. repo-discovery
+2. architecture-inference
+3. security-review
+4. networking-review
+5. finops-cost-optimizer
+6. observability-grafana-advisor
+7. devops-review
+8. nist-compliance-evaluator
+9. aws-federal-grade-checklist (FINAL GATE)
+10. well-architected-scoring-engine
 ```
 
 ---
 
 ## References
 
+- `skill-trigger-matrix.yaml` — `execution_order` and file/content triggers
 - `workload-sizing-rules.yaml` — Workload mode detection
 - `ROUTING_RULES.md` — Full routing logic
-- `skill-trigger-matrix.yaml` — File/content patterns and priority order

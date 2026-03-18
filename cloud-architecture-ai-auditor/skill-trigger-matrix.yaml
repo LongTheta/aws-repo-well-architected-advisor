@@ -45,7 +45,7 @@ always_on:
 # -----------------------------------------------------------------------------
 production_readiness_gate:
   skill: aws-federal-grade-checklist
-  run_order: "After architecture/security/cost/networking reviews; before well-architected-scoring-engine"
+  run_order: "Step 9 — after security-review, networking-review, finops-cost-optimizer, observability-grafana-advisor, devops-review, nist-compliance-evaluator; before well-architected-scoring-engine"
   priority: high
   triggers:
     - Terraform
@@ -69,6 +69,8 @@ file_triggers:
       - "**/terragrunt.hcl"
     skills:
       - aws-architecture-pattern-advisor
+      - security-review
+      - networking-review
       - finops-cost-optimizer
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
@@ -80,6 +82,8 @@ file_triggers:
       - "**/cdk*.js"
     skills:
       - aws-architecture-pattern-advisor
+      - security-review
+      - networking-review
       - finops-cost-optimizer
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
@@ -93,6 +97,8 @@ file_triggers:
       - "**/cloudformation/**/*.json"
     skills:
       - aws-architecture-pattern-advisor
+      - security-review
+      - networking-review
       - finops-cost-optimizer
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
@@ -107,49 +113,43 @@ file_triggers:
       - "**/kustomization.yaml"
       - "**/values.yaml"
     skills:
+      - security-review
+      - networking-review
       - observability-grafana-advisor
       - nist-compliance-evaluator
       - aws-architecture-pattern-advisor
       - aws-federal-grade-checklist
-    additional_logic:
-      - networking_review
 
   cicd_github:
     patterns:
       - ".github/workflows/*.yml"
       - ".github/workflows/*.yaml"
     skills:
-      - devops-operability-review
+      - devops-review
       - observability-grafana-advisor
-    additional_logic:
-      - supply_chain_checks
 
   cicd_gitlab:
     patterns:
       - ".gitlab-ci.yml"
       - ".gitlab-ci.yaml"
     skills:
-      - devops-operability-review
+      - devops-review
       - observability-grafana-advisor
-    additional_logic:
-      - supply_chain_checks
 
   cicd_jenkins:
     patterns:
       - "**/Jenkinsfile"
       - "**/Jenkinsfile*"
     skills:
-      - devops-operability-review
+      - devops-review
       - observability-grafana-advisor
-    additional_logic:
-      - supply_chain_checks
 
   cicd_codebuild:
     patterns:
       - "**/buildspec.yml"
       - "**/buildspec.yaml"
     skills:
-      - devops-operability-review
+      - devops-review
 
   containers:
     patterns:
@@ -169,10 +169,9 @@ file_triggers:
       - "**/*trust*.json"
       - "**/roles/**/*.yaml"
     skills:
+      - security-review
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
-    additional_logic:
-      - iam_security_review
 
   observability:
     patterns:
@@ -211,11 +210,11 @@ content_triggers:
       - "cidr_blocks.*0.0.0.0"
     priority: 1
     skills:
+      - security-review
+      - networking-review
       - nist-compliance-evaluator
       - aws-architecture-pattern-advisor
       - aws-federal-grade-checklist
-    additional_logic:
-      - high_priority_network_exposure_review
 
   hardcoded_secrets:
     description: "Hardcoded secrets or suspicious credentials"
@@ -227,10 +226,9 @@ content_triggers:
       - "api_key\s*=\s*['\"]"
     priority: 1
     skills:
+      - security-review
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
-    additional_logic:
-      - high_priority_secret_handling_review
 
   eks_simple_app:
     description: "EKS detected for small/simple application pattern"
@@ -291,35 +289,17 @@ content_triggers:
       - nist-compliance-evaluator
 
 # -----------------------------------------------------------------------------
-# EXECUTION PRIORITY ORDER (for tie-breaking when multiple skills apply)
-# Order: repo discovery first → architecture/security/cost/networking → aws-federal-grade-checklist last (gate) → scoring
+# EXECUTION ORDER (strict sequence)
+# 1. repo-discovery → 2. architecture-inference → 3–8 specialist reviews → 9. aws-federal-grade-checklist (FINAL GATE) → scoring
 # -----------------------------------------------------------------------------
-execution_priority:
-  tier_1:
-    - repo-discovery
-    - architecture-inference
-    - secret_exposure_detection
-    - public_exposure_detection
-
-  tier_2:
-    - nist-compliance-evaluator
-    - aws-architecture-pattern-advisor
-    - finops-cost-optimizer
-    - devops-operability-review
-    - networking_review
-    - iam_security_review
-    - resilience_gap_analysis
-
-  tier_3:
-    - observability-grafana-advisor
-    - over_engineering_detection
-    - cost_refinement_suggestions
-    - observability_gap_analysis
-
-  tier_4:
-    - aws-federal-grade-checklist
-
-  tier_5:
-    - well-architected-scoring-engine
-    - questionnaire_generation
-    - target_state_recommendation
+execution_order:
+  - repo-discovery
+  - architecture-inference
+  - security-review
+  - networking-review
+  - finops-cost-optimizer
+  - observability-grafana-advisor
+  - devops-review
+  - nist-compliance-evaluator
+  - aws-federal-grade-checklist   # FINAL GATE
+  - well-architected-scoring-engine

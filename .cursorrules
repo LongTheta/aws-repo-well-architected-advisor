@@ -3,13 +3,15 @@
 Rule-driven skill selection. Skills = expertise modules. Rules = conditions that trigger them.
 
 ## File Triggers (cloud-architecture-ai-auditor/skill-trigger-matrix.yaml)
-- IaC (Terraform, CDK, CloudFormation) → aws-architecture-pattern-advisor, finops-cost-optimizer, nist-compliance-evaluator, aws-federal-grade-checklist
-- K8s, Helm, ArgoCD → observability-grafana-advisor, nist-compliance-evaluator, aws-architecture-pattern-advisor, aws-federal-grade-checklist
-- IAM, security, compliance, regulated → aws-federal-grade-checklist
-- CI/CD → devops-operability-review, observability-grafana-advisor
+- IaC → security-review, networking-review, aws-architecture-pattern-advisor, finops-cost-optimizer, nist-compliance-evaluator, aws-federal-grade-checklist
+- K8s, Helm, ArgoCD → security-review, networking-review, observability-grafana-advisor, nist-compliance-evaluator, aws-architecture-pattern-advisor, aws-federal-grade-checklist
+- IAM, security, compliance, regulated → security-review, aws-federal-grade-checklist
+- CI/CD → devops-review, observability-grafana-advisor
+
+## Execution order: 1 repo-discovery 2 architecture-inference 3 security-review 4 networking-review 5 finops-cost-optimizer 6 observability-grafana-advisor 7 devops-review 8 nist-compliance-evaluator 9 aws-federal-grade-checklist (FINAL GATE) 10 well-architected-scoring-engine
 
 ## aws-federal-grade-checklist (Production-Readiness Gate)
-- Runs LAST among specialist skills (tier 4)
+- Step 9 — runs after all specialist reviews, before scoring
 - Critical findings → NOT READY
 - High findings → require remediation before production
 - Missing required tags = governance failure

@@ -105,7 +105,7 @@ Surface which tradeoff drove each major decision in the output.
 | Condition | Recommendation | Reasoning |
 |-----------|----------------|-----------|
 | Simple login | **Cognito** | Managed; user pools; MFA |
-| Enterprise / SSO | **Cognito + external IdP** | SAML/OIDC; federate to Okta, Azure AD, etc. |
+| Enterprise / SSO | **Cognito + external IdP** | SAML/OIDC; federate to Okta, corporate IdP |
 | Internal only | **IAM / SSO** | No Cognito; IAM roles; AWS SSO for humans |
 
 ---
