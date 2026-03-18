@@ -1,0 +1,88 @@
+# Cloud Architecture AI Auditor — Cost Bands
+# Machine-readable cost estimation bands. See cost-estimation-and-overkill.md.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# MONTHLY COST BANDS (USD)
+# Use ranges; never fake precision.
+# -----------------------------------------------------------------------------
+bands:
+  very_low:
+    range: "< $50"
+    min: 0
+    max: 50
+    use_when:
+      - "Lambda-only; minimal S3"
+      - "No NAT Gateway"
+      - "Serverless-first; scale to zero"
+
+  low:
+    range: "$50–$250"
+    min: 50
+    max: 250
+    use_when:
+      - "Small ECS/Fargate; single RDS"
+      - "Basic ALB"
+      - "Single-AZ for non-critical"
+
+  moderate:
+    range: "$250–$1,000"
+    min: 250
+    max: 1000
+    use_when:
+      - "Multi-AZ"
+      - "NAT Gateway"
+      - "Moderate traffic"
+
+  high:
+    range: "$1,000–$5,000"
+    min: 1000
+    max: 5000
+    use_when:
+      - "EKS"
+      - "Multi-region"
+      - "High traffic"
+
+  very_high:
+    range: "$5,000+"
+    min: 5000
+    max: null
+    use_when:
+      - "Enterprise"
+      - "Multi-account"
+      - "Heavy data processing"
+
+# -----------------------------------------------------------------------------
+# COST DRIVERS (by category)
+# -----------------------------------------------------------------------------
+drivers:
+  compute:
+    - Lambda invocations
+    - EC2/ECS/EKS instance hours
+    - Fargate vCPU/memory
+  networking:
+    - NAT Gateway hours
+    - Data transfer
+    - ALB/NLB
+    - VPC endpoints
+  storage:
+    - S3 GB
+    - EBS
+    - EFS
+  database:
+    - RDS instance size
+    - Multi-AZ
+    - DynamoDB RCU/WCU
+  observability:
+    - CloudWatch Logs GB
+    - Metrics
+    - Retention
+
+# -----------------------------------------------------------------------------
+# ESTIMATION LABELS
+# -----------------------------------------------------------------------------
+estimation_labels:
+  observed: "Estimated from observed configuration (IaC/config present)"
+  inferred: "Estimated from inferred architecture (patterns; no explicit config)"
+  unknown: "Unknown due to missing usage data"

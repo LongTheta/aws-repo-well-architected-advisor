@@ -65,8 +65,8 @@ modes:
           - "compliance"
           - "zero.trust"
           - "audit"
-    run: "Full review + full compliance stack + Zero Trust stack"
-    report_scope: "Full report; NIST, CIS, Zero Trust, compliance overlays; regulated depth."
+    run: "Full review + full compliance stack + Zero Trust stack + aws-federal-grade-checklist"
+    report_scope: "Full report; NIST, CIS, Zero Trust, aws-federal-grade-checklist; regulated depth."
 
 # -----------------------------------------------------------------------------
 # EVALUATION ORDER (first match wins)

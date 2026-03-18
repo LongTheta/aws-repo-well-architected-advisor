@@ -145,6 +145,7 @@ Every report must include:
 | Architect mindset | architect-mindset.md |
 | Operating modes | operating-modes.yaml, OPERATING_MODES.md |
 | Output consistency | output-consistency-rules.yaml |
+| Federal-grade evaluation | aws-federal-grade-checklist.md |
 | Report template | report-template.md |
 | Tagging compliance | tagging-compliance.yaml |
 | Design principles | design-principles.md |

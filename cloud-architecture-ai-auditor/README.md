@@ -199,6 +199,10 @@ All outputs must follow [cloud-architecture-ai-auditor-rules.md](cloud-architect
 | `cloud-architecture-client-questionnaire.md` | Reusable 6-question refinement prompt |
 | `aws-platform-blueprint-for-app.md` | **Platform design prompt** — full AWS platform from ground up |
 | `aws-app-platform-questionnaire.md` | **Platform questionnaire** — 12 questions to right-size design |
+| `eks-justification-checklist.md` | **EKS justification** — when EKS is appropriate |
+| `aws-federal-grade-checklist.md` | **Federal-grade evaluation** — NIST, FedRAMP, DoD, Zero Trust |
+| `glossary.md` | **Glossary** — terms and definitions |
+| `cost-bands.yaml` | **Cost bands** — machine-readable cost estimation |
 | `well-architected-scoring-engine/SKILL.md` | Orchestrator |
 | `repo-discovery/SKILL.md` | Repo discovery module |
 | `architecture-inference/SKILL.md` | Architecture inference module |

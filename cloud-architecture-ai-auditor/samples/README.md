@@ -12,11 +12,18 @@ Minimal realistic structures and reports for the cloud architecture review syste
 
 ## Sample Reports (Shared Schema)
 
-| Report | Repo | Conforms To |
-|--------|------|-------------|
-| `sample-report-app.md` | sample_app_repo | finding-schema.yaml, output-consistency-rules.yaml |
-| `sample-report-infra.md` | sample_infra_repo | finding-schema.yaml, output-consistency-rules.yaml |
-| `sample-report-gitops.md` | sample_gitops_repo | finding-schema.yaml, output-consistency-rules.yaml |
+| Report | Repo / Mode | Conforms To |
+|--------|-------------|-------------|
+| `sample-report-app.md` | sample_app_repo (Repo-Driven) | finding-schema.yaml, output-consistency-rules.yaml |
+| `sample-report-infra.md` | sample_infra_repo (Repo-Driven) | finding-schema.yaml, output-consistency-rules.yaml |
+| `sample-report-gitops.md` | sample_gitops_repo (Repo-Driven) | finding-schema.yaml, output-consistency-rules.yaml |
+| `sample-report-spec-driven.md` | Spec-Driven (no repo) | output-consistency-rules.yaml |
+
+## Questionnaire → Architecture
+
+| File | Purpose |
+|------|---------|
+| `sample-questionnaire-answers.md` | Example questionnaire answers → expected decision engine output |
 
 ## Input Documentation
 

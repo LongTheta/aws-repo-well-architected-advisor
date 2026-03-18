@@ -147,6 +147,7 @@ aws-repo-well-architected-advisor/
 |-----------|-------|
 | **AWS Well-Architected** | 6 pillars; primary architecture framework |
 | **NIST / CIS** | NIST 800-53, 800-207 (Zero Trust), CIS Benchmarks |
+| **Federal-grade** | aws-federal-grade-checklist (FedRAMP, DoD DevSecOps) |
 | **FinOps** | Cost optimization, tagging, cost allocation |
 | **Observability** | SRE Golden Signals, CloudWatch, DORA |
 
@@ -184,6 +185,9 @@ This repo is **AWS-only**. No Azure or GCP logic. See [AWS-SCOPE.md](AWS-SCOPE.m
 | File | Purpose |
 |------|---------|
 | `AWS-SCOPE.md` | AWS-only scope; no Azure/GCP |
+| `CONTRIBUTING.md` | Contribution guidelines |
+| `CHANGELOG.md` | Version history |
+| `LICENSE` | MIT |
 | `cloud-architecture-ai-auditor/README.md` | Full system documentation |
 | `cloud-architecture-ai-auditor/orchestrator-prompt.md` | Coordination prompt |
 | `cloud-architecture-ai-auditor/OPERATING_MODES.md` | Mode selection |
