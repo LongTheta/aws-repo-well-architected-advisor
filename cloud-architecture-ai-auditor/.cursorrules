@@ -1,0 +1,32 @@
+# Cloud Architecture AI Auditor — Cursor Rules
+
+When working in this repo, enforce:
+
+## Evidence
+- Be evidence-based; never assume implementation without proof
+- Tag findings: Observed / Inferred / Missing Evidence / Contradictory Evidence
+
+## Baseline & Complexity
+- Start with the cheapest safe baseline
+- Increase complexity only when justified
+- Prefer managed AWS services when practical
+- Avoid over-engineering
+
+## Cost
+- Use rough cost bands only; no fake precision
+- Do not recommend cost savings that weaken basic security
+
+## Security
+- Never trade security for cost
+- Flag: wildcard IAM, public exposure, missing encryption, hardcoded secrets, missing audit
+
+## Findings
+- Every major finding: evidence, fix, effort, impact
+- Always explain tradeoffs: cost, reliability, security, ops burden
+
+## Deduplication
+- Merge duplicate findings: combined evidence, strongest severity, cross-framework mapping
+
+## Output
+- Tailor output for architect, developer/platform, and security roles
+- Reports must be practical, phased, and realistic for the likely team

@@ -1,0 +1,72 @@
+# Cloud Architecture AI Auditor — Rule Precedence Model
+# Execution order. Higher priority wins. Higher priority findings must not be overridden.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# PRECEDENCE ORDER (1 = highest)
+# -----------------------------------------------------------------------------
+precedence:
+  priority_1_security_critical:
+    priority: 1
+    description: "Security-critical detection"
+    rules:
+      - Security-critical detection
+      - Secrets exposure
+      - Public exposure
+      - IAM wildcard access
+    skills:
+      - security-evaluator
+      - nist-compliance-evaluator
+
+  priority_2_repo_classification:
+    priority: 2
+    description: "Repo classification and architecture inference"
+    rules:
+      - Repo classification
+      - Architecture inference
+    reference: repo-classification-rules.yaml
+
+  priority_3_core_reviews:
+    priority: 3
+    description: "Core reviews"
+    rules:
+      - Security review
+      - Networking review
+      - DevOps review
+      - Cost review
+    skills:
+      - security-evaluator
+      - ai-devsecops-policy-enforcement
+      - finops-cost-optimizer
+
+  priority_4_optimization:
+    priority: 4
+    description: "Optimization"
+    rules:
+      - Cost refinement
+      - Observability improvements
+      - Over-engineering detection
+    skills:
+      - finops-cost-optimizer
+      - aws-architecture-pattern-advisor
+
+  priority_5_questionnaire_refinement:
+    priority: 5
+    description: "Questionnaire and refinement"
+    rules:
+      - 6 refinement questions
+      - Baseline vs refined architecture
+      - Delta explanation
+    reference: cloud-architecture-client-questionnaire.md
+
+# -----------------------------------------------------------------------------
+# CONFLICT RESOLUTION
+# -----------------------------------------------------------------------------
+conflict_resolution:
+  higher_priority_wins:
+    rule: "Higher priority findings must not be overridden"
+  security_always_precedence:
+    rule: "Security always takes precedence over cost optimization"
+  security_vs_cost:
+    rule: "Never recommend cost savings that weaken security"

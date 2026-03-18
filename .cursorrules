@@ -1,0 +1,20 @@
+# AWS Repo Well-Architected Advisor — Rule-Based Skills
+
+Rule-driven skill selection. Skills = expertise modules. Rules = conditions that trigger them.
+
+## File Triggers (skill-trigger-matrix.yaml)
+- IaC → security-evaluator, ai-devsecops-policy-enforcement, tool-evaluator
+- K8s, Helm, ArgoCD → zero-trust-gitops-enforcement, dod-zero-trust-architect, security-evaluator
+- Dockerfiles, dependency manifests → cve-detect-and-remediate, security-evaluator
+- CI/CD → ai-devsecops-policy-enforcement, zero-trust-gitops-enforcement, security-evaluator
+
+## Request Triggers
+- Tool/platform evaluation → tool-evaluator
+- New rule → create-rule
+- New skill → create-skill
+- Decompose into specialist workflows → create-subagent
+
+## Output
+- Prioritize security findings
+- Merge duplicates (combined evidence, strongest severity)
+- Tag evidence: Observed / Inferred / Missing Evidence / Contradictory Evidence

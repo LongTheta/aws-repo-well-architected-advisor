@@ -1,0 +1,281 @@
+# Cloud Architecture AI Auditor — Skill Trigger Matrix
+# Maps file patterns and content patterns to skills. Used for automatic orchestration.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# WORKLOAD MODES (determine review depth; label every report)
+# Evaluation order: Regulated → Full → Standard → Lightweight
+# -----------------------------------------------------------------------------
+workload_modes:
+  lightweight:
+    when: "Small repo, early-stage, or limited infrastructure evidence (<5 artifacts, no production IaC)"
+    skills: [repo-discovery, architecture-inference, well-architected-scoring-engine]
+    scope: "Abbreviated report; skip deep NIST, FinOps, observability"
+
+  standard:
+    when: "Production IaC + CI/CD + partial networking/IAM"
+    skills: "File-based triggers; conditional per matrix"
+    scope: "Full report; standard depth"
+
+  full:
+    when: "Production IaC + CI/CD + networking + IAM + observability"
+    skills: "All file-based and content-based triggers"
+    scope: "Comprehensive report; full depth"
+
+  regulated:
+    when: "Federal/compliance/security signals (FedRAMP, HIPAA, PCI, Zero Trust, audit)"
+    skills: "Full review + compliance stack + Zero Trust stack"
+    scope: "Full report; NIST, CIS, Zero Trust; regulated depth"
+
+# -----------------------------------------------------------------------------
+# ALWAYS-ON SKILLS (run first/last regardless of repo contents)
+# -----------------------------------------------------------------------------
+always_on:
+  first:
+    - repo-discovery
+  second:
+    - architecture-inference
+  last:
+    - well-architected-scoring-engine
+
+# -----------------------------------------------------------------------------
+# FILE-BASED TRIGGERS
+# Maps path/glob patterns to skills. Skills run only when matching files exist.
+# -----------------------------------------------------------------------------
+file_triggers:
+  iac_terraform:
+    patterns:
+      - "**/*.tf"
+      - "**/*.tf.json"
+      - "**/terragrunt.hcl"
+    skills:
+      - aws-architecture-pattern-advisor
+      - finops-cost-optimizer
+      - nist-compliance-evaluator
+
+  iac_cdk:
+    patterns:
+      - "**/cdk.json"
+      - "**/cdk*.ts"
+      - "**/cdk*.js"
+    skills:
+      - aws-architecture-pattern-advisor
+      - finops-cost-optimizer
+      - nist-compliance-evaluator
+
+  iac_cloudformation:
+    patterns:
+      - "**/template*.yaml"
+      - "**/template*.yml"
+      - "**/template*.json"
+      - "**/cloudformation/**/*.yaml"
+      - "**/cloudformation/**/*.json"
+    skills:
+      - aws-architecture-pattern-advisor
+      - finops-cost-optimizer
+      - nist-compliance-evaluator
+
+  kubernetes:
+    patterns:
+      - "**/k8s/**/*.yaml"
+      - "**/k8s/**/*.yml"
+      - "**/deployment.yaml"
+      - "**/service.yaml"
+      - "**/Chart.yaml"
+      - "**/kustomization.yaml"
+      - "**/values.yaml"
+    skills:
+      - observability-grafana-advisor
+      - nist-compliance-evaluator
+      - aws-architecture-pattern-advisor
+    additional_logic:
+      - networking_review
+
+  cicd_github:
+    patterns:
+      - ".github/workflows/*.yml"
+      - ".github/workflows/*.yaml"
+    skills:
+      - devops-operability-review
+      - observability-grafana-advisor
+    additional_logic:
+      - supply_chain_checks
+
+  cicd_gitlab:
+    patterns:
+      - ".gitlab-ci.yml"
+      - ".gitlab-ci.yaml"
+    skills:
+      - devops-operability-review
+      - observability-grafana-advisor
+    additional_logic:
+      - supply_chain_checks
+
+  cicd_jenkins:
+    patterns:
+      - "**/Jenkinsfile"
+      - "**/Jenkinsfile*"
+    skills:
+      - devops-operability-review
+      - observability-grafana-advisor
+    additional_logic:
+      - supply_chain_checks
+
+  cicd_codebuild:
+    patterns:
+      - "**/buildspec.yml"
+      - "**/buildspec.yaml"
+    skills:
+      - devops-operability-review
+
+  containers:
+    patterns:
+      - "**/Dockerfile"
+      - "**/docker-compose*.yml"
+      - "**/docker-compose*.yaml"
+    skills:
+      - nist-compliance-evaluator
+    additional_logic:
+      - supply_chain_checks
+      - compute_runtime_fit_review
+
+  iam_identity:
+    patterns:
+      - "**/iam*.tf"
+      - "**/*policy*.json"
+      - "**/*trust*.json"
+      - "**/roles/**/*.yaml"
+    skills:
+      - nist-compliance-evaluator
+    additional_logic:
+      - iam_security_review
+
+  observability:
+    patterns:
+      - "**/prometheus*.yml"
+      - "**/prometheus*.yaml"
+      - "**/grafana/**"
+      - "**/cloudwatch*.json"
+      - "**/opentelemetry*.yaml"
+      - "**/otel*.yaml"
+      - "**/logging*.yaml"
+    skills:
+      - observability-grafana-advisor
+
+# -----------------------------------------------------------------------------
+# CONTENT-BASED TRIGGERS (pattern-based risk signals)
+# Triggered when content matches regex/patterns in discovered files.
+# -----------------------------------------------------------------------------
+content_triggers:
+  iam_wildcard:
+    description: "IAM policy contains wildcard actions or resources"
+    patterns:
+      - '"Action":\s*"\*"'
+      - '"Resource":\s*"\*"'
+      - "aws:iam::*:*"
+    priority: 1
+    skills:
+      - nist-compliance-evaluator
+    additional_logic:
+      - high_priority_iam_review
+
+  public_exposure:
+    description: "Security groups or network rules expose 0.0.0.0/0"
+    patterns:
+      - "0\.0\.0\.0/0"
+      - "0.0.0.0/0"
+      - "cidr_blocks.*0.0.0.0"
+    priority: 1
+    skills:
+      - nist-compliance-evaluator
+      - aws-architecture-pattern-advisor
+    additional_logic:
+      - high_priority_network_exposure_review
+
+  hardcoded_secrets:
+    description: "Hardcoded secrets or suspicious credentials"
+    patterns:
+      - "AKIA[0-9A-Z]{16}"
+      - "aws_secret_access_key"
+      - "password\s*=\s*['\"]"
+      - "secret\s*=\s*['\"]"
+      - "api_key\s*=\s*['\"]"
+    priority: 1
+    skills:
+      - nist-compliance-evaluator
+    additional_logic:
+      - high_priority_secret_handling_review
+
+  eks_simple_app:
+    description: "EKS detected for small/simple application pattern"
+    patterns:
+      - "aws_eks_cluster"
+      - "kind: Deployment"
+    heuristic: "small_app_with_eks"
+    priority: 3
+    skills:
+      - aws-architecture-pattern-advisor
+      - finops-cost-optimizer
+    additional_logic:
+      - over_engineering_review
+
+  nat_gateway:
+    description: "NAT Gateway usage inferred"
+    patterns:
+      - "aws_nat_gateway"
+      - "nat_gateway"
+    priority: 2
+    skills:
+      - finops-cost-optimizer
+    additional_logic:
+      - cost_optimization_endpoints_data_transfer
+
+  no_logging_monitoring:
+    description: "No logging/monitoring signals found"
+    heuristic: "absence_of_observability"
+    priority: 3
+    skills:
+      - observability-grafana-advisor
+    additional_logic:
+      - observability_gap_analysis
+
+  no_backup_dr:
+    description: "No backup/DR evidence found"
+    heuristic: "absence_of_backup_dr"
+    priority: 2
+    skills:
+      - aws-architecture-pattern-advisor
+    additional_logic:
+      - resilience_gap_analysis
+
+# -----------------------------------------------------------------------------
+# EXECUTION PRIORITY ORDER (for tie-breaking when multiple skills apply)
+# Lower number = higher priority. Skills in same tier can run in parallel.
+# -----------------------------------------------------------------------------
+execution_priority:
+  tier_1:
+    - repo-discovery
+    - architecture-inference
+    - secret_exposure_detection
+    - public_exposure_detection
+
+  tier_2:
+    - nist-compliance-evaluator
+    - aws-architecture-pattern-advisor
+    - finops-cost-optimizer
+    - devops-operability-review
+    - networking_review
+    - iam_security_review
+    - resilience_gap_analysis
+
+  tier_3:
+    - observability-grafana-advisor
+    - over_engineering_detection
+    - cost_refinement_suggestions
+    - observability_gap_analysis
+
+  tier_4:
+    - well-architected-scoring-engine
+    - questionnaire_generation
+    - target_state_recommendation

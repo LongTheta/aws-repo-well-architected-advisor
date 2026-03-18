@@ -1,0 +1,54 @@
+# Cloud Architecture AI Auditor — Missing Evidence Handling
+# The system must support uncertainty. Never fabricate certainty.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# ALLOWED OUTPUTS
+# -----------------------------------------------------------------------------
+allowed_outputs:
+  cannot_determine_from_repo:
+    when: "Insufficient data in repo to conclude"
+    use_in: "summary, confidence"
+    example: "Cannot determine from repo: backup retention not configured or documented."
+
+  likely_but_unconfirmed:
+    when: "Pattern suggests but no direct proof"
+    use_in: "confidence"
+    maps_to_evidence_type: "inferred"
+    example: "Likely but unconfirmed: VPC structure suggests private subnets; no explicit docs."
+
+  missing_runtime_context:
+    when: "Runtime or deployment context not in repo"
+    use_in: "summary, recommendation"
+    example: "Missing runtime context: traffic volume unknown; recommend defining before sizing."
+
+  requires_user_input:
+    when: "Need user to provide context"
+    use_in: "recommendation, summary"
+    example: "Requires user input: What is your availability target (99.9% vs 99.99%)?"
+
+# -----------------------------------------------------------------------------
+# RULES
+# -----------------------------------------------------------------------------
+rules:
+  - "Never fabricate certainty"
+  - "Never fabricate evidence"
+  - "Use appropriate output when uncertain"
+  - "Tag findings with evidence_type: observed, inferred, missing, contradictory"
+  - "When evidence_type is missing, use one of the allowed uncertainty outputs"
+
+# -----------------------------------------------------------------------------
+# MAPPING TO FINDING SCHEMA
+# -----------------------------------------------------------------------------
+schema_mapping:
+  confidence:
+    cannot_determine_from_repo: "low"
+    likely_but_unconfirmed: "medium"
+    missing_runtime_context: "low"
+    requires_user_input: "low"
+  evidence_type:
+    cannot_determine_from_repo: "missing"
+    likely_but_unconfirmed: "inferred"
+    missing_runtime_context: "missing"
+    requires_user_input: "missing"

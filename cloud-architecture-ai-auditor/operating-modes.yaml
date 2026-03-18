@@ -1,0 +1,126 @@
+# Cloud Architecture AI Auditor — Operating Modes
+# Two modes: Repo-Driven (analyze existing code) or Spec-Driven (design from requirements).
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# MODE 1 — REPO-DRIVEN
+# Analyze existing repositories and infer architecture.
+# -----------------------------------------------------------------------------
+repo_driven:
+  name: "Repo-Driven Mode"
+  description: "Analysis from existing code"
+
+  trigger_when:
+    - "Repos are provided"
+    - "User asks for analysis, review, or improvements"
+    - "User says 'review my repo', 'audit', 'analyze', 'improve'"
+
+  behavior:
+    1: "Run repo discovery"
+    2: "Infer architecture"
+    3: "Identify: security gaps, cost issues, missing tagging, observability gaps, over-engineering"
+    4: "Generate: current-state architecture, findings, improved platform recommendation"
+
+  output:
+    - "Audit-style report"
+    - "Remediation backlog"
+    - "Optimized architecture"
+
+  skills:
+    - repo-discovery
+    - architecture-inference
+    - well-architected-scoring-engine
+    - aws-architecture-pattern-advisor
+    - nist-compliance-evaluator
+    - finops-cost-optimizer
+    - devops-operability-review
+    - observability-grafana-advisor
+
+# -----------------------------------------------------------------------------
+# MODE 2 — SPEC-DRIVEN
+# Design platform from requirements (product manager + solutions architect).
+# -----------------------------------------------------------------------------
+spec_driven:
+  name: "Spec-Driven Mode"
+  description: "Design from requirements"
+
+  trigger_when:
+    - "No repo is provided"
+    - "User asks to design a system"
+    - "User provides requirements or answers questions"
+    - "User says 'design', 'build', 'create platform', 'from scratch'"
+
+  behavior:
+    1: "Run application questionnaire (aws-app-platform-questionnaire)"
+    2: "Convert answers via aws-architecture-decision-engine (rule-based logic)"
+    3: "Design: AWS platform from scratch, cost-effective baseline, security baseline, observability setup"
+    4: "Provide: service selection, architecture diagram (text), cost estimate, growth path"
+
+  output:
+    - "Platform blueprint"
+    - "Architecture decisions"
+    - "Implementation plan"
+
+  references:
+    - architect-mindset.md
+    - aws-app-platform-questionnaire.md
+    - aws-architecture-decision-engine.md
+    - aws-platform-blueprint-for-app.md
+
+# -----------------------------------------------------------------------------
+# MODE SELECTION LOGIC
+# -----------------------------------------------------------------------------
+mode_selection:
+  repo_driven:
+    when: "Repo files are present"
+    priority: 1
+
+  spec_driven:
+    when: "Only requirements or questions provided (no repo)"
+    priority: 2
+
+  both:
+    when: "Both repo and requirements/spec provided"
+    behavior: "Run Repo-Driven first; then refine using Spec-Driven inputs"
+    order:
+      - repo_driven
+      - spec_driven_refinement
+
+# -----------------------------------------------------------------------------
+# SHARED RULES (apply to both modes)
+# -----------------------------------------------------------------------------
+shared_rules:
+  - "Default to cheapest safe architecture"
+  - "Enforce tagging strategy"
+  - "Avoid over-engineering"
+  - "Prefer managed services"
+  - "Do not recommend EKS unless justified"
+  - "Include cost vs reliability tradeoffs"
+  - "Include upgrade path"
+
+# -----------------------------------------------------------------------------
+# OUTPUT CONSISTENCY (both modes must produce)
+# -----------------------------------------------------------------------------
+output_consistency:
+  required_sections:
+    - executive_summary
+    - architecture
+    - cost_snapshot
+    - security_baseline
+    - observability_plan
+    - risks
+    - recommendations
+
+  architecture:
+    repo_driven: "Current-state (inferred)"
+    spec_driven: "Proposed (designed)"
+
+  format:
+    - "Executive summary"
+    - "Architecture (current or proposed)"
+    - "Cost snapshot"
+    - "Security baseline"
+    - "Observability plan"
+    - "Risks"
+    - "Recommendations"

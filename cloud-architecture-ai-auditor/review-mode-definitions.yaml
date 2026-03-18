@@ -1,0 +1,115 @@
+# Cloud Architecture AI Auditor — Review Mode Definitions
+# Defines scope and depth for each review mode.
+# Default to standard; escalate based on repo signals.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# REVIEW MODES
+# -----------------------------------------------------------------------------
+modes:
+  quick_scan:
+    description: "Minimal checks; high-level findings only"
+    scope:
+      - Security-critical only
+      - Top 5 risks
+      - No deep NIST/Compliance
+      - No cost deep-dive
+    output:
+      - Executive summary (brief)
+      - Top 5 risks
+      - Quick remediation list
+    duration_hint: "minutes"
+
+  standard:
+    description: "Default mode; balanced coverage"
+    scope:
+      - All evaluation domains
+      - Top 10 risks
+      - Findings by role
+      - Cost snapshot
+      - Remediation backlog
+    output:
+      - Executive summary
+      - Repo classification
+      - Review mode
+      - Architecture inference
+      - Scorecard
+      - Top risks
+      - Findings (deduplicated)
+      - Cost snapshot
+      - Remediation backlog
+      - Target-state recommendation
+    duration_hint: "moderate"
+
+  deep_review:
+    description: "Full analysis; cost, security, observability, architecture"
+    scope:
+      - Standard +
+      - NIST control mapping
+      - Observability dashboard plan
+      - Cheaper alternatives
+      - Over-engineering check
+      - Full compliance gaps
+    output:
+      - All standard sections
+      - NIST Compliance Gaps
+      - Observability / Grafana Dashboard Plan
+      - Cost Optimization (Snapshot, Cheaper Alternatives, Overkill Check)
+    duration_hint: "extended"
+
+  regulated_review:
+    description: "NIST, Zero Trust, compliance checks"
+    scope:
+      - Deep review +
+      - Zero Trust alignment
+      - FedRAMP/HIPAA/PCI considerations
+      - Audit trail requirements
+      - Compliance overlay
+    output:
+      - All deep review sections
+      - Zero Trust assessment
+      - Compliance overlay
+      - Audit trail gaps
+    duration_hint: "extended"
+
+# -----------------------------------------------------------------------------
+# MODE SELECTION RULES
+# -----------------------------------------------------------------------------
+mode_selection:
+  default: standard
+
+  quick_scan:
+    when:
+      - User requests "quick" or "fast" or "scan"
+      - Repo is small (< 20 artifacts)
+
+  standard:
+    when:
+      - Default for most repos
+      - User requests "full" or "standard" or "review"
+
+  deep_review:
+    escalate_when:
+      - IaC + CI/CD + networking present
+    when:
+      - User requests "deep" or "comprehensive"
+      - Production-ready assessment
+
+  regulated_review:
+    escalate_when:
+      - Security/compliance signals detected (FedRAMP, HIPAA, PCI, Zero Trust)
+    when:
+      - User requests "regulated" or "compliance" or "federal"
+      - Repo contains compliance keywords
+
+# -----------------------------------------------------------------------------
+# OUTPUT FORMAT (required for every mode selection)
+# -----------------------------------------------------------------------------
+mode_output:
+  review_mode:
+    type: string
+    enum: [quick_scan, standard, deep_review, regulated_review]
+  reason_for_selection:
+    type: string
+    description: "Why this mode was selected (default, user request, escalation)"

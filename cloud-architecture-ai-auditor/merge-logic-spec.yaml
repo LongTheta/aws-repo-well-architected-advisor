@@ -1,0 +1,76 @@
+# Cloud Architecture AI Auditor — Duplicate Finding Merge Rules
+# When multiple skills report similar findings, merge into unified output.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# WHEN TO MERGE
+# -----------------------------------------------------------------------------
+merge_criteria:
+  same_issue:
+    description: "Findings describe the same underlying issue"
+    signals:
+      - Same or highly overlapping title/summary
+      - Same evidence (file, config)
+      - Same recommendation
+  semantic_overlap:
+    description: "Same gap from different frameworks (e.g. broad IAM + NIST AC-3)"
+
+# -----------------------------------------------------------------------------
+# MERGE RULES
+# -----------------------------------------------------------------------------
+merge_rules:
+  merge_into_single:
+    rule: "Merge into a single finding"
+
+  keep_highest_severity:
+    rule: "Keep highest severity across duplicates"
+    order: [critical, high, medium, low]
+
+  keep_strongest_confidence:
+    rule: "Keep strongest confidence across duplicates"
+    order: [high, medium, low]
+
+  combine_evidence:
+    rule: "Combine evidence from all duplicates; deduplicate paths"
+
+  combine_framework_mappings:
+    rule: "Combine framework_mapping from all duplicates (AWS, NIST, DevOps/DORA/FinOps)"
+
+  deduplicate_recommendations:
+    rule: "Deduplicate recommendations; keep clearest actionable fix"
+
+  tag_merged_sources:
+    rule: "Tag merged sources in merged_from array"
+    field: merged_from
+    format: ["S1", "N2", "..."]
+
+# -----------------------------------------------------------------------------
+# OUTPUT
+# -----------------------------------------------------------------------------
+unified_finding:
+  description: "Unified finding with merged context"
+  fields:
+    id: "From primary finding"
+    title: "From primary; refine if needed"
+    summary: "Combine if complementary; else use primary"
+    evidence: "Combined; deduplicated"
+    evidence_type: "Strongest (observed > inferred > missing > contradictory)"
+    severity: "Highest across duplicates"
+    confidence: "Strongest across duplicates"
+    affected_area: "From primary; union if multiple"
+    recommendation: "Deduplicated; clearest action"
+    effort: "From primary"
+    impact: "Union of impact areas"
+    framework_mapping: "Combined from all"
+    merged_from: "List of source IDs"
+    source_skill: "Primary skill"
+
+  primary_finding:
+    rule: "Use finding from highest-priority skill as base"
+    skill_priority:
+      - security-evaluator
+      - nist-compliance-evaluator
+      - ai-devsecops-policy-enforcement
+      - aws-architecture-pattern-advisor
+      - others

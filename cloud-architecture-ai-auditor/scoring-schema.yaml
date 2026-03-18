@@ -1,0 +1,106 @@
+# Cloud Architecture AI Auditor — Shared Scoring Schema
+# Used by all modules for consistent scoring and classification
+
+version: "1.0"
+
+scores:
+  range: [0, 10]
+  interpretation:
+    9-10: "Excellent alignment; minor gaps"
+    7-8: "Good; some improvements needed"
+    5-6: "Moderate; significant gaps"
+    3-4: "Weak; major remediation required"
+    0-2: "Critical gaps; not production-ready"
+
+frameworks:
+  aws_well_architected:
+    pillars:
+      - operational_excellence
+      - security
+      - reliability
+      - performance_efficiency
+      - cost_optimization
+      - sustainability
+  comptia_operational:
+    checks:
+      - iac_automation
+      - cicd_presence
+      - backup_automation
+      - restore_testing
+      - rto_rpo_defined
+      - monitoring_alerts
+      - environment_reproducibility
+      - troubleshooting_observability
+  nist_compliance:
+    control_families:
+      - AC  # Access Control
+      - IA  # Identification and Authentication
+      - SC  # System and Communications Protection
+      - AU  # Audit and Accountability
+      - SI  # System and Information Integrity
+      - CM  # Configuration Management
+      - IR  # Incident Response
+  observability:
+    signals:
+      - latency
+      - traffic
+      - errors
+      - saturation
+    dora_metrics:
+      - deployment_frequency
+      - lead_time
+      - mttr
+      - change_failure_rate
+  cost_efficiency:
+    categories:
+      - compute
+      - network
+      - storage
+      - database
+      - cicd
+
+severity:
+  critical:
+    definition: "Immediate risk; blocks production"
+    examples: ["plaintext secrets", "no encryption"]
+  high:
+    definition: "Significant gap; fix before prod"
+    examples: ["single-AZ RDS", "broad IAM"]
+  medium:
+    definition: "Important improvement"
+    examples: ["missing tags", "no image scanning"]
+  low:
+    definition: "Nice to have"
+    examples: ["suboptimal instance type"]
+
+confidence:
+  confirmed:
+    definition: "Direct evidence in repo"
+  inferred:
+    definition: "Clear pattern from artifacts"
+  missing_evidence:
+    definition: "No evidence; cannot assume"
+
+evidence_labels:
+  observed:
+    definition: "Direct evidence in config, code, manifest"
+  inferred:
+    definition: "Derived from patterns, naming, partial evidence"
+  missing_evidence:
+    definition: "No evidence; recommend validation"
+  contradictory_evidence:
+    definition: "Conflicting signals; flag for review"
+
+evaluation_domains:
+  - account_strategy
+  - networking
+  - iam_identity
+  - secrets_encryption
+  - compute
+  - storage_database
+  - integration
+  - cicd_deployment
+  - observability
+  - reliability_dr
+  - cost_efficiency
+  - governance_compliance

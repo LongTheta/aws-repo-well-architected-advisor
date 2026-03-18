@@ -1,0 +1,155 @@
+# AWS Repo Well-Architected Advisor — Skill Trigger Matrix
+# Rule-driven mapping: file patterns and user requests → skills.
+# Deterministic. No agent dependency.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# OUTPUT RULES
+# -----------------------------------------------------------------------------
+output_rules:
+  merge_duplicates: true
+  merge_criteria:
+    - combined_evidence
+    - strongest_severity
+    - cross_framework_mapping
+  evidence_tags:
+    - Observed
+    - Inferred
+    - Missing Evidence
+    - Contradictory Evidence
+  priority: security_first
+
+# -----------------------------------------------------------------------------
+# FILE-BASED TRIGGERS (deterministic pattern matching)
+# -----------------------------------------------------------------------------
+file_triggers:
+  iac:
+    description: "IaC repos"
+    patterns:
+      - "**/*.tf"
+      - "**/*.tf.json"
+      - "**/terragrunt.hcl"
+      - "**/cdk.json"
+      - "**/cdk*.ts"
+      - "**/template*.yaml"
+      - "**/template*.json"
+      - "**/cloudformation/**/*"
+    skills:
+      - security-evaluator
+      - ai-devsecops-policy-enforcement
+      - tool-evaluator
+
+  kubernetes:
+    description: "Kubernetes / GitOps repos"
+    patterns:
+      - "**/k8s/**/*.yaml"
+      - "**/deployment.yaml"
+      - "**/service.yaml"
+      - "**/Chart.yaml"
+      - "**/kustomization.yaml"
+      - "**/values.yaml"
+      - "**/argocd/**/*"
+      - "**/applicationset*.yaml"
+    skills:
+      - zero-trust-gitops-enforcement
+      - dod-zero-trust-architect
+      - security-evaluator
+
+  containers:
+    description: "Containerized apps"
+    patterns:
+      - "**/Dockerfile"
+      - "**/docker-compose*.yml"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/requirements.txt"
+      - "**/Pipfile"
+      - "**/go.mod"
+      - "**/Cargo.toml"
+      - "**/pom.xml"
+      - "**/build.gradle"
+    skills:
+      - cve-detect-and-remediate
+      - security-evaluator
+
+  cicd:
+    description: "CI/CD repos"
+    patterns:
+      - ".gitlab-ci.yml"
+      - ".github/workflows/*.yml"
+      - ".github/workflows/*.yaml"
+      - "**/Jenkinsfile"
+      - "**/buildspec.yml"
+    skills:
+      - ai-devsecops-policy-enforcement
+      - zero-trust-gitops-enforcement
+      - security-evaluator
+
+  tools_platform:
+    description: "Tool/platform evaluation (content signals)"
+    patterns:
+      - "**/ADRs/**/*"
+      - "**/docs/**/tool*.md"
+      - "**/vendor*.md"
+      - "**/platform*.md"
+    skills:
+      - tool-evaluator
+
+# -----------------------------------------------------------------------------
+# REQUEST-BASED TRIGGERS (user intent)
+# -----------------------------------------------------------------------------
+request_triggers:
+  tool_evaluation:
+    description: "Tool or platform evaluation request"
+    signals:
+      - "evaluate tool"
+      - "compare tools"
+      - "vendor selection"
+      - "platform decision"
+    skill: tool-evaluator
+
+  new_rule:
+    description: "New rule request"
+    signals:
+      - "add rule"
+      - "create rule"
+      - ".cursorrules"
+      - "repo-wide behavior"
+    skill: create-rule
+
+  new_skill:
+    description: "New skill request"
+    signals:
+      - "create skill"
+      - "add skill"
+      - "reusable capability"
+      - "SKILL.md"
+    skill: create-skill
+
+  workflow_decomposition:
+    description: "Decompose work into specialist workflows"
+    signals:
+      - "split work"
+      - "specialist workflows"
+      - "create subagent"
+      - "decompose tasks"
+    skill: create-subagent
+
+# -----------------------------------------------------------------------------
+# SKILL PRIORITY (when multiple skills apply)
+# -----------------------------------------------------------------------------
+skill_priority:
+  tier_1:
+    - security-evaluator
+  tier_2:
+    - ai-devsecops-policy-enforcement
+    - zero-trust-gitops-enforcement
+    - dod-zero-trust-architect
+  tier_3:
+    - cve-detect-and-remediate
+    - tool-evaluator
+  tier_4:
+    - create-rule
+    - create-skill
+    - create-subagent

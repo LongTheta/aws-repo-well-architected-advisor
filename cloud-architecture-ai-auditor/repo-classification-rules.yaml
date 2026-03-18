@@ -1,0 +1,128 @@
+# Cloud Architecture AI Auditor — Repo Classification Rules
+# Classify repos to drive skill selection and review scope.
+# Each repo must be classified into ONE type.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# REPO TYPES
+# -----------------------------------------------------------------------------
+repo_types:
+  application:
+    description: "App code primary; APIs, frontend, services"
+    detection_signals:
+      - App code (Node, Python, Java, Go, Rust, etc.)
+      - APIs, frontend, services
+      - package.json, requirements.txt, go.mod, Cargo.toml, pom.xml
+      - src/, app/, lib/ with runtime logic
+    exclude:
+      - infrastructure/ with substantial IaC as primary
+      - k8s/ or helm/ as primary
+    skills_emphasis:
+      - cve-detect-and-remediate
+      - security-evaluator
+
+  infrastructure:
+    description: "IaC primary; no app runtime logic"
+    detection_signals:
+      - Terraform, CDK, CloudFormation
+      - **/*.tf, cdk.json, template*.yaml
+      - infrastructure/, terraform/, cdk/
+      - No app runtime logic (no src/, app/ with services)
+    exclude:
+      - Only Dockerfile and app code
+    skills_emphasis:
+      - security-evaluator
+      - ai-devsecops-policy-enforcement
+      - tool-evaluator
+
+  platform:
+    description: "Shared services, internal tooling, reusable modules"
+    detection_signals:
+      - shared services
+      - internal tooling
+      - reusable modules
+      - platform/, base/, shared/
+      - Multiple Dockerfiles or base images
+      - ADRs or platform docs
+    skills_emphasis:
+      - security-evaluator
+      - zero-trust-gitops-enforcement
+      - tool-evaluator
+
+  gitops:
+    description: "ArgoCD, Helm, Kustomize; environment promotion configs"
+    detection_signals:
+      - ArgoCD, Helm, Kustomize
+      - k8s/, Chart.yaml, kustomization.yaml
+      - argocd/, applicationset*.yaml
+      - environment promotion configs
+    exclude:
+      - IaC only (Terraform for EKS, no K8s manifests)
+    skills_emphasis:
+      - zero-trust-gitops-enforcement
+      - dod-zero-trust-architect
+      - security-evaluator
+
+  mixed:
+    description: "Multiple of the above present"
+    detection_signals:
+      - Multiple of: app code, IaC, K8s, CI/CD, platform
+    fallback: true
+    skills_emphasis:
+      - All relevant per file triggers
+
+# -----------------------------------------------------------------------------
+# CLASSIFICATION LOGIC (first match wins)
+# -----------------------------------------------------------------------------
+classification_order:
+  - gitops
+  - infrastructure
+  - platform
+  - application
+  - mixed
+
+# -----------------------------------------------------------------------------
+# OUTPUT FORMAT (required for every classification)
+# -----------------------------------------------------------------------------
+classification_output:
+  repo_type:
+    type: string
+    enum: [application, infrastructure, platform, gitops, mixed]
+  confidence:
+    type: string
+    enum: [high, medium, low]
+    description: "How confident the classification is"
+  reasoning:
+    type: string
+    description: "Brief explanation of why this type was selected"
+
+# -----------------------------------------------------------------------------
+# FILE PATTERNS FOR DETECTION
+# -----------------------------------------------------------------------------
+file_patterns:
+  application:
+    - "**/src/**"
+    - "**/app/**"
+    - "**/lib/**"
+    - "**/package.json"
+    - "**/requirements.txt"
+    - "**/go.mod"
+    - "**/Cargo.toml"
+    - "**/pom.xml"
+  infrastructure:
+    - "**/*.tf"
+    - "**/cdk.json"
+    - "**/template*.yaml"
+    - "**/cloudformation/**"
+  platform:
+    - "**/platform/**"
+    - "**/base/**"
+    - "**/shared/**"
+    - "**/ADRs/**"
+  gitops:
+    - "**/k8s/**"
+    - "**/Chart.yaml"
+    - "**/kustomization.yaml"
+    - "**/argocd/**"
+    - "**/applicationset*.yaml"

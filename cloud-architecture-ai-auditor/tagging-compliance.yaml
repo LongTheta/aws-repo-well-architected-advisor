@@ -1,0 +1,148 @@
+# Cloud Architecture AI Auditor — Tagging Compliance
+# Mandatory platform control. All AWS resources must be properly tagged.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# REQUIRED TAG SET
+# Every resource must include these tags.
+# -----------------------------------------------------------------------------
+required_tags:
+  Project:
+    description: "Project or application name"
+    example: "order-service"
+  Environment:
+    description: "Deployment environment"
+    allowed_values: [dev, test, prod]
+    example: "prod"
+  Owner:
+    description: "Team or person responsible"
+    example: "platform-team"
+  CostCenter:
+    description: "Cost allocation code"
+    example: "CC-12345"
+  ManagedBy:
+    description: "How resource is managed"
+    allowed_values: [terraform, cloudformation, manual, other]
+    example: "terraform"
+  Purpose:
+    description: "What the resource is used for"
+    example: "api-backend"
+  DataClassification:
+    description: "Data sensitivity level"
+    allowed_values: [public, internal, confidential]
+    example: "internal"
+  Lifecycle:
+    description: "Resource lifecycle"
+    allowed_values: [ephemeral, persistent]
+    example: "persistent"
+
+# -----------------------------------------------------------------------------
+# VALIDATION RULES
+# -----------------------------------------------------------------------------
+validation_rules:
+  missing_tags:
+    description: "Resource has fewer than required tags"
+    check: "Compare resource tags against required_tags"
+  inconsistent_values:
+    description: "Tag values differ from allowed or expected patterns"
+    check: "Validate Environment, ManagedBy, DataClassification, Lifecycle against allowed_values"
+  hardcoded_environment:
+    description: "Environment tag hardcoded incorrectly (e.g. prod in dev tfvars)"
+    check: "Environment tag matches deployment context"
+  no_tags_in_iac:
+    description: "Resources created in IaC without tags block"
+    check: "Terraform/CDK/CloudFormation resources have tags"
+  tag_drift:
+    description: "Tag values differ between environments for same resource type"
+    check: "Compare dev/test/prod for consistency"
+
+# -----------------------------------------------------------------------------
+# SEVERITY MAPPING
+# -----------------------------------------------------------------------------
+severity:
+  high:
+    when:
+      - "Cost-related tags missing (Project, Environment, CostCenter) — cost tracking broken"
+      - "DataClassification missing — security/governance gap"
+      - "Production resources untagged"
+    impact: "Cost visibility broken; governance failure"
+  medium:
+    when:
+      - "Some required tags missing — partial attribution"
+      - "Inconsistent tag values across environments"
+      - "Governance issue"
+    impact: "Partial cost attribution; audit gaps"
+  low:
+    when:
+      - "Optional tags missing"
+      - "Tag value format suboptimal"
+      - "Hygiene issue"
+    impact: "Minor attribution gaps"
+
+# -----------------------------------------------------------------------------
+# FINDING FORMAT
+# -----------------------------------------------------------------------------
+finding_format:
+  resource: "AWS resource type and identifier"
+  missing_incorrect_tag: "Tag name or value"
+  severity: "High / Medium / Low"
+  recommendation: "Specific fix"
+
+# -----------------------------------------------------------------------------
+# RULES
+# -----------------------------------------------------------------------------
+rules:
+  - "Tagging is mandatory for production environments"
+  - "Missing cost-related tags = High severity"
+  - "Missing security classification (DataClassification) = High severity"
+  - "Do not allow untagged resources in recommended architecture"
+  - "Every AWS resource must be traceable, accountable, and cost-attributable"
+
+# -----------------------------------------------------------------------------
+# COST INTEGRATION
+# -----------------------------------------------------------------------------
+cost_integration:
+  missing_tags_impact:
+    - "Cost allocation reports incomplete"
+    - "Cannot attribute spend by project, environment, or cost center"
+    - "FinOps maturity blocked"
+  unattributable_costs:
+    - "Untagged resources appear as 'unallocated'"
+    - "Budget alerts cannot target specific projects"
+    - "Chargeback/showback impossible"
+  finops_maturity:
+    - "Tagging is foundational for FinOps"
+    - "Without tags: Crawl stage blocked"
+    - "With tags: Walk/Run stages possible"
+
+# -----------------------------------------------------------------------------
+# REMEDIATION
+# -----------------------------------------------------------------------------
+remediation:
+  terraform_example: |
+    # Terraform: default tags
+    provider "aws" {
+      default_tags {
+        tags = {
+          Project         = "order-service"
+          Environment     = var.environment
+          Owner           = "platform-team"
+          CostCenter      = "CC-12345"
+          ManagedBy       = "terraform"
+          Purpose         = "api-backend"
+          DataClassification = "internal"
+          Lifecycle       = "persistent"
+        }
+      }
+    }
+  aws_best_practices:
+    - "Use AWS Organizations tag policies for enforcement"
+    - "Use Resource Groups for tag-based filtering"
+    - "Enable Cost Allocation Tags in Billing"
+    - "Use consistent casing (e.g. PascalCase for keys)"
+  enforcement:
+    - "CI/CD: Fail pipeline if IaC creates resources without tags"
+    - "Policy: AWS Config rule for required tags"
+    - "Terraform: default_tags in provider block"
+    - "Pre-commit: Validate tags in IaC before merge"

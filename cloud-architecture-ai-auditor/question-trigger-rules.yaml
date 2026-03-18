@@ -1,0 +1,124 @@
+# Cloud Architecture AI Auditor — Question Trigger Rules
+# Defines when refinement questions should be asked. Questions appear ONLY after baseline analysis.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# RULE: Questions appear only after baseline analysis is generated
+# -----------------------------------------------------------------------------
+prerequisite: "baseline_analysis_complete"
+
+# -----------------------------------------------------------------------------
+# CORE 6 QUESTIONS — When to ask each
+# -----------------------------------------------------------------------------
+questions:
+  traffic_pattern:
+    id: "Q1"
+    question: "Traffic pattern: Low / Moderate / High / Spiky"
+    trigger_when:
+      - traffic_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Low"
+    used_for: "Right-size compute, autoscaling, load balancing"
+
+  availability_requirement:
+    id: "Q2"
+    question: "Availability: Best effort / 99.9% / 99.99%+"
+    trigger_when:
+      - availability_target_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Best effort"
+    used_for: "Multi-AZ, RTO/RPO, backup strategy"
+
+  data_criticality:
+    id: "Q3"
+    question: "Data criticality: Non-critical / Important / Mission-critical"
+    trigger_when:
+      - data_criticality_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Non-critical"
+    used_for: "Encryption, backup, retention, DR"
+
+  security_compliance:
+    id: "Q4"
+    question: "Security/compliance: Basic / Moderate / High / Regulated"
+    trigger_when:
+      - compliance_level_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Basic"
+    used_for: "IAM, audit, encryption, compliance controls"
+
+  team_maturity:
+    id: "Q5"
+    question: "Team size: Solo / Small team / Platform team"
+    trigger_when:
+      - team_maturity_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Solo builder"
+    used_for: "Complexity ceiling, managed vs self-managed, ops burden"
+
+  cost_priority:
+    id: "Q6"
+    question: "Cost priority: Aggressive savings / Balanced / Performance-first"
+    trigger_when:
+      - cost_priority_unknown: true
+      - baseline_generated: true
+    default_if_skipped: "Aggressive savings"
+    used_for: "Cost vs reliability tradeoffs, right-sizing"
+
+# -----------------------------------------------------------------------------
+# DETECTION RULES — How to infer "unknown"
+# -----------------------------------------------------------------------------
+detection:
+  traffic_unknown:
+    # No explicit traffic hints in IaC, config, or comments
+    signals_absent:
+      - autoscaling_min_max
+      - load_balancer_capacity
+      - traffic_comment
+    default: true
+
+  availability_target_unknown:
+    signals_absent:
+      - multi_az_config
+      - rto_rpo_comment
+      - sla_requirement
+    default: true
+
+  data_criticality_unknown:
+    signals_absent:
+      - encryption_at_rest
+      - backup_retention
+      - compliance_tags
+    default: true
+
+  compliance_level_unknown:
+    signals_absent:
+      - fedramp
+      - hipaa
+      - pci
+      - soc2
+    default: true
+
+  team_maturity_unknown:
+    # Cannot infer from repo alone
+    default: true
+
+  cost_priority_unknown:
+    # Cannot infer from repo alone
+    default: true
+
+# -----------------------------------------------------------------------------
+# FALLBACK: Do not block when answers are incomplete
+# -----------------------------------------------------------------------------
+fallback:
+  on_missing_answers:
+    action: "proceed_with_defaults"
+    defaults:
+      traffic_pattern: "Low"
+      availability_requirement: "Best effort"
+      data_criticality: "Non-critical"
+      security_compliance: "Basic"
+      team_maturity: "Solo builder"
+      cost_priority: "Aggressive savings"
+  label: "Cost-optimized baseline based on minimal assumptions"

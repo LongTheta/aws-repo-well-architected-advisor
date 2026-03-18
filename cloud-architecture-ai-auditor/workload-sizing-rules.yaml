@@ -1,0 +1,118 @@
+# Cloud Architecture AI Auditor — Workload Sizing Rules
+# Determines review depth based on repo maturity and evidence. Label workload mode in every report.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# WORKLOAD MODES
+# -----------------------------------------------------------------------------
+modes:
+  lightweight:
+    label: "Lightweight"
+    description: "Small, early-stage, or limited infrastructure evidence"
+    when:
+      - artifact_count_below_threshold: 5
+      - no_production_iac: true
+      - early_stage_signals:
+          - readme_only
+          - app_code_only
+          - single_dockerfile
+    run:
+      - repo-discovery
+      - architecture-inference
+      - well-architected-scoring-engine
+    report_scope: "Abbreviated: executive summary, top risks, baseline recommendation. Skip deep NIST, FinOps, observability dives."
+
+  standard:
+    label: "Standard"
+    description: "Production IaC and CI/CD present; partial networking/IAM/observability"
+    when:
+      - has_iac: true
+      - has_cicd: true
+      - has_networking_or_iam: true
+    run: "File-based triggers; conditional skills per skill-trigger-matrix"
+    report_scope: "Full report; all triggered skills; standard depth."
+
+  full:
+    label: "Full"
+    description: "Production IaC, CI/CD, networking, IAM, and observability signals"
+    when:
+      - has_iac: true
+      - has_cicd: true
+      - has_networking: true
+      - has_iam: true
+      - has_observability: true
+    run: "All file-based and content-based triggers; full skill stack"
+    report_scope: "Comprehensive report; all skills; full depth."
+
+  regulated:
+    label: "Regulated"
+    description: "Federal, compliance, or security-critical signals"
+    when:
+      - has_iac: true
+      - federal_compliance_signals:
+          - fedramp
+          - hipaa
+          - pci
+          - soc2
+          - zero_trust
+          - nist_800_53
+          - audit_requirements
+      - content_patterns:
+          - "fedramp"
+          - "hipaa"
+          - "pci"
+          - "compliance"
+          - "zero.trust"
+          - "audit"
+    run: "Full review + full compliance stack + Zero Trust stack"
+    report_scope: "Full report; NIST, CIS, Zero Trust, compliance overlays; regulated depth."
+
+# -----------------------------------------------------------------------------
+# EVALUATION ORDER (first match wins)
+# Regulated overrides Full; Full overrides Standard; Standard overrides Lightweight
+# -----------------------------------------------------------------------------
+evaluation_order:
+  - regulated
+  - full
+  - standard
+  - lightweight
+
+# -----------------------------------------------------------------------------
+# SIGNAL DETECTION
+# -----------------------------------------------------------------------------
+signals:
+  has_iac:
+    patterns:
+      - "**/*.tf"
+      - "**/cdk.json"
+      - "**/template*.yaml"
+      - "**/terragrunt.hcl"
+
+  has_cicd:
+    patterns:
+      - ".github/workflows/*"
+      - ".gitlab-ci.yml"
+      - "**/Jenkinsfile"
+      - "**/buildspec.yml"
+
+  has_networking:
+    patterns:
+      - "**/vpc*.tf"
+      - "**/*subnet*"
+      - "**/*security_group*"
+      - "**/network*.yaml"
+
+  has_iam:
+    patterns:
+      - "**/iam*.tf"
+      - "**/*policy*.json"
+      - "**/*trust*.json"
+
+  has_observability:
+    patterns:
+      - "**/prometheus*.yml"
+      - "**/grafana/**"
+      - "**/cloudwatch*.json"
+      - "**/opentelemetry*.yaml"
+      - "**/logging*.yaml"

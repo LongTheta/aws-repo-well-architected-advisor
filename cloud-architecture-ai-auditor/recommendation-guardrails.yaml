@@ -1,0 +1,82 @@
+# Cloud Architecture AI Auditor — Recommendation Guardrails
+# Do-not-recommend-by-default list. Only recommend if clearly justified.
+# Always explain why complexity is necessary.
+
+version: "1.0"
+
+# -----------------------------------------------------------------------------
+# DO NOT RECOMMEND BY DEFAULT (unless justified)
+# -----------------------------------------------------------------------------
+do_not_recommend:
+  eks_simple_low_traffic:
+    item: "EKS for simple or low-traffic apps"
+    default: "Prefer ECS Fargate or Lambda"
+    justify_when:
+      - "K8s ecosystem required (multi-cluster, K8s API)"
+      - "Team has K8s expertise"
+      - "Workload needs K8s-native features"
+
+  multi_region_without_need:
+    item: "Multi-region architectures without clear need"
+    default: "Prefer single region"
+    justify_when:
+      - "DR requirement (RTO/RPO)"
+      - "Latency/geo requirements"
+      - "Regulatory requirement"
+
+  service_mesh_small_teams:
+    item: "Complex service mesh for small teams"
+    default: "Prefer ALB + service discovery or minimal mesh"
+    justify_when:
+      - "Multi-cluster communication"
+      - "Advanced traffic splitting"
+      - "Team has mesh expertise"
+
+  excessive_microservices:
+    item: "Excessive microservices for basic apps"
+    default: "Prefer modular monolith or few services"
+    justify_when:
+      - "Independent scaling required"
+      - "Team/organization boundaries"
+      - "Polyglot or independent deploy needs"
+
+  self_managed_over_managed:
+    item: "Self-managed infrastructure where managed services suffice"
+    default: "Prefer RDS, ElastiCache, managed Kafka, etc."
+    justify_when:
+      - "Specific version/extension not available"
+      - "Regulatory constraint"
+      - "Existing migration from self-managed"
+
+  complex_observability_small_workloads:
+    item: "Overly complex observability stacks for small workloads"
+    default: "Prefer CloudWatch + minimal dashboards"
+    justify_when:
+      - "Team has dedicated SRE/observability"
+      - "Multi-cluster/multi-account"
+      - "Compliance requires centralized logging"
+
+  excessive_multi_account:
+    item: "Excessive multi-account segmentation for very small workloads"
+    default: "Prefer single account + tags"
+    justify_when:
+      - "Compliance boundary required"
+      - "Billing separation required"
+      - "Team/structure mandates"
+
+# -----------------------------------------------------------------------------
+# RULES
+# -----------------------------------------------------------------------------
+rules:
+  - "Only recommend do-not-recommend items if clearly justified"
+  - "Always explain why complexity is necessary"
+
+# -----------------------------------------------------------------------------
+# JUSTIFICATION REQUIREMENTS
+# -----------------------------------------------------------------------------
+justification:
+  required: "If recommending any do-not-recommend item, must include:"
+  fields:
+    - reason: "Why this exception applies"
+    - evidence: "User requirement or repo signal"
+    - tradeoff: "Cost, ops burden, complexity"

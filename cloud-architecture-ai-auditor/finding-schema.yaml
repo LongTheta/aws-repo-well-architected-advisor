@@ -1,0 +1,107 @@
+# Cloud Architecture AI Auditor — Shared Finding Schema
+# All skills MUST return findings in this structure. Conform before merge.
+
+version: "1.0"
+
+finding:
+  required_fields:
+    - id
+    - title
+    - summary
+    - evidence
+    - evidence_type
+    - severity
+    - confidence
+    - affected_area
+    - recommendation
+    - effort
+    - impact
+    - framework_mapping
+
+  fields:
+    id:
+      type: string
+      format: "{source}-{number}"
+      example: "S1"
+      description: "Unique identifier; source prefix (S=security, A=arch, D=devops, C=cost, N=network)"
+
+    title:
+      type: string
+      max_length: 120
+      description: "Short, actionable title"
+
+    summary:
+      type: string
+      description: "1-2 sentences"
+
+    evidence:
+      type: string | array
+      description: "File path, config snippet, or pattern"
+
+    evidence_type:
+      type: string
+      enum: [observed, inferred, missing, contradictory]
+      description: "Evidence classification"
+      definitions:
+        observed: "Direct evidence in repo"
+        inferred: "Derived from patterns"
+        missing: "Expected but not found"
+        contradictory: "Conflicting signals"
+
+    severity:
+      type: string
+      enum: [critical, high, medium, low]
+      description: "Impact if unaddressed"
+
+    confidence:
+      type: string
+      enum: [high, medium, low]
+      description: "How certain we are"
+
+    affected_area:
+      type: string
+      enum: [security, cost, reliability, performance, operations]
+      description: "Primary domain affected"
+
+    recommendation:
+      type: string
+      description: "Clear, actionable fix"
+
+    effort:
+      type: string
+      enum: [low, medium, high]
+      description: "Implementation effort"
+
+    impact:
+      type: string
+      enum: [cost, security, reliability, ops]
+      description: "Primary impact; can be comma-separated for multiple"
+
+    framework_mapping:
+      type: object
+      description: "Map to frameworks for merge and compliance"
+      properties:
+        aws_pillar: string
+        nist_control: string
+        devops_dora_finops: string
+
+  optional_fields:
+    - role
+    - source_skill
+    - merged_from
+
+  role:
+    type: string
+    enum: [architect, developer, security]
+
+  source_skill:
+    type: string
+    description: "Skill that produced this finding"
+
+  merged_from:
+    type: array
+    items: string
+    description: "IDs of findings merged into this one; tag merged sources"
+
+  conformance:
+    rule: "All skills must conform to this schema before results are merged"
