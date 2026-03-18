@@ -21,37 +21,33 @@ It analyzes repositories OR gathers requirements to:
 
 ### 2. Spec-Driven Mode
 - Acts like a Solutions Architect / Product Manager
-- Asks:
-  - users
-  - traffic
-  - budget
-  - compliance level
+- Asks: users, traffic, budget, compliance level
 - Designs optimal AWS architecture
-
----
-
-## Modules
-
-- aws-architecture-pattern-advisor
-- cloud-architecture-ai-auditor
-- devops-review
-- finops-cost-optimizer
-- networking-review
-- nist-compliance-evaluator
-- observability-grafana-advisor
-- security-review
-- aws-federal-grade-checklist
 
 ---
 
 ## How It Works
 
-1. Discover repo structure
-2. Infer AWS architecture
-3. Run specialized reviews
-4. Aggregate scores
-5. Apply federal-grade checklist
-6. Produce final verdict
+1. **Scoping** — Classify repo (application, infrastructure, platform, GitOps, mixed); select review mode (quick-scan, standard, deep-review, regulated-review)
+2. **Design / Inference** — architecture-decision-engine, cloud-architecture-ai-auditor
+3. **Core Reviews** — security-review, networking-review, finops-cost-optimizer, observability-grafana-advisor, devops-review
+4. **Compliance** — nist-compliance-evaluator
+5. **Final Gate** — aws-federal-grade-checklist
+6. **Output** — Merge findings, apply verdict rules, generate report
+
+---
+
+## Skills (Execution Order)
+
+- architecture-decision-engine
+- cloud-architecture-ai-auditor
+- security-review
+- networking-review
+- finops-cost-optimizer
+- observability-grafana-advisor
+- devops-review
+- nist-compliance-evaluator
+- aws-federal-grade-checklist
 
 ---
 
@@ -59,9 +55,8 @@ It analyzes repositories OR gathers requirements to:
 
 The `aws-federal-grade-checklist` acts as a strict production readiness gate.
 
-Rules:
-- CRITICAL issues → NOT READY
-- HIGH issues → remediation required
+- CRITICAL findings → NOT READY
+- HIGH findings → CONDITIONAL
 - Missing evidence → treated as risk
 - Missing tags → governance failure
 
@@ -69,11 +64,11 @@ Rules:
 
 ## Rule Engine
 
-Routing and enforcement is controlled by:
+Routing and enforcement:
 
-- RULES.md
-- .cursorrules
-- skill-trigger-matrix.yaml
+- **skill-trigger-matrix.yaml** — Repo signals, user intents → skills; review modes; verdict rules
+- **RULES.md** — Review philosophy, execution, evidence, gating rules
+- **.cursorrules** — Condensed routing for Cursor
 
 ---
 
@@ -85,26 +80,7 @@ Each run produces:
 - category scores
 - risk classification
 - remediation plan
-- production readiness verdict
-
----
-
-## Who This Is For
-
-- Solutions Architects
-- DevOps Engineers
-- Security Engineers
-- Platform Engineers
-
----
-
-## Goal
-
-Make AWS platform design:
-- consistent
-- secure
-- cost-effective
-- production-ready
+- production readiness verdict (READY / CONDITIONAL / NOT READY)
 
 ---
 
@@ -112,7 +88,13 @@ Make AWS platform design:
 
 | File | Purpose |
 |------|---------|
-| [review-order.md](review-order.md) | Execution order (phases 1–4) |
+| [skill-trigger-matrix.yaml](skill-trigger-matrix.yaml) | Repo signals, user intents → skills; review modes; verdict rules |
+| [review-order.md](review-order.md) | Execution flow (phases 1–5) |
+| [RULES.md](RULES.md) | Review philosophy, execution, evidence, gating rules |
+| [review-mode-definitions.md](review-mode-definitions.md) | quick-scan, standard, deep-review, regulated-review |
+| [repo-classification.md](repo-classification.md) | application, infrastructure, platform, GitOps, mixed |
+| [final-verdict-logic.md](final-verdict-logic.md) | READY, CONDITIONAL, NOT READY |
 | [example-full-run.md](example-full-run.md) | Example Terraform review with verdict |
 | [POSITIONING.md](POSITIONING.md) | What this repo actually is |
+| [architecture-decision-engine/README.md](architecture-decision-engine/README.md) | Decision engine (design, not checklist) |
 | [AWS-SCOPE.md](AWS-SCOPE.md) | AWS-only scope |

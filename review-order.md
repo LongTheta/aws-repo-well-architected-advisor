@@ -1,26 +1,49 @@
-# Review Execution Order
+# Review Order
 
-This defines the deterministic order in which skills/modules are executed.
+Deterministic execution flow for AWS platform design and review.
 
-## Phase 1: Discovery
-1. repo discovery
-2. architecture inference
+See `repo-classification.md` for classification logic. See `review-mode-definitions.md` for mode definitions.
 
-## Phase 2: Core Reviews
-3. security-review
-4. networking-review
-5. finops-cost-optimizer
-6. observability-grafana-advisor
-7. devops-review
+---
 
-## Phase 3: Compliance & Governance
-8. nist-compliance-evaluator
+## Phase 1: Scoping
 
-## Phase 4: Final Gate (STRICT)
-9. aws-federal-grade-checklist
+1. repo classification (application, infrastructure, platform, GitOps, mixed)
+2. review mode selection (quick-scan, standard, deep-review, regulated-review)
 
-## Notes
-- The federal-grade checklist is the final gate
-- Any CRITICAL findings result in NOT READY
-- Missing evidence must be treated as risk
-- Tagging failures must be treated as governance issues
+---
+
+## Phase 2: Design / Inference
+
+3. architecture-decision-engine
+4. cloud-architecture-ai-auditor
+
+---
+
+## Phase 3: Core Reviews
+
+5. security-review
+6. networking-review
+7. finops-cost-optimizer
+8. observability-grafana-advisor
+9. devops-review
+
+---
+
+## Phase 4: Compliance
+
+10. nist-compliance-evaluator
+
+---
+
+## Phase 5: Final Gate
+
+11. aws-federal-grade-checklist
+
+---
+
+## Final Processing
+
+12. merge findings
+13. apply verdict rules
+14. generate final report

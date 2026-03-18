@@ -1,155 +1,257 @@
 # AWS Repo Well-Architected Advisor — Skill Trigger Matrix
-# Rule-driven mapping: file patterns and user requests → skills.
+# Rule-driven mapping: repo signals and user intents → skills.
 # Deterministic. No agent dependency.
 
-version: "1.0"
+version: "2.0"
 
-# -----------------------------------------------------------------------------
-# OUTPUT RULES
-# -----------------------------------------------------------------------------
-output_rules:
-  merge_duplicates: true
-  merge_criteria:
-    - combined_evidence
-    - strongest_severity
-    - cross_framework_mapping
-  evidence_tags:
-    - Observed
-    - Inferred
-    - Missing Evidence
-    - Contradictory Evidence
-  priority: security_first
+global:
+  default_mode: standard
+  final_gate: aws-federal-grade-checklist
+  evidence_labels:
+    - observed
+    - inferred
+    - missing
+    - contradictory
 
-# -----------------------------------------------------------------------------
-# FILE-BASED TRIGGERS (deterministic pattern matching)
-# -----------------------------------------------------------------------------
-file_triggers:
-  iac:
-    description: "IaC repos"
-    patterns:
-      - "**/*.tf"
-      - "**/*.tf.json"
-      - "**/terragrunt.hcl"
-      - "**/cdk.json"
-      - "**/cdk*.ts"
-      - "**/template*.yaml"
-      - "**/template*.json"
-      - "**/cloudformation/**/*"
+review_modes:
+  quick-scan:
+    include:
+      - security-review
+      - networking-review
+      - finops-cost-optimizer
+  standard:
+    include:
+      - security-review
+      - networking-review
+      - finops-cost-optimizer
+      - observability-grafana-advisor
+      - devops-review
+  deep-review:
+    include:
+      - security-review
+      - networking-review
+      - finops-cost-optimizer
+      - observability-grafana-advisor
+      - devops-review
+      - nist-compliance-evaluator
+      - aws-federal-grade-checklist
+  regulated-review:
+    include:
+      - security-review
+      - networking-review
+      - finops-cost-optimizer
+      - observability-grafana-advisor
+      - devops-review
+      - nist-compliance-evaluator
+      - aws-federal-grade-checklist
+
+repo_classification:
+  application:
+    default_review_mode: standard
+  infrastructure:
+    default_review_mode: deep-review
+  platform:
+    default_review_mode: deep-review
+  GitOps:
+    default_review_mode: regulated-review
+  mixed:
+    default_review_mode: deep-review
+
+triggers:
+  file_patterns:
+    terraform:
+      patterns:
+        - "**/*.tf"
+        - "**/*.tfvars"
+        - "**/terragrunt.hcl"
+      skills:
+        - cloud-architecture-ai-auditor
+        - networking-review
+        - security-review
+        - finops-cost-optimizer
+        - nist-compliance-evaluator
+
+    cloudformation_cdk:
+      patterns:
+        - "**/template.yaml"
+        - "**/template.yml"
+        - "**/cdk.json"
+        - "**/lib/**/*.ts"
+      skills:
+        - cloud-architecture-ai-auditor
+        - security-review
+        - finops-cost-optimizer
+        - nist-compliance-evaluator
+
+    kubernetes_gitops:
+      patterns:
+        - "**/k8s/**/*.yaml"
+        - "**/k8s/**/*.yml"
+        - "**/helm/**"
+        - "**/Chart.yaml"
+        - "**/values.yaml"
+        - "**/kustomization.yaml"
+        - "**/argocd/**/*.yaml"
+      skills:
+        - networking-review
+        - observability-grafana-advisor
+        - security-review
+        - devops-review
+        - nist-compliance-evaluator
+        - aws-federal-grade-checklist
+
+    cicd:
+      patterns:
+        - ".gitlab-ci.yml"
+        - ".github/workflows/**"
+        - "**/Jenkinsfile"
+      skills:
+        - devops-review
+        - security-review
+        - nist-compliance-evaluator
+        - aws-federal-grade-checklist
+
+    docker:
+      patterns:
+        - "**/Dockerfile"
+        - "**/docker-compose.yml"
+        - "**/docker-compose.yaml"
+      skills:
+        - security-review
+        - devops-review
+        - finops-cost-optimizer
+        - nist-compliance-evaluator
+
+    observability:
+      patterns:
+        - "**/grafana/**"
+        - "**/prometheus/**"
+        - "**/otel/**"
+        - "**/cloudwatch/**"
+      skills:
+        - observability-grafana-advisor
+        - devops-review
+
+    docs_or_requirements:
+      patterns:
+        - "README.md"
+        - "**/docs/**"
+        - "**/architecture.md"
+        - "**/requirements.md"
+      skills:
+        - architecture-decision-engine
+
+  content_patterns:
+    wildcard_iam:
+      match:
+        - '"Action": "*"'
+        - '"Resource": "*"'
+      skills:
+        - security-review
+        - aws-federal-grade-checklist
+      severity: critical
+
+    public_exposure:
+      match:
+        - "0.0.0.0/0"
+        - 'cidr_blocks = ["0.0.0.0/0"]'
+      skills:
+        - networking-review
+        - security-review
+        - aws-federal-grade-checklist
+      severity: critical
+
+    secrets_exposure:
+      match:
+        - "AKIA"
+        - "aws_secret_access_key"
+        - "BEGIN PRIVATE KEY"
+        - "password ="
+      skills:
+        - security-review
+        - aws-federal-grade-checklist
+      severity: critical
+
+    missing_tags_signals:
+      match:
+        - "resource"
+      skills:
+        - finops-cost-optimizer
+        - aws-federal-grade-checklist
+      note: "Check for required tag absence in IaC resources"
+
+    eks_usage:
+      match:
+        - "aws_eks_cluster"
+        - "eks.amazonaws.com"
+      skills:
+        - networking-review
+        - observability-grafana-advisor
+        - finops-cost-optimizer
+        - nist-compliance-evaluator
+        - aws-federal-grade-checklist
+
+    lambda_usage:
+      match:
+        - "aws_lambda_function"
+      skills:
+        - cloud-architecture-ai-auditor
+        - finops-cost-optimizer
+        - security-review
+
+user_intents:
+  design_platform:
+    phrases:
+      - "design the platform"
+      - "what should we build"
+      - "design aws architecture"
     skills:
-      - security-evaluator
-      - ai-devsecops-policy-enforcement
-      - tool-evaluator
+      - architecture-decision-engine
+      - cloud-architecture-ai-auditor
 
-  kubernetes:
-    description: "Kubernetes / GitOps repos"
-    patterns:
-      - "**/k8s/**/*.yaml"
-      - "**/deployment.yaml"
-      - "**/service.yaml"
-      - "**/Chart.yaml"
-      - "**/kustomization.yaml"
-      - "**/values.yaml"
-      - "**/argocd/**/*"
-      - "**/applicationset*.yaml"
+  review_repo:
+    phrases:
+      - "review this repo"
+      - "analyze this repo"
+      - "is this production ready"
     skills:
-      - zero-trust-gitops-enforcement
-      - dod-zero-trust-architect
-      - security-evaluator
+      - cloud-architecture-ai-auditor
+      - security-review
+      - networking-review
+      - finops-cost-optimizer
+      - devops-review
 
-  containers:
-    description: "Containerized apps"
-    patterns:
-      - "**/Dockerfile"
-      - "**/docker-compose*.yml"
-      - "**/package.json"
-      - "**/package-lock.json"
-      - "**/requirements.txt"
-      - "**/Pipfile"
-      - "**/go.mod"
-      - "**/Cargo.toml"
-      - "**/pom.xml"
-      - "**/build.gradle"
+  regulated_or_federal:
+    phrases:
+      - "federal-grade"
+      - "DoD"
+      - "FedRAMP"
+      - "NIST"
+      - "ATO"
     skills:
-      - cve-detect-and-remediate
-      - security-evaluator
+      - nist-compliance-evaluator
+      - aws-federal-grade-checklist
 
-  cicd:
-    description: "CI/CD repos"
-    patterns:
-      - ".gitlab-ci.yml"
-      - ".github/workflows/*.yml"
-      - ".github/workflows/*.yaml"
-      - "**/Jenkinsfile"
-      - "**/buildspec.yml"
-    skills:
-      - ai-devsecops-policy-enforcement
-      - zero-trust-gitops-enforcement
-      - security-evaluator
+execution_order:
+  - architecture-decision-engine
+  - cloud-architecture-ai-auditor
+  - security-review
+  - networking-review
+  - finops-cost-optimizer
+  - observability-grafana-advisor
+  - devops-review
+  - nist-compliance-evaluator
+  - aws-federal-grade-checklist
 
-  tools_platform:
-    description: "Tool/platform evaluation (content signals)"
-    patterns:
-      - "**/ADRs/**/*"
-      - "**/docs/**/tool*.md"
-      - "**/vendor*.md"
-      - "**/platform*.md"
-    skills:
-      - tool-evaluator
+merge_rules:
+  deduplicate: true
+  preserve_highest_severity: true
+  preserve_strongest_confidence: true
+  combine_framework_mappings: true
+  combine_evidence: true
 
-# -----------------------------------------------------------------------------
-# REQUEST-BASED TRIGGERS (user intent)
-# -----------------------------------------------------------------------------
-request_triggers:
-  tool_evaluation:
-    description: "Tool or platform evaluation request"
-    signals:
-      - "evaluate tool"
-      - "compare tools"
-      - "vendor selection"
-      - "platform decision"
-    skill: tool-evaluator
-
-  new_rule:
-    description: "New rule request"
-    signals:
-      - "add rule"
-      - "create rule"
-      - ".cursorrules"
-      - "repo-wide behavior"
-    skill: create-rule
-
-  new_skill:
-    description: "New skill request"
-    signals:
-      - "create skill"
-      - "add skill"
-      - "reusable capability"
-      - "SKILL.md"
-    skill: create-skill
-
-  workflow_decomposition:
-    description: "Decompose work into specialist workflows"
-    signals:
-      - "split work"
-      - "specialist workflows"
-      - "create subagent"
-      - "decompose tasks"
-    skill: create-subagent
-
-# -----------------------------------------------------------------------------
-# SKILL PRIORITY (when multiple skills apply)
-# -----------------------------------------------------------------------------
-skill_priority:
-  tier_1:
-    - security-evaluator
-  tier_2:
-    - ai-devsecops-policy-enforcement
-    - zero-trust-gitops-enforcement
-    - dod-zero-trust-architect
-  tier_3:
-    - cve-detect-and-remediate
-    - tool-evaluator
-  tier_4:
-    - create-rule
-    - create-skill
-    - create-subagent
+final_verdict_rules:
+  critical_from_federal_gate: NOT_READY
+  high_from_federal_gate: CONDITIONAL
+  missing_required_tags_in_prod: CONDITIONAL
+  missing_evidence_in_regulated_review: CONDITIONAL
