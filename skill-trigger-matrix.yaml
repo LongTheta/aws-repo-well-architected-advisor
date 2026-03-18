@@ -232,6 +232,16 @@ user_intents:
       - nist-compliance-evaluator
       - aws-federal-grade-checklist
 
+  scaffold_from_findings:
+    phrases:
+      - "scaffold from this design"
+      - "generate terraform from these findings"
+      - "build the repo"
+      - "generate IaC from findings"
+      - "scaffold the infrastructure"
+    skills:
+      - aws-repo-scaffolder
+
 execution_order:
   - architecture-decision-engine
   - cloud-architecture-ai-auditor

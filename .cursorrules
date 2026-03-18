@@ -21,3 +21,4 @@
 - Missing required tags is a governance failure
 - Prefer simplest safe AWS architecture
 - Avoid EKS unless clearly justified
+- Scaffold: "scaffold from this design", "generate IaC from findings" → aws-repo-scaffolder

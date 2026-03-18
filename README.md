@@ -84,6 +84,18 @@ Each run produces:
 
 ---
 
+## Build from Findings
+
+After design or review, use **aws-repo-scaffolder** to generate Terraform or CDK scaffolding:
+
+- "Scaffold from this design"
+- "Generate Terraform from these findings"
+- "Build the repo"
+
+Produces repo structure, IaC with required tags, security defaults, and CI/CD skeleton. See [aws-repo-scaffolder/scaffold-prompt.md](aws-repo-scaffolder/scaffold-prompt.md).
+
+---
+
 ## Key Files
 
 | File | Purpose |
@@ -97,4 +109,5 @@ Each run produces:
 | [example-full-run.md](example-full-run.md) | Example Terraform review with verdict |
 | [POSITIONING.md](POSITIONING.md) | What this repo actually is |
 | [architecture-decision-engine/README.md](architecture-decision-engine/README.md) | Decision engine (design, not checklist) |
+| [aws-repo-scaffolder/README.md](aws-repo-scaffolder/README.md) | Scaffold IaC from design or findings |
 | [AWS-SCOPE.md](AWS-SCOPE.md) | AWS-only scope |

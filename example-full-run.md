@@ -36,3 +36,6 @@ NOT READY FOR PRODUCTION
 - Restrict DB access
 - Add required tags
 - Enable logging/audit
+
+## Suggested Next Step
+Use **aws-repo-scaffolder** to generate Terraform that addresses these fixes: "Scaffold from this design" or "Generate Terraform from these findings".
