@@ -1,6 +1,6 @@
 # AWS Repo Well-Architected Advisor
 
-**Evidence-based repository architecture reviews for AWS Well-Architected, federal compliance (NIST/FedRAMP), and GitOps. OpenCode platform pack with Cursor support.**
+**Evidence-based repository architecture reviews for AWS Well-Architected, federal compliance (NIST/FedRAMP), and GitOps. Jade uses OpenCode; this pack runs on the OpenCode platform with Cursor support.**
 
 ---
 
@@ -34,7 +34,7 @@ We evaluate repositories against AWS Well-Architected pillars and produce struct
 ### Option 1: Use This Repo Directly
 
 ```bash
-git clone https://github.com/LongTheta/aws-repo-well-architected-advisor.git
+git clone https://github.com/Jade/aws-repo-well-architected-advisor.git
 cd aws-repo-well-architected-advisor
 cd .opencode && bun install   # or: npm install
 opencode run "/repo-assess"
@@ -44,7 +44,7 @@ opencode run "/repo-assess"
 
 ```bash
 # Clone this repo first
-git clone https://github.com/LongTheta/aws-repo-well-architected-advisor.git
+git clone https://github.com/Jade/aws-repo-well-architected-advisor.git
 cd aws-repo-well-architected-advisor
 
 # Install into your target repo

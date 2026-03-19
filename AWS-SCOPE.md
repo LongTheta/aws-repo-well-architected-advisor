@@ -31,6 +31,6 @@ This repository is the **canonical AWS-specific implementation** of a broader mu
 
 ---
 
-## LongTheta Ecosystem
+## Jade Ecosystem
 
-This repo is the **AWS-first** platform design and review system. Other cloud implementations may exist as sibling repositories in the LongTheta ecosystem.
+Jade uses **OpenCode** as its platform. This repo is the **AWS-first** platform design and review system. Other cloud implementations may exist as sibling repositories in the Jade ecosystem.

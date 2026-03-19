@@ -1,6 +1,6 @@
 # AWS Well-Architected Pack — OpenCode Skill Manifest
 # Plug-and-play pack for OpenCode systems. Enterprise-grade. No repo-specific branding.
-# Refactored from: https://github.com/LongTheta/aws-repo-well-architected-advisor
+# Refactored from: https://github.com/Jade/aws-repo-well-architected-advisor
 
 version: "2.0"
 name: aws-well-architected-pack

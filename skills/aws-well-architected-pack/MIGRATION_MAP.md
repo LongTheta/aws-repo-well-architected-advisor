@@ -4,7 +4,7 @@ Mapping from the original aws-repo-well-architected-advisor repository structure
 
 ## Source Repository
 
-- **Source**: https://github.com/LongTheta/aws-repo-well-architected-advisor
+- **Source**: https://github.com/Jade/aws-repo-well-architected-advisor
 - **Structure**: Monolithic repo with skills as sibling directories (cloud-architecture-ai-auditor, security-review, etc.)
 
 ## Target Structure

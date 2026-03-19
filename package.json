@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/LongTheta/aws-repo-well-architected-advisor.git"
+    "url": "https://github.com/Jade/aws-repo-well-architected-advisor.git"
   },
   "scripts": {
     "test": "node tests/run-all.js",

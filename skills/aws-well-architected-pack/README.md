@@ -1,6 +1,6 @@
 # AWS Well-Architected Pack
 
-OpenCode-native skill pack for evidence-based AWS architecture review. Refactored from [aws-repo-well-architected-advisor](https://github.com/LongTheta/aws-repo-well-architected-advisor). Plug-and-play: drop into `skills/` of a larger OpenCode system. No repo-specific branding; reusable, composable, enterprise-grade.
+OpenCode-native skill pack for evidence-based AWS architecture review. Refactored from [aws-repo-well-architected-advisor](https://github.com/Jade/aws-repo-well-architected-advisor). Plug-and-play: drop into `skills/` of a larger OpenCode system. No repo-specific branding; reusable, composable, enterprise-grade.
 
 ## Preserved Concepts
 
