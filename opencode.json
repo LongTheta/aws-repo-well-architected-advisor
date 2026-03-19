@@ -1,0 +1,94 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "skills/aws-well-architected-pack/SKILL.md",
+    "RULES.md",
+    "docs/OPERATING-MODEL.md"
+  ],
+  "plugin": [
+    ".opencode/plugins/aws-well-architected-enforcement.ts"
+  ],
+  "command": {
+    "/repo-assess": {
+      "template": "Run full repository architecture assessment. Execute: repo-discovery → architecture-inference → security → networking → observability → scoring. Produce report per schemas/review-score.schema.json. Output: weighted scorecard, findings, production readiness.",
+      "description": "Full repository architecture assessment",
+      "agent": "repo-auditor"
+    },
+    "/solution-discovery": {
+      "template": "Solution architect discovery. Ask: users, traffic, budget, compliance level, constraints. Synthesize requirements. Produce solution brief.",
+      "description": "Requirements discovery for solution design",
+      "agent": "product-manager-discovery"
+    },
+    "/platform-design": {
+      "template": "Platform design from discovery. Execute: discovery → constraints synthesis → reference architecture → decision log. Produce target architecture and rationale.",
+      "description": "Platform design and reference architecture",
+      "agent": "cloud-platform-reviewer"
+    },
+    "/federal-checklist": {
+      "template": "Federal-grade evidence-based review. Execute: evidence extraction → control-family mapping (NIST AC, IA, SC, AU, SI, CM, IR) → readiness report. Never assume compliance without evidence. Stop for missing evidence on critical controls.",
+      "description": "Federal compliance checklist",
+      "agent": "federal-security-reviewer"
+    },
+    "/gitops-audit": {
+      "template": "GitOps and DevSecOps audit. Execute: repo-discovery → CI/CD review → ArgoCD/Flux assessment → deployment safety → observability. Produce audit report per scoring model.",
+      "description": "GitOps and DevSecOps audit",
+      "agent": "gitops-reviewer"
+    },
+    "/quality-gate": {
+      "template": "Production readiness quality gate. Execute full review pipeline. Produce verdict: READY / CONDITIONAL / NOT READY. Write verdict, weighted_score, letter_grade, timestamp to .opencode/quality-gate-result.json. Block push if NOT_READY when AWS_PACK_ENFORCE_QUALITY_GATE=true.",
+      "description": "Production readiness gate",
+      "agent": "repo-auditor"
+    },
+    "/doc-sync": {
+      "template": "Sync architecture docs with inferred design. Update docs/architecture.md from repo state. Ensure evidence tags and findings documented.",
+      "description": "Sync architecture documentation",
+      "agent": "documentation-writer"
+    },
+    "/verify": {
+      "template": "Verify findings have required evidence tags (Observed, Inferred, Missing Evidence). Validate severity and confidence. Check against schemas/review-score.schema.json. Produce verification report: pass | pass_with_warnings | fail.",
+      "description": "Verify findings and evidence",
+      "agent": "repo-auditor"
+    },
+    "/checkpoint": {
+      "template": "Checkpoint current review state. Summarize: artifacts discovered, architecture inferred, findings so far, scores. Preserve for next session.",
+      "description": "Checkpoint review state",
+      "agent": "repo-auditor"
+    },
+    "/orchestrate": {
+      "template": "Orchestrate multi-phase review: (1) discovery, (2) inference, (3) specialist reviews, (4) scoring, (5) report. Track state between phases.",
+      "description": "Orchestrate multi-phase review",
+      "agent": "repo-auditor"
+    }
+  },
+  "agent": {
+    "solution-architect": {
+      "description": "Solution architect for AWS design decisions",
+      "prompt": "You are a solution architect. Design AWS architectures from requirements. Use evidence-based reasoning. Document tradeoffs. Follow skills/aws-well-architected-pack."
+    },
+    "product-manager-discovery": {
+      "description": "Requirements and constraints discovery",
+      "prompt": "You discover requirements: users, traffic, budget, compliance, constraints. Ask clarifying questions. Produce structured solution brief."
+    },
+    "repo-auditor": {
+      "description": "Repository architecture auditor",
+      "prompt": "You audit repos for Well-Architected alignment. Use evidence tags: Observed, Inferred, Missing Evidence. Never fabricate. Follow skills/aws-well-architected-pack."
+    },
+    "federal-security-reviewer": {
+      "description": "Federal compliance and NIST reviewer",
+      "prompt": "You review for NIST, FedRAMP alignment. Map findings to control families. Never assume compliance without evidence. Stop for missing evidence on critical controls."
+    },
+    "gitops-reviewer": {
+      "description": "GitOps and DevSecOps reviewer",
+      "prompt": "You audit CI/CD, GitOps, deployment safety. Assess ArgoCD/Flux, promotion flow, observability. Follow skills/aws-well-architected-pack devops-operability-review."
+    },
+    "cloud-platform-reviewer": {
+      "description": "Cloud platform design reviewer",
+      "prompt": "You design and review cloud platforms. Synthesize constraints, produce reference architecture, document decisions. Follow skills/aws-well-architected-pack aws-architecture-pattern-review."
+    },
+    "documentation-writer": {
+      "description": "Architecture documentation writer",
+      "prompt": "You sync docs with repo state. Update architecture.md from inferred design. Preserve evidence tags and findings. Enterprise tone."
+    }
+  },
+  "default_agent": "build"
+}

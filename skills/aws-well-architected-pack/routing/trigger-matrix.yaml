@@ -1,0 +1,260 @@
+# AWS Well-Architected Pack — OpenCode Trigger Matrix
+# Routes file patterns and user intents to review modules. Deterministic.
+
+version: "2.0"
+
+# Review modes
+review_modes:
+  quick-scan:
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - security-review
+      - networking-review
+      - finops-cost-review
+  standard:
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - networking-review
+      - devops-operability-review
+      - finops-cost-review
+      - observability-review
+  deep-review:
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - networking-review
+      - reliability-resilience-review
+      - devops-operability-review
+      - finops-cost-review
+      - observability-review
+      - compliance-evidence-review
+  regulated-review:
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - networking-review
+      - reliability-resilience-review
+      - devops-operability-review
+      - finops-cost-review
+      - observability-review
+      - compliance-evidence-review
+
+# Repo classification → default mode
+repo_classification:
+  application:
+    default_mode: standard
+  infrastructure:
+    default_mode: deep-review
+  platform:
+    default_mode: deep-review
+  gitops:
+    default_mode: regulated-review
+  mixed:
+    default_mode: deep-review
+
+# File pattern triggers
+file_patterns:
+  terraform:
+    patterns:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/terragrunt.hcl"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - networking-review
+      - finops-cost-review
+      - compliance-evidence-review
+
+  cloudformation_cdk:
+    patterns:
+      - "**/template.yaml"
+      - "**/template.yml"
+      - "**/cdk.json"
+      - "**/lib/**/*.ts"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - finops-cost-review
+      - compliance-evidence-review
+
+  kubernetes_gitops:
+    patterns:
+      - "**/k8s/**/*.yaml"
+      - "**/k8s/**/*.yml"
+      - "**/helm/**"
+      - "**/Chart.yaml"
+      - "**/values.yaml"
+      - "**/kustomization.yaml"
+      - "**/argocd/**/*.yaml"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - security-review
+      - devops-operability-review
+      - observability-review
+      - compliance-evidence-review
+
+  cicd:
+    patterns:
+      - ".gitlab-ci.yml"
+      - ".github/workflows/**"
+      - "**/Jenkinsfile"
+      - "**/buildspec.yml"
+    modules:
+      - repo-discovery
+      - devops-operability-review
+      - security-review
+      - compliance-evidence-review
+
+  docker:
+    patterns:
+      - "**/Dockerfile"
+      - "**/docker-compose.yml"
+      - "**/docker-compose.yaml"
+    modules:
+      - repo-discovery
+      - security-review
+      - devops-operability-review
+      - finops-cost-review
+
+  observability:
+    patterns:
+      - "**/grafana/**"
+      - "**/prometheus/**"
+      - "**/otel/**"
+      - "**/cloudwatch/**"
+    modules:
+      - observability-review
+      - devops-operability-review
+
+  iam_secrets:
+    patterns:
+      - "**/iam*.tf"
+      - "**/*policy*.json"
+      - "**/.env*"
+    modules:
+      - security-review
+      - compliance-evidence-review
+
+  networking:
+    patterns:
+      - "**/vpc*.tf"
+      - "**/*subnet*"
+      - "**/*security_group*"
+    modules:
+      - networking-review
+      - security-review
+
+# Content pattern triggers (escalate severity)
+content_patterns:
+  wildcard_iam:
+    match:
+      - '"Action": "*"'
+      - '"Resource": "*"'
+    modules:
+      - security-review
+      - compliance-evidence-review
+    severity: critical
+
+  public_exposure:
+    match:
+      - "0.0.0.0/0"
+      - 'cidr_blocks = ["0.0.0.0/0"]'
+    modules:
+      - networking-review
+      - security-review
+      - compliance-evidence-review
+    severity: critical
+
+  secrets_exposure:
+    match:
+      - "AKIA"
+      - "aws_secret_access_key"
+      - "BEGIN PRIVATE KEY"
+      - "password ="
+    modules:
+      - security-review
+      - compliance-evidence-review
+    severity: critical
+
+  eks_usage:
+    match:
+      - "aws_eks_cluster"
+      - "eks.amazonaws.com"
+    modules:
+      - networking-review
+      - observability-review
+      - finops-cost-review
+      - compliance-evidence-review
+
+  lambda_usage:
+    match:
+      - "aws_lambda_function"
+    modules:
+      - aws-architecture-pattern-review
+      - finops-cost-review
+      - security-review
+
+# User intent triggers
+user_intents:
+  review_repo:
+    phrases:
+      - "review this repo"
+      - "analyze this repo"
+      - "is this production ready"
+      - "well-architected review"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+      - security-review
+      - networking-review
+      - finops-cost-review
+      - devops-operability-review
+
+  target_architecture:
+    phrases:
+      - "target architecture"
+      - "recommend architecture"
+      - "design aws architecture"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+
+  security_focus:
+    phrases:
+      - "security review"
+      - "iam assessment"
+      - "secrets check"
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - security-review
+      - compliance-evidence-review
+
+  compliance_focus:
+    phrases:
+      - "federal-grade"
+      - "DoD"
+      - "FedRAMP"
+      - "NIST"
+      - "ATO"
+      - "compliance"
+    modules:
+      - compliance-evidence-review
+      - security-review
+      - devops-operability-review

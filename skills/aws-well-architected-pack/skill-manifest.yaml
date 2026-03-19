@@ -1,0 +1,104 @@
+# AWS Well-Architected Pack — OpenCode Skill Manifest
+# Plug-and-play pack for OpenCode systems. Enterprise-grade. No repo-specific branding.
+# Refactored from: https://github.com/LongTheta/aws-repo-well-architected-advisor
+
+version: "2.0"
+name: aws-well-architected-pack
+description: OpenCode skill pack for AWS Well-Architected architecture review. Multi-layer review model, specialist modules, evidence tags, severity and confidence scoring, role-based findings, production-readiness verdicts.
+
+# Primary use cases
+use_cases:
+  - full_architecture_review
+  - security_assessment
+  - cost_optimization_review
+  - production_readiness_check
+  - compliance_evidence_review
+  - target_architecture_recommendation
+
+# Modules (subskills)
+modules:
+  - repo-discovery
+  - architecture-inference
+  - aws-architecture-pattern-review
+  - security-review
+  - networking-review
+  - reliability-resilience-review
+  - devops-operability-review
+  - finops-cost-review
+  - observability-review
+  - compliance-evidence-review
+
+# Execution order
+execution_order:
+  - repo-discovery
+  - architecture-inference
+  - aws-architecture-pattern-review
+  - security-review
+  - networking-review
+  - reliability-resilience-review
+  - devops-operability-review
+  - finops-cost-review
+  - observability-review
+  - compliance-evidence-review
+
+# OpenCode command integration
+commands:
+  /aws-review:
+    description: Full AWS Well-Architected review
+    modules: all
+    report_shape: full
+    stop_for_missing_evidence: false
+    conditional_when: HIGH findings; missing tags in prod
+
+  /aws-target-architecture:
+    description: Infer current architecture and recommend target design
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - aws-architecture-pattern-review
+    report_shape: architecture_focus
+    stop_for_missing_evidence: false
+
+  /aws-security-review:
+    description: Security-focused review (IAM, secrets, encryption, supply chain)
+    modules:
+      - repo-discovery
+      - architecture-inference
+      - security-review
+    report_shape: security_focus
+    stop_for_missing_evidence: true
+    conditional_when: CRITICAL or HIGH security findings
+
+  /aws-production-readiness:
+    description: Production readiness gate with verdict
+    modules: all
+    report_shape: full
+    stop_for_missing_evidence: true
+    conditional_when: any HIGH; missing evidence in critical controls
+
+# Expected outputs
+outputs:
+  - architecture_summary
+  - inferred_architecture_diagram
+  - weighted_scorecard
+  - pillar_scores
+  - findings
+  - evidence_found
+  - missing_evidence
+  - role_based_findings
+  - remediation_backlog
+  - production_readiness_verdict
+  - target_architecture_recommendation
+
+# Compatible with
+frameworks:
+  - aws_well_architected
+  - nist_sp_800_53
+  - nist_sp_800_207
+  - finops_foundation
+  - comptia_operational
+
+# Composability
+composable: true
+standalone: true
+requires: []

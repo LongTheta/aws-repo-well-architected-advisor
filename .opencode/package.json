@@ -1,0 +1,9 @@
+{
+  "name": "aws-well-architected-pack-opencode",
+  "version": "0.2.0",
+  "description": "OpenCode plugin and tools for AWS Well-Architected Pack",
+  "private": true,
+  "dependencies": {
+    "@opencode-ai/plugin": "latest"
+  }
+}

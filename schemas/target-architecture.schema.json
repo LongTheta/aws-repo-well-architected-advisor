@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Target Architecture",
+  "description": "Output from /platform-design",
+  "type": "object",
+  "properties": {
+    "target_architecture": {
+      "type": "object",
+      "properties": {
+        "compute": { "type": "string" },
+        "storage": { "type": "string" },
+        "network": { "type": "string" },
+        "iam": { "type": "string" },
+        "cicd": { "type": "string" },
+        "observability": { "type": "string" }
+      }
+    },
+    "decision_log": { "type": "array", "items": { "type": "object" } },
+    "tradeoffs": { "type": "array", "items": { "type": "string" } },
+    "alternatives_considered": { "type": "array", "items": { "type": "object" } }
+  }
+}

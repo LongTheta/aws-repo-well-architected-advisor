@@ -1,0 +1,34 @@
+# AWS Repo Well-Architected Advisor — LLM Orientation
+
+## Mission
+
+OpenCode operating system for repository architecture reviews, solution architect discovery, platform design, GitOps/DevSecOps audits, federal-grade evidence-based engineering reviews, and pre-push quality enforcement.
+
+## Major Folders
+
+- `.opencode/` — Control plane: opencode.json, plugins, commands, tools
+- `skills/aws-well-architected-pack/` — Core skill pack: 10 modules, scoring, routing
+- `schemas/` — review-score.schema.json, command-routing.schema.json
+- `docs/` — Operating model, command-to-skill mapping, routing matrix, scoring
+- `hooks/` — Pre-push hook for quality gate
+
+## Command Surface
+
+/repo-assess, /solution-discovery, /platform-design, /federal-checklist, /gitops-audit, /quality-gate, /doc-sync, /verify, /checkpoint, /orchestrate
+
+## Rules and Constraints
+
+- Evidence before claims: findings must have evidence_type (observed, inferred, missing, contradictory)
+- Never fabricate compliance
+- Quality gate blocks push when NOT_READY and AWS_PACK_ENFORCE_QUALITY_GATE=true
+- Do not read .env, secrets, .pem, .key
+- All review output must conform to schemas/review-score.schema.json
+
+## Ideal Use Cases
+
+- Repo onboarding assessment
+- Pre-production readiness gate
+- Federal compliance (NIST, FedRAMP) review
+- GitOps/CI/CD audit
+- Platform design from requirements
+- Architecture doc sync

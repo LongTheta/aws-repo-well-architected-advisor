@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Command Routing",
+  "description": "Schema for command-to-agent-to-skill routing",
+  "type": "object",
+  "properties": {
+    "command": {
+      "type": "string",
+      "enum": [
+        "repo-assess",
+        "solution-discovery",
+        "platform-design",
+        "federal-checklist",
+        "gitops-audit",
+        "quality-gate",
+        "doc-sync",
+        "verify",
+        "checkpoint",
+        "orchestrate"
+      ]
+    },
+    "agent": {
+      "type": "string",
+      "enum": [
+        "solution-architect",
+        "product-manager-discovery",
+        "repo-auditor",
+        "federal-security-reviewer",
+        "gitops-reviewer",
+        "cloud-platform-reviewer",
+        "documentation-writer"
+      ]
+    },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "output_schema": {
+      "type": "string",
+      "enum": ["review-score", "solution-brief", "target-architecture", "verification", null]
+    },
+    "blocking": {
+      "type": "string",
+      "enum": ["none", "missing_evidence", "quality_gate", "evidence_tags"]
+    }
+  },
+  "required": ["command", "agent"]
+}

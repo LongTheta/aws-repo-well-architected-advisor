@@ -1,98 +1,103 @@
 # AWS Repo Well-Architected Advisor
 
+**Executable OpenCode platform pack for repository architecture reviews, solution discovery, platform design, GitOps audits, federal-grade evidence-based reviews, and pre-push quality enforcement.**
+
+---
+
 ## What This Is
 
-An AI-driven AWS architecture review and platform design system.
+An **OpenCode operating system** — not a generic AI agent collection. Focused, opinionated, enterprise-grade.
 
-It analyzes repositories OR gathers requirements to:
-- design AWS infrastructure
-- evaluate security, cost, networking, and DevOps maturity
-- enforce federal-grade readiness standards
-
----
-
-## Two Modes of Operation
-
-### 1. Repo-Driven Mode
-- Input: Terraform, CDK, CloudFormation, CI/CD
-- System infers architecture
-- Runs full review pipeline
-- Outputs risks, scores, and fixes
-
-### 2. Spec-Driven Mode
-- Acts like a Solutions Architect / Product Manager
-- Asks: users, traffic, budget, compliance level
-- Designs optimal AWS architecture
+- **Repository architecture reviews** — Evidence-based assessment against AWS Well-Architected
+- **Solution architect discovery** — Requirements, constraints, compliance level
+- **Platform design** — Reference architecture, decision log, tradeoffs
+- **GitOps / DevSecOps audits** — CI/CD, ArgoCD/Flux, deployment safety
+- **Federal-grade evidence-based reviews** — NIST control mapping, FedRAMP readiness
+- **Pre-push quality enforcement** — Quality gate blocks push when NOT_READY (when enforced)
 
 ---
 
-## How It Works
+## Commands
 
-1. **Scoping** — Classify repo (application, infrastructure, platform, GitOps, mixed); select review mode (quick-scan, standard, deep-review, regulated-review)
-2. **Design / Inference** — architecture-decision-engine, cloud-architecture-ai-auditor
-3. **Core Reviews** — security-review, networking-review, finops-cost-optimizer, observability-grafana-advisor, devops-review
-4. **Compliance** — nist-compliance-evaluator
-5. **Final Gate** — aws-federal-grade-checklist
-6. **Output** — Merge findings, apply verdict rules, generate report
-
----
-
-## Skills (Execution Order)
-
-- architecture-decision-engine
-- cloud-architecture-ai-auditor
-- security-review
-- networking-review
-- finops-cost-optimizer
-- observability-grafana-advisor
-- devops-review
-- nist-compliance-evaluator
-- aws-federal-grade-checklist
+| Command | Purpose |
+|---------|---------|
+| `/repo-assess` | Full repository architecture assessment |
+| `/solution-discovery` | Requirements discovery for solution design |
+| `/platform-design` | Platform design and reference architecture |
+| `/federal-checklist` | Federal compliance (NIST, FedRAMP) review |
+| `/gitops-audit` | GitOps and DevSecOps audit |
+| `/quality-gate` | Production readiness gate; writes result for pre-push |
+| `/doc-sync` | Sync architecture docs with inferred design |
+| `/verify` | Verify findings have evidence tags |
+| `/checkpoint` | Checkpoint review state |
+| `/orchestrate` | Orchestrate multi-phase review |
 
 ---
 
-## Final Gate
+## Agents
 
-The `aws-federal-grade-checklist` acts as a strict production readiness gate.
-
-- CRITICAL findings → NOT READY
-- HIGH findings → CONDITIONAL
-- Missing evidence → treated as risk
-- Missing tags → governance failure
-
----
-
-## Rule Engine
-
-Routing and enforcement:
-
-- **skill-trigger-matrix.yaml** — Repo signals, user intents → skills; review modes; verdict rules
-- **RULES.md** — Review philosophy, execution, evidence, gating rules
-- **.cursorrules** — Condensed routing for Cursor
+| Agent | Use Case |
+|-------|----------|
+| solution-architect | AWS design decisions |
+| product-manager-discovery | Requirements discovery |
+| repo-auditor | Architecture review, scoring, verification |
+| federal-security-reviewer | NIST, FedRAMP |
+| gitops-reviewer | CI/CD, GitOps |
+| cloud-platform-reviewer | Platform design |
+| documentation-writer | Doc sync |
 
 ---
 
-## Output
+## Skills
 
-Each run produces:
+Core pack: `skills/aws-well-architected-pack/`
 
-- architecture summary
-- category scores
-- risk classification
-- remediation plan
-- production readiness verdict (READY / CONDITIONAL / NOT READY)
+- 10 modules: repo-discovery, architecture-inference, aws-architecture-pattern-review, security-review, networking-review, reliability-resilience-review, devops-operability-review, finops-cost-review, observability-review, compliance-evidence-review
+- Conductor SKILL.md orchestrates modules
+- Trigger matrix routes file patterns and intents to modules
 
 ---
 
-## Build from Findings
+## Governance
 
-After design or review, use **aws-repo-scaffolder** to generate Terraform or CDK scaffolding:
+**Plugin**: `.opencode/plugins/aws-well-architected-enforcement.ts`
 
-- "Scaffold from this design"
-- "Generate Terraform from these findings"
-- "Build the repo"
+- Blocks reading .env, secrets, .pem, .key
+- Blocks push without quality gate when `AWS_PACK_ENFORCE_QUALITY_GATE=true`
+- Flags infra edits for doc-sync
+- Detects potential secrets in messages
 
-Produces repo structure, IaC with required tags, security defaults, and CI/CD skeleton. See [aws-repo-scaffolder/scaffold-prompt.md](aws-repo-scaffolder/scaffold-prompt.md).
+**Pre-push hook**: `hooks/pre-push` — Checks `.opencode/quality-gate-result.json` before push.
+
+**Output classification**: pass | pass with warnings | fail. See `docs/OPERATING-MODEL.md`.
+
+---
+
+## Evidence-First Review
+
+All findings require:
+- **evidence_type**: observed | inferred | missing | contradictory
+- **confidence**: Confirmed | Strongly Inferred | Assumed
+
+Never assume compliance. Never fabricate evidence.
+
+---
+
+## Scoring
+
+Categories: Security, Reliability, Performance, Cost Awareness, Operational Excellence, Observability, Compliance Evidence Quality.
+
+Output: weighted score (0–10), letter grade (A–F), production readiness (READY | CONDITIONAL | NOT_READY).
+
+Schema: `schemas/review-score.schema.json`
+
+---
+
+## Quick Start
+
+1. Clone. Ensure OpenCode installed.
+2. `opencode run "/repo-assess"` or use TUI.
+3. For pre-push enforcement: `cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push` and `export AWS_PACK_ENFORCE_QUALITY_GATE=true`.
 
 ---
 
@@ -100,14 +105,22 @@ Produces repo structure, IaC with required tags, security defaults, and CI/CD sk
 
 | File | Purpose |
 |------|---------|
-| [skill-trigger-matrix.yaml](skill-trigger-matrix.yaml) | Repo signals, user intents → skills; review modes; verdict rules |
-| [review-order.md](review-order.md) | Execution flow (phases 1–5) |
-| [RULES.md](RULES.md) | Review philosophy, execution, evidence, gating rules |
-| [review-mode-definitions.md](review-mode-definitions.md) | quick-scan, standard, deep-review, regulated-review |
-| [repo-classification.md](repo-classification.md) | application, infrastructure, platform, GitOps, mixed |
-| [final-verdict-logic.md](final-verdict-logic.md) | READY, CONDITIONAL, NOT READY |
-| [example-full-run.md](example-full-run.md) | Example Terraform review with verdict |
-| [POSITIONING.md](POSITIONING.md) | What this repo actually is |
-| [architecture-decision-engine/README.md](architecture-decision-engine/README.md) | Decision engine (design, not checklist) |
-| [aws-repo-scaffolder/README.md](aws-repo-scaffolder/README.md) | Scaffold IaC from design or findings |
-| [AWS-SCOPE.md](AWS-SCOPE.md) | AWS-only scope |
+| [opencode.json](opencode.json) | Commands, agents, plugins |
+| [.opencode/opencode.json](.opencode/opencode.json) | Control plane (canonical) |
+| [.opencode/README.md](.opencode/README.md) | Config structure |
+| [INSTALL.md](INSTALL.md) | Installation options |
+| [.opencode/MIGRATION.md](.opencode/MIGRATION.md) | Doc-first → executable |
+| [docs/command-to-skill-mapping.md](docs/command-to-skill-mapping.md) | Command → skill graphs |
+| [docs/scoring-model.md](docs/scoring-model.md) | Scoring categories |
+| [schemas/review-score.schema.json](schemas/review-score.schema.json) | Output schema |
+| [llms.txt](llms.txt) | LLM orientation |
+
+---
+
+## How This Differs From Generic Packs
+
+- **Focused**: Architecture review, federal compliance, GitOps — not general-purpose
+- **Evidence-first**: No assumed compliance; findings must have evidence tags
+- **Command-driven**: 10 commands with defined agents and skill graphs
+- **Enforced**: Plugin blocks unsafe actions; quality gate can block push
+- **Schema-backed**: All review output conforms to review-score.schema.json

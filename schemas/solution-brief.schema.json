@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Solution Brief",
+  "description": "Output from /solution-discovery",
+  "type": "object",
+  "properties": {
+    "requirements": { "type": "object" },
+    "constraints": { "type": "array", "items": { "type": "string" } },
+    "compliance_level": { "type": "string" },
+    "budget_tier": { "type": "string" },
+    "traffic_expectations": { "type": "string" },
+    "users": { "type": "string" }
+  }
+}

@@ -1,0 +1,22 @@
+#!/bin/sh
+# AWS Well-Architected Pack — Pre-push hook
+# Run quality gate before push when AWS_PACK_ENFORCE_QUALITY_GATE=true
+# Install: cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+if [ "$AWS_PACK_ENFORCE_QUALITY_GATE" != "true" ]; then
+  exit 0
+fi
+
+# Check for quality gate result file (created by /aws-production-readiness)
+if [ -f ".opencode/quality-gate-result.json" ]; then
+  verdict=$(grep -o '"verdict":"[^"]*"' .opencode/quality-gate-result.json 2>/dev/null | cut -d'"' -f4)
+  if [ "$verdict" = "READY" ] || [ "$verdict" = "CONDITIONAL" ]; then
+    echo "[AWS Pack] Quality gate passed ($verdict). Proceeding with push."
+    exit 0
+  fi
+fi
+
+echo "[AWS Pack] Push blocked: quality gate not passed."
+echo "Run: opencode run '/aws-production-readiness'"
+echo "Or set AWS_PACK_ENFORCE_QUALITY_GATE=false to skip."
+exit 1
