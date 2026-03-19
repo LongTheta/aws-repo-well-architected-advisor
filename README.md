@@ -1,103 +1,190 @@
 # AWS Repo Well-Architected Advisor
 
-**Executable OpenCode platform pack for repository architecture reviews, solution discovery, platform design, GitOps audits, federal-grade evidence-based reviews, and pre-push quality enforcement.**
+**Evidence-based repository architecture reviews for AWS Well-Architected, federal compliance (NIST/FedRAMP), and GitOps. OpenCode platform pack with Cursor support.**
 
 ---
 
-## What This Is
+## What We Do
 
-An **OpenCode operating system** — not a generic AI agent collection. Focused, opinionated, enterprise-grade.
+We evaluate repositories against AWS Well-Architected pillars and produce structured, evidence-based findings with production-readiness verdicts. All outputs follow a strict evidence model: **Observed**, **Inferred**, or **Missing Evidence** — never assumed compliance.
 
-- **Repository architecture reviews** — Evidence-based assessment against AWS Well-Architected
-- **Solution architect discovery** — Requirements, constraints, compliance level
-- **Platform design** — Reference architecture, decision log, tradeoffs
-- **GitOps / DevSecOps audits** — CI/CD, ArgoCD/Flux, deployment safety
-- **Federal-grade evidence-based reviews** — NIST control mapping, FedRAMP readiness
-- **Pre-push quality enforcement** — Quality gate blocks push when NOT_READY (when enforced)
-
----
-
-## Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/repo-assess` | Full repository architecture assessment |
-| `/solution-discovery` | Requirements discovery for solution design |
-| `/platform-design` | Platform design and reference architecture |
-| `/federal-checklist` | Federal compliance (NIST, FedRAMP) review |
-| `/gitops-audit` | GitOps and DevSecOps audit |
-| `/quality-gate` | Production readiness gate; writes result for pre-push |
-| `/doc-sync` | Sync architecture docs with inferred design |
-| `/verify` | Verify findings have evidence tags |
-| `/checkpoint` | Checkpoint review state |
-| `/orchestrate` | Orchestrate multi-phase review |
+| Capability | Description |
+|------------|-------------|
+| **Repository assessment** | Full architecture review: IaC (Terraform, CDK, CloudFormation), CI/CD, Kubernetes. Weighted scorecard, findings, production readiness. |
+| **Solution discovery** | Requirements gathering: users, traffic, budget, compliance level, constraints. Produces solution brief. |
+| **Platform design** | Reference architecture from discovery. Decision log, tradeoffs, target architecture. |
+| **Federal compliance** | NIST control mapping (AC, IA, SC, AU, SI, CM, IR). FedRAMP readiness. Evidence-based; stops on missing critical controls. |
+| **GitOps audit** | CI/CD, ArgoCD/Flux, deployment safety, observability. |
+| **Quality gate** | Production readiness verdict (READY / CONDITIONAL / NOT_READY). Can block `git push` when enforced. |
 
 ---
 
-## Agents
+## Supported Platforms
 
-| Agent | Use Case |
-|-------|----------|
-| solution-architect | AWS design decisions |
-| product-manager-discovery | Requirements discovery |
-| repo-auditor | Architecture review, scoring, verification |
-| federal-security-reviewer | NIST, FedRAMP |
-| gitops-reviewer | CI/CD, GitOps |
-| cloud-platform-reviewer | Platform design |
-| documentation-writer | Doc sync |
+| Platform | Support |
+|----------|---------|
+| **OpenCode** | Full — commands, agents, plugin, native tools |
+| **Cursor** | Rules for AWS architecture review (IaC, CI configs) |
+| **Claude Code** | CLAUDE.md, agents (repo-auditor, federal-security-reviewer) |
 
 ---
 
-## Skills
+## Installation
 
-Core pack: `skills/aws-well-architected-pack/`
+### Option 1: Use This Repo Directly
 
-- 10 modules: repo-discovery, architecture-inference, aws-architecture-pattern-review, security-review, networking-review, reliability-resilience-review, devops-operability-review, finops-cost-review, observability-review, compliance-evidence-review
-- Conductor SKILL.md orchestrates modules
-- Trigger matrix routes file patterns and intents to modules
+```bash
+git clone https://github.com/LongTheta/aws-repo-well-architected-advisor.git
+cd aws-repo-well-architected-advisor
+cd .opencode && bun install   # or: npm install
+opencode run "/repo-assess"
+```
+
+### Option 2: Install Into Another Repo
+
+```bash
+# Clone this repo first
+git clone https://github.com/LongTheta/aws-repo-well-architected-advisor.git
+cd aws-repo-well-architected-advisor
+
+# Install into your target repo
+./install.sh --dest /path/to/your-repo [--hooks]    # Unix/macOS
+.\install.ps1 -Dest C:\path\to\your-repo [-Hooks]   # Windows PowerShell
+
+# Add Cursor rules
+./install.sh --target cursor --dest /path/to/your-repo
+
+# Add Claude Code config
+./install.sh --target claude --dest /path/to/your-repo
+```
+
+**Flags:**
+- `--dest DIR` — Destination directory (default: current)
+- `--target opencode|cursor|claude` — opencode (default), cursor, or claude
+- `--hooks` — Install pre-push quality gate hook
+
+### Option 3: Pre-Push Enforcement
+
+To block pushes when quality gate has not passed:
+
+```bash
+cp hooks/pre-push .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
+export AWS_PACK_ENFORCE_QUALITY_GATE=true
+```
+
+Then run `/quality-gate` before pushing. Verdict READY or CONDITIONAL allows push.
 
 ---
 
-## Governance
+## Usage
 
-**Plugin**: `.opencode/plugins/aws-well-architected-enforcement.ts`
+### Run a Full Assessment
 
-- Blocks reading .env, secrets, .pem, .key
-- Blocks push without quality gate when `AWS_PACK_ENFORCE_QUALITY_GATE=true`
-- Flags infra edits for doc-sync
-- Detects potential secrets in messages
+```bash
+opencode run "/repo-assess"
+```
 
-**Pre-push hook**: `hooks/pre-push` — Checks `.opencode/quality-gate-result.json` before push.
+Produces: weighted scorecard, findings with evidence tags, production readiness verdict, top remediation priorities.
 
-**Output classification**: pass | pass with warnings | fail. See `docs/OPERATING-MODEL.md`.
+### Run Quality Gate
+
+```bash
+opencode run "/quality-gate"
+```
+
+Writes `.opencode/quality-gate-result.json`. Use before push when enforcement is enabled.
+
+### Other Commands
+
+| Command | Use When |
+|---------|----------|
+| `/solution-discovery` | Starting a new design; need requirements |
+| `/platform-design` | Have requirements; need reference architecture |
+| `/federal-checklist` | NIST/FedRAMP compliance review |
+| `/gitops-audit` | CI/CD, ArgoCD, Flux assessment |
+| `/verify` | Validate findings have evidence tags |
+| `/doc-sync` | Sync architecture docs with repo state |
 
 ---
 
-## Evidence-First Review
+## Native Tools
 
-All findings require:
-- **evidence_type**: observed | inferred | missing | contradictory
-- **confidence**: Confirmed | Strongly Inferred | Assumed
+Agents can call these tools during review:
 
-Never assume compliance. Never fabricate evidence.
+| Tool | Purpose |
+|------|---------|
+| `review_score` | Compute weighted score and letter grade from category scores |
+| `evidence_extractor` | Extract and validate evidence tags from findings text |
+| `quality_gate_check` | Check if quality gate has passed (file or session) |
+
+---
+
+## Governance Plugin
+
+The plugin (`.opencode/plugins/aws-well-architected-enforcement.ts`) enforces:
+
+**Runtime:** `AWS_PACK_HOOK_PROFILE=minimal|standard|strict` (default: strict)
+- **minimal** — Only block dangerous commands
+- **standard** — + block .env read, push without quality gate (when enforced)
+- **strict** — + message secret detection, file.edited logging
+
+- **Blocks** reading `.env`, secrets, `.pem`, `.key`
+- **Blocks** `git push` without quality gate when `AWS_PACK_ENFORCE_QUALITY_GATE=true`
+- **Blocks** dangerous commands (e.g. `rm -rf /`)
+- **Flags** infra file edits for doc-sync
+- **Logs** potential secrets in messages
+
+---
+
+## Evidence Model
+
+Every finding must have:
+
+- **evidence_type**: `observed` \| `inferred` \| `missing` \| `contradictory`
+- **confidence**: `Confirmed` \| `Strongly Inferred` \| `Assumed`
+
+We never assume compliance. We never fabricate evidence.
 
 ---
 
 ## Scoring
 
-Categories: Security, Reliability, Performance, Cost Awareness, Operational Excellence, Observability, Compliance Evidence Quality.
+| Category | Weight |
+|----------|--------|
+| Security | 20% |
+| Reliability | 15% |
+| Performance | 10% |
+| Cost Optimization | 15% |
+| Operational Excellence | 15% |
+| Observability | 15% |
+| Compliance Evidence Quality | 10% |
 
-Output: weighted score (0–10), letter grade (A–F), production readiness (READY | CONDITIONAL | NOT_READY).
+**Output:** weighted score (0–10), letter grade (A–F), production readiness (READY \| CONDITIONAL \| NOT_READY).
 
 Schema: `schemas/review-score.schema.json`
 
 ---
 
-## Quick Start
+## Validate Output
 
-1. Clone. Ensure OpenCode installed.
-2. `opencode run "/repo-assess"` or use TUI.
-3. For pre-push enforcement: `cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push` and `export AWS_PACK_ENFORCE_QUALITY_GATE=true`.
+```bash
+# Validate JSON against schema
+./scripts/validate-review-output.sh path/to/review-output.json   # Unix/macOS
+.\scripts\validate-review-output.ps1 path\to\review-output.json  # Windows
+```
+
+Default: `examples/validated-review-output.json`. Requires Node.js and `npx`.
+
+---
+
+## Run Tests
+
+```bash
+npm test
+```
+
+Runs: schema validation, review-score logic, install script checks. See [INSTALL.md](INSTALL.md).
 
 ---
 
@@ -105,25 +192,21 @@ Schema: `schemas/review-score.schema.json`
 
 | File | Purpose |
 |------|---------|
-| [opencode.json](opencode.json) | Commands, agents, plugins |
-| [.opencode/opencode.json](.opencode/opencode.json) | Control plane (canonical) |
-| [.opencode/README.md](.opencode/README.md) | Config structure |
-| [.opencode/tools/review-score.ts](.opencode/tools/review-score.ts) | Native tool: weighted score + letter grade |
-| [INSTALL.md](INSTALL.md) | Installation, plugin verification, schema validation |
-| [.opencode/MIGRATION.md](.opencode/MIGRATION.md) | Doc-first → executable |
-| [docs/command-to-skill-mapping.md](docs/command-to-skill-mapping.md) | Command → skill graphs |
-| [docs/scoring-model.md](docs/scoring-model.md) | Scoring categories |
+| [.opencode/opencode.json](.opencode/opencode.json) | Commands, agents, plugin config |
+| [.opencode/tools/](.opencode/tools/) | Native tools: review-score, evidence-extractor, quality-gate-check |
+| [skills/aws-well-architected-pack/](skills/aws-well-architected-pack/) | 10 specialist modules + conductor |
 | [schemas/review-score.schema.json](schemas/review-score.schema.json) | Output schema |
-| [examples/validated-review-output.json](examples/validated-review-output.json) | Schema-conformant example |
+| [INSTALL.md](INSTALL.md) | Full installation, plugin verification |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | FAQ and common issues |
 | [docs/LEGACY-SKILLS.md](docs/LEGACY-SKILLS.md) | Legacy skills vs pack |
-| [llms.txt](llms.txt) | LLM orientation |
+| [docs/RELEASE.md](docs/RELEASE.md) | Release process |
 
 ---
 
 ## How This Differs From Generic Packs
 
-- **Focused**: Architecture review, federal compliance, GitOps — not general-purpose
-- **Evidence-first**: No assumed compliance; findings must have evidence tags
-- **Command-driven**: 10 commands with defined agents and skill graphs
-- **Enforced**: Plugin blocks unsafe actions; quality gate can block push
-- **Schema-backed**: All review output conforms to review-score.schema.json
+- **Focused** — AWS Well-Architected, federal compliance, GitOps only
+- **Evidence-first** — No assumed compliance; findings require evidence tags
+- **Command-driven** — 10 commands with defined agents and skill graphs
+- **Enforced** — Plugin blocks unsafe actions; quality gate can block push
+- **Schema-backed** — All review output conforms to `review-score.schema.json`

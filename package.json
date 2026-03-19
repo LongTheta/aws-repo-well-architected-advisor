@@ -1,0 +1,19 @@
+{
+  "name": "aws-repo-well-architected-advisor",
+  "version": "1.1.0",
+  "description": "OpenCode platform pack for AWS Well-Architected repository reviews",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LongTheta/aws-repo-well-architected-advisor.git"
+  },
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "validate": "node -e \"require('child_process').execSync('npx --yes ajv validate -s schemas/review-score.schema.json -d examples/validated-review-output.json', {stdio:'inherit', cwd: process.cwd()})\""
+  },
+  "keywords": ["aws", "well-architected", "opencode", "architecture-review", "cursor", "claude-code"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -17,6 +17,6 @@ if [ -f ".opencode/quality-gate-result.json" ]; then
 fi
 
 echo "[AWS Pack] Push blocked: quality gate not passed."
-echo "Run: opencode run '/aws-production-readiness'"
+echo "Run: opencode run '/quality-gate'"
 echo "Or set AWS_PACK_ENFORCE_QUALITY_GATE=false to skip."
 exit 1

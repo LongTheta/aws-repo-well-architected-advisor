@@ -1,5 +1,23 @@
 # Installation
 
+## Install Script (Recommended)
+
+Use the install script to copy the AWS pack into the current directory or another repo:
+
+```bash
+# Unix/macOS
+./install.sh [--target opencode|cursor] [--dest DIR] [--hooks]
+
+# Windows PowerShell
+.\install.ps1 [-Target opencode|cursor] [-Dest DIR] [-Hooks]
+```
+
+- `--target opencode` (default): OpenCode config, skills, schemas
+- `--target cursor`: Same + `.cursor/rules/aws-well-architected.md`
+- `--target claude`: Same + `.claude/` (CLAUDE.md, agents)
+- `--dest DIR`: Destination (default: current directory)
+- `--hooks`: Install pre-push hook for quality gate
+
 ## Use This Repo Directly
 
 1. Clone the repo.
@@ -57,6 +75,16 @@ Validate review output against the schema:
 ```
 
 Default path: `examples/validated-review-output.json`. Requires `npx` (Node.js) and `ajv-cli` (installed via npx).
+
+## Running Tests
+
+```bash
+npm test
+# or
+node tests/run-all.js
+```
+
+Requires Node.js. Tests: schema validation, review-score logic, install script presence.
 
 ## Future Plugin/Tool Installation
 

@@ -7,8 +7,14 @@
  * - Flag secrets in prompts, configs, and diffs
  * - Require evidence tags in findings
  * - Log MCP usage for auditability
+ *
+ * Runtime: AWS_PACK_HOOK_PROFILE=minimal|standard|strict
+ *   minimal  — Only block dangerous commands
+ *   standard — + block .env read, push without quality gate (when enforced)
+ *   strict   — + message secret detection, file.edited logging (default)
  */
 
+const HOOK_PROFILE = process.env.AWS_PACK_HOOK_PROFILE || "strict"
 const SECRET_PATTERNS = [
   /AKIA[A-Z0-9]{16}/,
   /aws_secret_access_key\s*=\s*["'][^"']+["']/,
@@ -89,28 +95,26 @@ export const AwsWellArchitectedEnforcement = async ({
       const sessionId = input.sessionID ?? input.session_id
       const state = sessionId ? getState(sessionId) : null
 
-      // Block reading .env and secrets
-      if (input.tool === "read" && output.args?.filePath) {
-        const path = String(output.args.filePath)
-        if (path.includes(".env") || path.includes("secrets") || /\.pem$|\.key$/.test(path)) {
+      // Block reading .env and secrets (standard, strict)
+      if ((HOOK_PROFILE === "standard" || HOOK_PROFILE === "strict") && input.tool === "read" && output.args?.filePath) {
+        const p = String(output.args.filePath)
+        if (p.includes(".env") || p.includes("secrets") || /\.pem$|\.key$/.test(p)) {
           throw new Error("[AWS Pack] Do not read .env, secrets, or key files")
         }
       }
 
-      // Block push without quality gate (when quality gate is enforced)
-      if (input.tool === "bash" && output.args?.command) {
+      // Block push without quality gate (standard, strict; when enforced)
+      if ((HOOK_PROFILE === "standard" || HOOK_PROFILE === "strict") && input.tool === "bash" && output.args?.command) {
         const cmd = String(output.args.command)
         if (/git\s+push/.test(cmd) && state && !state.qualityGatePassed) {
           const enforce = process.env.AWS_PACK_ENFORCE_QUALITY_GATE === "true"
           if (enforce) {
-            throw new Error(
-              "[AWS Pack] Push blocked: quality gate not passed. Run /aws-production-readiness first."
-            )
+            throw new Error("[AWS Pack] Push blocked: quality gate not passed. Run /quality-gate first.")
           }
         }
       }
 
-      // Block dangerous commands
+      // Block dangerous commands (all profiles)
       if (input.tool === "bash" && output.args?.command) {
         const cmd = String(output.args.command)
         if (/rm\s+-rf\s+\//.test(cmd) || /:(){:|:&};:/.test(cmd)) {
@@ -138,6 +142,7 @@ export const AwsWellArchitectedEnforcement = async ({
     },
 
     "message.updated": async (input: any) => {
+      if (HOOK_PROFILE !== "strict") return
       const msg = input?.properties?.message
       if (!msg) return
       const content = JSON.stringify(msg.content ?? msg.parts ?? "")
@@ -154,15 +159,16 @@ export const AwsWellArchitectedEnforcement = async ({
     },
 
     "file.edited": async (input: any) => {
-      const path = input?.properties?.path ?? input?.path
-      if (!path) return
-      if (isInfraFile(path)) {
+      if (HOOK_PROFILE !== "strict") return
+      const p = input?.properties?.path ?? input?.path
+      if (!p) return
+      if (isInfraFile(p)) {
         await client?.app?.log?.({
           body: {
             service: "aws-well-architected-pack",
             level: "info",
             message: "Infra file edited; flag for architecture doc sync",
-            extra: { path, hint: "Run /docs-sync to update architecture docs" },
+            extra: { path: p, hint: "Run /doc-sync to update architecture docs" },
           },
         })
       }

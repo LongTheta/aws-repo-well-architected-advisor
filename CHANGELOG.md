@@ -10,17 +10,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- `.gitignore` — OS, IDE, Python, Terraform, secrets
-- `LICENSE` — MIT
-- `CONTRIBUTING.md` — Contribution guidelines
-- `CHANGELOG.md` — This file
-- `cloud-architecture-ai-auditor/samples/sample-report-spec-driven.md` — Spec-Driven report example
-- `cloud-architecture-ai-auditor/samples/sample-questionnaire-answers.md` — Example questionnaire → architecture
-- `cloud-architecture-ai-auditor/eks-justification-checklist.md` — When EKS is justified
-- `cloud-architecture-ai-auditor/glossary.md` — Terms and definitions
-- `cloud-architecture-ai-auditor/cost-bands.yaml` — Machine-readable cost estimation bands
-- `.github/PULL_REQUEST_TEMPLATE.md` — PR template
-- `.github/ISSUE_TEMPLATE/` — Bug report, feature request
+- (Future changes)
+
+---
+
+## [1.1.0] - 2025-03-18
+
+### Added
+
+- **Install scripts** — `install.sh` and `install.ps1` for OpenCode and Cursor targets
+- **Automated tests** — `tests/run-all.js` (schema validation, review-score logic)
+- **Cursor config** — `.cursor/rules/aws-well-architected.md` for Cursor IDE
+- **VERSION file** — Release version tracking
+- **TROUBLESHOOTING.md** — FAQ and common issues
+- **Schema validation** — `scripts/validate-review-output.sh` and `.ps1`
+- **Validated example** — `examples/validated-review-output.json`
+- **review-score tool** — `.opencode/tools/review-score.ts` (native OpenCode tool)
+- **LEGACY-SKILLS.md** — Documents legacy skills vs pack relationship
+
+### Changed
+
+- Pre-push hook — Fixed command reference (`/quality-gate` instead of `/aws-production-readiness`)
+- INSTALL.md — Added plugin verification and schema validation sections
 
 ---
 
