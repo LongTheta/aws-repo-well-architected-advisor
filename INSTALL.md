@@ -34,6 +34,30 @@
 3. To enforce: `export AWS_PACK_ENFORCE_QUALITY_GATE=true`
 4. Run `/quality-gate` before push; it writes `.opencode/quality-gate-result.json`
 
+## Plugin Verification
+
+Confirm the plugin loads and hooks run:
+
+1. **Install deps**: `cd .opencode && bun install`
+2. **Start OpenCode**: `opencode` (or use TUI)
+3. **Test .env block**: Ask the agent to read `.env` — it should refuse with `[AWS Pack] Do not read .env...`
+4. **Test quality gate block** (optional): Set `AWS_PACK_ENFORCE_QUALITY_GATE=true`, run a session, try `git push` without running `/quality-gate` first — push should be blocked
+5. **Test review-score tool**: Ask "Compute review score for security:7, reliability:6, cost_optimization:5" — agent should call `review_score` and return weighted score and letter grade
+
+## Schema Validation
+
+Validate review output against the schema:
+
+```bash
+# Unix/macOS
+./scripts/validate-review-output.sh [path-to.json]
+
+# Windows PowerShell
+.\scripts\validate-review-output.ps1 [path-to.json]
+```
+
+Default path: `examples/validated-review-output.json`. Requires `npx` (Node.js) and `ajv-cli` (installed via npx).
+
 ## Future Plugin/Tool Installation
 
 - **Plugin from npm**: Add to `plugin` array in config: `"@org/aws-well-architected-plugin"`.

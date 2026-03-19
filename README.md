@@ -108,11 +108,14 @@ Schema: `schemas/review-score.schema.json`
 | [opencode.json](opencode.json) | Commands, agents, plugins |
 | [.opencode/opencode.json](.opencode/opencode.json) | Control plane (canonical) |
 | [.opencode/README.md](.opencode/README.md) | Config structure |
-| [INSTALL.md](INSTALL.md) | Installation options |
+| [.opencode/tools/review-score.ts](.opencode/tools/review-score.ts) | Native tool: weighted score + letter grade |
+| [INSTALL.md](INSTALL.md) | Installation, plugin verification, schema validation |
 | [.opencode/MIGRATION.md](.opencode/MIGRATION.md) | Doc-first → executable |
 | [docs/command-to-skill-mapping.md](docs/command-to-skill-mapping.md) | Command → skill graphs |
 | [docs/scoring-model.md](docs/scoring-model.md) | Scoring categories |
 | [schemas/review-score.schema.json](schemas/review-score.schema.json) | Output schema |
+| [examples/validated-review-output.json](examples/validated-review-output.json) | Schema-conformant example |
+| [docs/LEGACY-SKILLS.md](docs/LEGACY-SKILLS.md) | Legacy skills vs pack |
 | [llms.txt](llms.txt) | LLM orientation |
 
 ---

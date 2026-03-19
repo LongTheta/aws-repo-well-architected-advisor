@@ -1,0 +1,82 @@
+{
+  "categories": {
+    "security": {
+      "score": 4,
+      "rationale": "No IAM; no encryption config",
+      "evidence_found": ["terraform/vpc.tf"],
+      "missing_evidence": ["IAM roles", "encryption config"],
+      "key_risks": ["No IAM roles or policies defined"],
+      "recommended_actions": ["Add iam.tf with roles and least-privilege policies"]
+    },
+    "reliability": {
+      "score": 3,
+      "rationale": "VPC has no subnets; deployment will fail",
+      "evidence_found": ["terraform/vpc.tf"],
+      "missing_evidence": ["Subnet configuration", "Multi-AZ"],
+      "key_risks": ["VPC has no subnet configuration"],
+      "recommended_actions": ["Add aws_subnet resources for public/private"]
+    },
+    "cost_optimization": {
+      "score": 5,
+      "rationale": "Minimal tags; no cost allocation",
+      "evidence_found": ["terraform/vpc.tf"],
+      "missing_evidence": ["Cost allocation tags"],
+      "key_risks": ["No cost allocation tags"],
+      "recommended_actions": ["Add tags: Environment, Project, CostCenter"]
+    },
+    "operational_excellence": {
+      "score": 6,
+      "rationale": "CI present; plan only, no apply",
+      "evidence_found": [".github/workflows/plan.yml"],
+      "missing_evidence": ["Apply workflow", "approval gates"],
+      "key_risks": ["Terraform plan only; no apply workflow"],
+      "recommended_actions": ["Add apply workflow with manual approval for prod"]
+    }
+  },
+  "weighted_overall_score": 4.5,
+  "letter_grade": "D",
+  "production_readiness": "NOT_READY",
+  "confidence_level": "Strongly Inferred",
+  "findings": [
+    {
+      "id": "I1",
+      "title": "VPC has no subnet configuration",
+      "summary": "VPC exists but no subnets; deployment will fail.",
+      "severity": "HIGH",
+      "evidence_type": "missing",
+      "confidence": "Strongly Inferred",
+      "affected_area": "reliability",
+      "recommendation": "Add aws_subnet resources for public/private",
+      "role_filter": ["architect", "developer"]
+    },
+    {
+      "id": "I2",
+      "title": "No IAM roles or policies defined",
+      "summary": "No IAM roles or policies; least privilege cannot be assessed.",
+      "severity": "HIGH",
+      "evidence_type": "missing",
+      "confidence": "Strongly Inferred",
+      "affected_area": "security",
+      "recommendation": "Add iam.tf with roles and least-privilege policies",
+      "role_filter": ["security", "architect"]
+    },
+    {
+      "id": "I3",
+      "title": "No cost allocation tags",
+      "summary": "VPC has minimal tags; no cost allocation.",
+      "severity": "MEDIUM",
+      "evidence_type": "observed",
+      "confidence": "Confirmed",
+      "affected_area": "cost",
+      "recommendation": "Add tags: Environment, Project, CostCenter",
+      "role_filter": ["developer", "operations"]
+    }
+  ],
+  "evidence_found": ["terraform/vpc.tf", ".github/workflows/plan.yml"],
+  "missing_evidence": ["Subnet configuration", "IAM roles", "encryption config", "Apply workflow"],
+  "top_remediation_priorities": [
+    "Add subnet configuration",
+    "Add IAM roles and policies",
+    "Add cost allocation tags"
+  ]
+}

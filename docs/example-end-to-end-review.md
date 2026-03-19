@@ -67,3 +67,13 @@ Terraform infrastructure repo. Pre-production readiness check.
 10. Production Readiness Decision
 11. Suggested Target Architecture
 12. Next Review Pass
+
+## Validated Output Example
+
+A schema-conformant JSON example is in `examples/validated-review-output.json`. Validate any review output with:
+
+```bash
+./scripts/validate-review-output.sh path/to/review-output.json
+```
+
+See `schemas/review-score.schema.json` for the full schema.
