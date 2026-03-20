@@ -42,6 +42,20 @@ Output per `schemas/review-score.schema.json`.
 
 When designing or recommending: consider full AWS service scope (no fixed shortlist); compare ≥2 viable options per component; prefer lowest-cost that meets constraints; output per policy §9; if cheapest not recommended, explain per §10. See `cloud-architecture-ai-auditor/aws-service-selection-policy.md`.
 
+## Terraform (Enforced)
+
+**Apply order:** CloudTrail MUST have `depends_on` on S3 bucket policy; VPC interface endpoints MUST reference a security group defined before them. See `docs/terraform-apply-order.md`.
+
+**Deployment checklist:** When generating Terraform, follow `docs/terraform-deployment-checklist.md` — remote backend, IAM execution policy (`terraform/iam-execution-policy.json` + `docs/iam-execution-requirements.md`), secrets outside state, globally unique names (random_id for S3/CloudTrail).
+
+**Production:** See `docs/terraform-production-guardrails.md` for RDS, EKS, VPC guardrails.
+
+**DRY:** Prefer Terraform modules and `locals` for repeated patterns. See `docs/terraform-deployment-checklist.md` § DRY.
+
+**DORA:** When assessing CI/CD, include optional `dora_assessment` (deployment frequency, lead time, change failure rate, MTTR). See `docs/dora-assessment.md`.
+
+Run `npm run validate:terraform` (or pass path to assessed repo).
+
 ## Design-and-Implement Flow
 
 When user asks to "read this repo", "design from requirements", "recommend and implement", or "generate Terraform from this design":

@@ -19,6 +19,8 @@
     "remediation:order": "node scripts/remediation-ordering.js",
     "security:checks": "node scripts/security-checks.js",
     "validate:diagrams": "node scripts/validate-mermaid.js examples/architecture-graph-example.json examples/architecture-diagram-example.mmd",
+    "validate:terraform": "node scripts/validate_terraform_apply_order.js",
+    "validate:terraform:deploy": "node scripts/validate_terraform_deployment.js",
     "render:mermaid": "node scripts/render-mermaid.js",
     "build:graph": "python scripts/build_architecture_graph.py --scenario examples/scenarios/startup-workload.json",
     "graph:mermaid": "python scripts/graph_to_mermaid.py examples/architecture-graph-built.json",

@@ -1,6 +1,7 @@
 # Sample Terraform for IaC -> architecture graph parsing demo
 # Reference patterns only — guides what to add; not a full deployable stack.
 # See docs/observability.md, docs/runbook.md, docs/compliance-mapping.md
+# Deployment: docs/terraform-deployment-checklist.md, docs/terraform-production-guardrails.md
 
 terraform {
   required_version = ">= 1.0"
@@ -9,6 +10,9 @@ terraform {
     random = { source = "hashicorp/random", version = ">= 3.0" }
     archive = { source = "hashicorp/archive", version = ">= 2.0" }
   }
+  # Remote state: terraform init -backend-config=backend.hcl
+  # Bootstrap: create S3 bucket + DynamoDB table before first init. See docs/terraform-apply-order.md.
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -102,8 +106,8 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_name            = "appdb"
   username           = "appuser"
-  password           = random_password.db.result
-  skip_final_snapshot = true
+  password           = random_password.db.result # For prod: use Secrets Manager. See docs/compliance-mapping.md.
+  skip_final_snapshot = true                     # For prod: set false. See docs/terraform-production-guardrails.md.
   enabled_cloudwatch_logs_exports = ["postgresql"]
   tags               = local.common_tags
 }

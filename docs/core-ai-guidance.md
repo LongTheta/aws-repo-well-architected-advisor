@@ -24,9 +24,12 @@ It produces evidence-based findings, control mappings, architecture decisions, a
 
 - **Findings, scorecard, review report** → `docs/assessment/` (or equivalent) in the assessed repo
 - **Terraform patches, incremental fixes** → `terraform/` (or IaC root) in the assessed repo
+- **IAM execution requirements (required for Terraform)** → `terraform/iam-execution-policy.json` and `docs/iam-execution-requirements.md` — the permissions needed for the role/user running Terraform apply (EKS, RDS, VPC, ECR, Secrets Manager, KMS, CloudTrail, etc.). MUST include when generating Terraform patches or scaffolds.
 - **Compliance mapping, runbooks** → `docs/` in the assessed repo
 
 The advisor repo remains unchanged. It provides guidance; the assessed repo receives the outputs.
+
+**Terraform deployment checklist:** When generating Terraform, follow `docs/terraform-deployment-checklist.md` — remote backend, IAM policy, secrets outside state, globally unique names.
 
 ---
 
@@ -204,6 +207,10 @@ flowchart LR
 - `docs/workload-type-profiles.md` — Workload classification and decision weights
 - `docs/diagram-conventions.md` — Mermaid diagram standards and templates
 - `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` — Federal mode spec
+- `docs/terraform-apply-order.md` — **Enforced** Terraform apply-order rules (CloudTrail depends_on, VPC endpoints)
+- `docs/terraform-deployment-checklist.md` — **Enforced** Pre-deploy requirements (backend, IAM, secrets, uniqueness)
+- `docs/terraform-production-guardrails.md` — Production safety (RDS, EKS, VPC)
+- `docs/dora-assessment.md` — DORA metrics (deployment frequency, lead time, MTTR, change failure rate)
 
 ---
 
@@ -231,7 +238,7 @@ See `docs/schemas.md` for schema index.
 
 ## Output
 
-- Review output: `schemas/review-score.schema.json` (includes optional `diagram`)
+- Review output: `schemas/review-score.schema.json` (includes optional `diagram`, `dora_assessment`)
 - Incremental fixes: `schemas/incremental-fix.schema.json`
 - Solution brief: `schemas/solution-brief.schema.json`
 
@@ -254,6 +261,19 @@ For federal mode: discovery → standards mapping (NIST 800-53, 800-37, 800-190,
 
 ---
 
+## DORA Metrics (Operational Excellence)
+
+When assessing CI/CD and DevOps maturity, include DORA metrics per `docs/dora-assessment.md`:
+
+- **Deployment frequency** — How often deploys occur; infer from pipeline triggers (push, schedule)
+- **Lead time for changes** — Commit to deploy; infer from pipeline stages, approval gates
+- **Change failure rate** — % of deploys causing incidents; requires runtime data (not in repo)
+- **MTTR** — Mean time to restore; requires incident system (not in repo)
+
+**Output:** Optional `dora_assessment` in review output with `status` (inferrable | partially_inferrable | not_inferrable), `evidence`, and `recommendation` per metric. When not inferrable, recommend instrumentation (Prometheus, GitLab exporter, ArgoCD metrics).
+
+---
+
 ## Design-and-Implement Flow (v5)
 
 When user asks to read repo, design from requirements, or generate Terraform:
@@ -263,3 +283,7 @@ When user asks to read repo, design from requirements, or generate Terraform:
 - Use aws-app-platform-questionnaire and infrastructure-governance-questionnaire for requirements
 - Use aws-repo-scaffolder for Terraform/CDK/CI configs
 - Output includes: architecture model, decision log, runbooks, testing plan, cost estimate, verification checklist
+
+**Terraform apply order (enforced):** When generating Terraform (scaffold, incremental-fix, patches), follow `docs/terraform-apply-order.md`. CloudTrail MUST have `depends_on` on S3 bucket policy; VPC interface endpoints MUST reference a security group defined before them. Run `npm run validate:terraform` on generated Terraform.
+
+**Terraform DRY:** Prefer modules for repeated resource patterns; use `locals` for shared values (tags, naming). Avoid copy-pasting similar blocks across files. See `docs/terraform-deployment-checklist.md` § DRY.

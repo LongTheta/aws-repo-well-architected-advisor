@@ -193,6 +193,44 @@
         "confidence": { "type": "string", "enum": ["observed", "inferred"] }
       },
       "required": ["type", "format", "content", "caption"]
+    },
+    "dora_assessment": {
+      "type": "object",
+      "description": "Optional DORA metrics assessment. Per docs/dora-assessment.md.",
+      "properties": {
+        "deployment_frequency": {
+          "type": "object",
+          "properties": {
+            "status": { "type": "string", "enum": ["inferrable", "partially_inferrable", "not_inferrable"] },
+            "evidence": { "type": "string" },
+            "recommendation": { "type": "string" }
+          }
+        },
+        "lead_time": {
+          "type": "object",
+          "properties": {
+            "status": { "type": "string", "enum": ["inferrable", "partially_inferrable", "not_inferrable"] },
+            "evidence": { "type": "string" },
+            "recommendation": { "type": "string" }
+          }
+        },
+        "change_failure_rate": {
+          "type": "object",
+          "properties": {
+            "status": { "type": "string", "enum": ["inferrable", "partially_inferrable", "not_inferrable"] },
+            "evidence": { "type": "string" },
+            "recommendation": { "type": "string" }
+          }
+        },
+        "mttr": {
+          "type": "object",
+          "properties": {
+            "status": { "type": "string", "enum": ["inferrable", "partially_inferrable", "not_inferrable"] },
+            "evidence": { "type": "string" },
+            "recommendation": { "type": "string" }
+          }
+        }
+      }
     }
   },
   "allOf": [
