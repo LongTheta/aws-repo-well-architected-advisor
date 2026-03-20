@@ -14,6 +14,16 @@ Specialist skill for security assessment of infrastructure repositories. Evaluat
 - User mentions least privilege, wildcards, Secrets Manager, KMS
 - Focused security evaluation (invoked by orchestrator or standalone)
 
+## Required Detection Areas
+
+Run all five per `docs/security-analysis.md`. Each finding **must** include: **evidence**, **impact**, **remediation**.
+
+1. **Missing IAM roles** — No aws_iam_role for workloads
+2. **Overly permissive policies** (if present) — Wildcards in Action/Resource
+3. **Missing encryption** (S3, RDS, EBS) — No server_side_encryption, storage_encrypted
+4. **Missing Secrets Manager usage** — Hardcoded secrets; no aws_secretsmanager_secret
+5. **Missing network isolation** — 0.0.0.0/0; no private subnets; no VPC endpoints
+
 ## Evaluation Domains
 
 ### Identity & Access

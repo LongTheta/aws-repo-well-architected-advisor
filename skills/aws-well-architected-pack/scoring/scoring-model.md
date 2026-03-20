@@ -38,10 +38,19 @@ For each category, produce:
 
 ## Final Outputs
 
-- **Weighted overall score** — Sum of (category_score × weight) for all scored categories
+- **Weighted overall score** — `sum(category_score × weight) / sum(weights)` for all scored categories
 - **Letter grade** — From overall score
 - **Production readiness** — READY | CONDITIONAL | NOT READY
 - **Confidence level** — Confirmed | Strongly Inferred | Assumed
+
+## Score Projection (Per Finding)
+
+Each finding must include **expected_score_impact** computed from category weights:
+```
+expected_score_impact = weight[category] × category_score_delta / sum(weights_of_scored_categories)
+```
+
+Output **score_projection**: current_score, score_after_each_fix, score_after_top_3_fixes, final_projected_score.
 
 ## Production Readiness Rules
 

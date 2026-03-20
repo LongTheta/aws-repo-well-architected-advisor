@@ -130,6 +130,20 @@ function testInstallScripts() {
   else fail("install.ps1", "not found")
 }
 
+// 5b. Review schema enforcement tests
+function testReviewSchemaEnforcement() {
+  console.log("\n5b. Review schema enforcement")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "review-schema.test.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("Review schema enforcement (NOT_READY, findings, remediation_summary, READY/missing_components)")
+  } catch (e) {
+    fail("Review schema enforcement", e.stderr?.toString() || e.message)
+  }
+}
+
 // 6. Schema validation (all schemas)
 function testAllSchemaValidation() {
   console.log("\n6. All schema validation")
@@ -227,6 +241,20 @@ function testCostEstimation() {
   }
 }
 
+// 11b. Scoring tools (score projection, remediation ordering)
+function testScoringTools() {
+  console.log("\n11b. Scoring tools")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "scoring-tools.test.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("Score projection and remediation ordering")
+  } catch (e) {
+    fail("Scoring tools", e.stderr?.toString() || e.message)
+  }
+}
+
 // 12. Remediation / patch application
 function testRemediation() {
   console.log("\n12. Remediation (patch application)")
@@ -275,12 +303,14 @@ testReviewScoreLogic()
 testEvidenceExtractorLogic()
 testQualityGateCheck()
 testInstallScripts()
+testReviewSchemaEnforcement()
 testAllSchemaValidation()
 testMermaidValidation()
 testPlatformConfigs()
 testGoldenScenarios()
 testE2EStartupSaaS()
 testCostEstimation()
+testScoringTools()
 testRemediation()
 testSkillContracts()
 

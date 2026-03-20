@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Review Score",
-  "description": "Schema for review output: weighted scores, findings, production readiness. Supports v2/v3 evidence model (confidence_score, source_reference, affected_standard, implementation_status).",
+  "description": "Schema for review output: weighted scores, findings, production readiness. Enforces: not_ready_reason when NOT_READY; findings required; remediation_summary when findings present; READY requires empty missing_components.",
   "type": "object",
+  "required": ["production_readiness", "production_baseline", "findings"],
   "properties": {
     "categories": {
       "type": "object",
@@ -21,29 +22,143 @@
     "weighted_overall_score": { "type": "number", "minimum": 0, "maximum": 10 },
     "letter_grade": { "type": "string", "enum": ["A", "B+", "B", "C", "D", "F"] },
     "production_readiness": { "type": "string", "enum": ["READY", "CONDITIONAL", "NOT_READY"] },
+    "production_baseline": {
+      "type": "object",
+      "description": "Minimum production baseline. Per docs/production-baseline.md. Required for every review.",
+      "required": ["required_components", "missing_components"],
+      "properties": {
+        "required_components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "component", "category"],
+            "properties": {
+              "id": { "type": "string", "description": "Component ID from docs/production-baseline.md" },
+              "component": { "type": "string" },
+              "category": { "type": "string" }
+            }
+          },
+          "description": "Full list of required components for production readiness (workload-adapted per docs/production-baseline.md)"
+        },
+        "missing_components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["component_id", "reason"],
+            "properties": {
+              "component_id": { "type": "string" },
+              "reason": { "type": "string", "description": "Why this component is missing" },
+              "finding_ids": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "description": "Components that are missing; must be empty when production_readiness is READY"
+        },
+        "not_ready_reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REQUIRED when production_readiness is NOT_READY. Explicit statement listing each blocking gap."
+        },
+        "conditional_reason": {
+          "type": "string",
+          "description": "Recommended when production_readiness is CONDITIONAL"
+        }
+      }
+    },
     "confidence_level": { "type": "string", "enum": ["Confirmed", "Strongly Inferred", "Assumed"] },
     "confidence_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "v3: 0.0–1.0 confidence" },
     "nist_alignment": { "type": "string", "enum": ["STRONG", "PARTIAL", "WEAK"], "description": "Federal overlay: evidence-based NIST alignment" },
     "dod_alignment": { "type": "string", "enum": ["STRONG", "PARTIAL", "WEAK"], "description": "Federal overlay: evidence-based DoD alignment" },
+    "category_weights": {
+      "type": "object",
+      "description": "Weights used for weighted score. Must sum to 1.0. Per docs/scoring-model.md.",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
     "findings": {
       "type": "array",
+      "minItems": 1,
+      "description": "Findings are required; empty reviews must use a placeholder or explicit no-findings structure",
       "items": {
         "type": "object",
+        "required": ["id", "title", "severity", "category", "blocking_status", "affected_files", "evidence", "impact", "recommendation", "remediation_plan", "expected_score_impact", "implementation_effort"],
         "properties": {
           "id": { "type": "string" },
           "title": { "type": "string" },
           "summary": { "type": "string" },
           "severity": { "type": "string", "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"] },
+          "category": { "type": "string", "enum": ["security", "reliability", "cost_optimization", "operational_excellence", "performance_efficiency", "sustainability", "observability", "compliance_evidence_quality", "other"] },
+          "blocking_status": { "type": "string", "enum": ["deployment_blocker", "security_blocker", "improvement"] },
+          "affected_files": { "type": "array", "items": { "type": "string" } },
+          "evidence": { "type": "string" },
+          "impact": { "type": "string" },
+          "recommendation": { "type": "string" },
+          "remediation_plan": {
+            "type": "object",
+            "required": ["steps"],
+            "properties": {
+              "steps": { "type": "array", "items": { "type": "string" } },
+              "terraform_resources": { "type": "array", "items": { "type": "string" } },
+              "example_code": { "type": "string" },
+              "dependencies": { "type": "array", "items": { "type": "string" }, "description": "Finding IDs this fix depends on; must exist in findings" },
+              "validation_steps": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "expected_score_impact": { "type": "number" },
+          "implementation_effort": { "type": "string", "enum": ["low", "medium", "high"] },
+          "fix_priority": { "type": "integer", "minimum": 1 },
           "evidence_type": { "type": "string", "enum": ["observed", "inferred", "missing", "contradictory", "unverifiable"] },
           "confidence": { "type": "string", "enum": ["Confirmed", "Strongly Inferred", "Assumed"] },
-          "confidence_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "v3: 0.0–1.0" },
-          "source_reference": { "type": "string", "description": "v3: file, path, pattern, or explicit absence" },
+          "confidence_score": { "type": "number", "minimum": 0, "maximum": 1 },
+          "source_reference": { "type": "string" },
           "affected_standard": { "type": "string", "enum": ["AWS_WELL_ARCHITECTED", "NIST_800_53", "NIST_800_37", "NIST_800_190", "NIST_800_204A", "NIST_800_204B", "NIST_800_204C", "NIST_800_204D", "DOD_ZERO_TRUST", "DOD_DEVSECOPS"] },
-          "affected_control_or_principle": { "type": "string", "description": "v3: control family, practice, or architecture principle" },
+          "affected_control_or_principle": { "type": "string" },
           "implementation_status": { "type": "string", "enum": ["implemented", "partially_implemented", "missing", "cannot_verify_from_repo"] },
           "affected_area": { "type": "string" },
-          "recommendation": { "type": "string" },
           "role_filter": { "type": "array", "items": { "type": "string", "enum": ["architect", "developer", "security", "operations"] } }
+        }
+      }
+    },
+    "remediation_summary": {
+      "type": "object",
+      "required": ["immediate_blockers", "ordered_remediation_plan", "ordering_reasoning", "first_3_fixes_to_apply", "score_projection"],
+      "properties": {
+        "immediate_blockers": { "type": "array", "items": { "type": "string" } },
+        "ordered_remediation_plan": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Finding IDs in execution order; each must exist in findings"
+        },
+        "ordering_reasoning": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Explanation of ordering; must cite remediation-ordering rules"
+        },
+        "first_3_fixes_to_apply": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 3,
+          "description": "First 3 finding IDs from ordered_remediation_plan"
+        },
+        "score_projection": {
+          "type": "object",
+          "required": ["current_score", "score_after_each_fix", "score_after_top_3_fixes", "final_projected_score"],
+          "properties": {
+            "current_score": { "type": "number", "minimum": 0, "maximum": 10 },
+            "score_after_each_fix": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["finding_id", "score_after"],
+                "properties": {
+                  "finding_id": { "type": "string" },
+                  "score_after": { "type": "number", "minimum": 0, "maximum": 10 },
+                  "category_impact": { "type": "object", "additionalProperties": { "type": "number" }, "description": "Raw category score delta (not weighted)" }
+                }
+              }
+            },
+            "score_after_top_3_fixes": { "type": "number", "minimum": 0, "maximum": 10 },
+            "final_projected_score": { "type": "number", "minimum": 0, "maximum": 10 }
+          }
         }
       }
     },
@@ -52,7 +167,6 @@
     "top_remediation_priorities": { "type": "array", "items": { "type": "string" } },
     "control_alignment_summary": {
       "type": "object",
-      "description": "v3 federal: implemented, partially_implemented, missing, unverifiable",
       "properties": {
         "implemented": { "type": "array", "items": { "type": "string" } },
         "partially_implemented": { "type": "array", "items": { "type": "string" } },
@@ -71,15 +185,47 @@
     },
     "diagram": {
       "type": "object",
-      "description": "Inferred or target architecture diagram (Mermaid). See docs/diagram-conventions.md",
       "properties": {
-        "type": { "type": "string", "enum": ["mermaid"], "default": "mermaid" },
+        "type": { "type": "string", "enum": ["mermaid"] },
         "format": { "type": "string", "enum": ["flowchart", "sequenceDiagram", "erDiagram"] },
-        "content": { "type": "string", "description": "Raw Mermaid source" },
-        "caption": { "type": "string", "description": "Human-readable title" },
+        "content": { "type": "string" },
+        "caption": { "type": "string" },
         "confidence": { "type": "string", "enum": ["observed", "inferred"] }
       },
       "required": ["type", "format", "content", "caption"]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "production_readiness": { "const": "NOT_READY" } }, "required": ["production_readiness"] },
+      "then": {
+        "properties": {
+          "production_baseline": {
+            "type": "object",
+            "required": ["required_components", "missing_components", "not_ready_reason"],
+            "properties": {
+              "not_ready_reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "production_readiness": { "const": "READY" } }, "required": ["production_readiness"] },
+      "then": {
+        "properties": {
+          "production_baseline": {
+            "type": "object",
+            "properties": {
+              "missing_components": { "type": "array", "maxItems": 0 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "findings": { "type": "array", "minItems": 1 } }, "required": ["findings"] },
+      "then": { "required": ["remediation_summary"] }
+    }
+  ]
 }

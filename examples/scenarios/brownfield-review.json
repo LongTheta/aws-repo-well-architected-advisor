@@ -81,6 +81,18 @@
     ],
     "rollback_notes": "Revert Terraform"
   },
+  "production_readiness": "NOT_READY",
+  "production_baseline": {
+    "required_components": [
+      { "id": "networking_subnets", "component": "VPC subnet configuration", "category": "reliability" },
+      { "id": "iam_roles", "component": "IAM roles and policies", "category": "security" }
+    ],
+    "missing_components": [
+      { "component_id": "networking_subnets", "reason": "No aws_subnet resources in vpc.tf", "finding_ids": ["B1"] },
+      { "component_id": "iam_roles", "reason": "No iam.tf or IAM resources", "finding_ids": ["B2"] }
+    ],
+    "not_ready_reason": "NOT_READY because: (1) VPC has no subnet configuration — deployment will fail. (2) No IAM roles defined — security blocker."
+  },
   "deployment_model": {
     "bootstrap_order": ["VPC", "Subnets", "IAM"],
     "apply_phases": [
@@ -107,15 +119,68 @@
       "id": "B1",
       "title": "VPC has no subnet configuration",
       "severity": "HIGH",
-      "evidence_type": "missing",
-      "recommendation": "Add aws_subnet resources"
+      "category": "reliability",
+      "blocking_status": "deployment_blocker",
+      "affected_files": ["terraform/vpc.tf"],
+      "evidence": "No aws_subnet resources found in vpc.tf",
+      "impact": "Deployment will fail; no network isolation.",
+      "recommendation": "Add aws_subnet resources",
+      "remediation_plan": {
+        "steps": [
+          "Add aws_subnet resources for public and private subnets",
+          "Associate subnets with route tables",
+          "Run terraform plan and apply"
+        ],
+        "terraform_resources": ["aws_subnet", "aws_route_table_association"],
+        "example_code": "resource \"aws_subnet\" \"public\" { vpc_id = aws_vpc.main.id; cidr_block = \"10.0.1.0/24\"; availability_zone = \"us-east-1a\" }",
+        "dependencies": [],
+        "validation_steps": ["terraform plan succeeds", "Subnets created in AWS"]
+      },
+      "expected_score_impact": 0.69,
+      "implementation_effort": "medium",
+      "fix_priority": 1,
+      "evidence_type": "missing"
     },
     {
       "id": "B2",
       "title": "No IAM roles defined",
       "severity": "HIGH",
-      "evidence_type": "missing",
-      "recommendation": "Add iam.tf with least-privilege roles"
+      "category": "security",
+      "blocking_status": "security_blocker",
+      "affected_files": [],
+      "evidence": "No iam.tf or IAM resources found",
+      "impact": "Workloads may run with overly broad credentials; security blocker.",
+      "recommendation": "Add iam.tf with least-privilege roles",
+      "remediation_plan": {
+        "steps": [
+          "Create iam.tf with aws_iam_role resources",
+          "Add least-privilege policies",
+          "Reference roles in compute resources"
+        ],
+        "terraform_resources": ["aws_iam_role", "aws_iam_role_policy"],
+        "example_code": "resource \"aws_iam_role\" \"app\" { name = \"app-role\"; assume_role_policy = data.aws_iam_policy_document.assume.json }",
+        "dependencies": [],
+        "validation_steps": ["iam.tf applies", "Roles visible in IAM console"]
+      },
+      "expected_score_impact": 0.92,
+      "implementation_effort": "high",
+      "fix_priority": 2,
+      "evidence_type": "missing"
     }
-  ]
+  ],
+  "remediation_summary": {
+    "immediate_blockers": ["B1", "B2"],
+    "ordered_remediation_plan": ["B1", "B2"],
+    "ordering_reasoning": "B1 (deployment_blocker) first — VPC has no subnets; deployment will fail. B2 (security_blocker) second — no IAM roles; blocks production readiness.",
+    "first_3_fixes_to_apply": ["B1", "B2"],
+    "score_projection": {
+      "current_score": 4.0,
+      "score_after_each_fix": [
+        { "finding_id": "B1", "score_after": 5.2, "category_impact": { "reliability": 3.0 } },
+        { "finding_id": "B2", "score_after": 6.1, "category_impact": { "security": 3.0 } }
+      ],
+      "score_after_top_3_fixes": 6.1,
+      "final_projected_score": 6.8
+    }
+  }
 }

@@ -24,6 +24,18 @@ Evaluate security posture across identity, secrets, encryption, and supply chain
 - Inferred architecture
 - IaC files, IAM policies, K8s manifests, app configs
 
+## Required Detection Areas
+
+Run all five per `docs/security-analysis.md`. Each finding **must** include: **evidence**, **impact**, **remediation**.
+
+| # | Detection | Evidence | Impact | Remediation |
+|---|-----------|----------|--------|-------------|
+| 1 | **Missing IAM roles** | File paths searched; explicit absence | Blast radius; least privilege impossible | Create iam.tf with roles |
+| 2 | **Overly permissive policies** (if present) | File:line; quoted Action/Resource | Lateral movement; data exfiltration | Replace wildcards with specific actions |
+| 3 | **Missing encryption** (S3, RDS, EBS) | Resource and file; no encryption config | Data at rest exposed; compliance failure | Add server_side_encryption, storage_encrypted |
+| 4 | **Missing Secrets Manager usage** | No aws_secretsmanager; hardcoded/plaintext | No rotation; credential sprawl | Migrate to Secrets Manager |
+| 5 | **Missing network isolation** | Subnet layout; sg rules; 0.0.0.0/0 | Workloads exposed; lateral movement | Private subnets; restrict sg ingress |
+
 ## Review Questions
 
 - Are IAM policies least-privilege? Any wildcards?
@@ -51,8 +63,10 @@ Evaluate security posture across identity, secrets, encryption, and supply chain
 ## Expected Output
 
 1. Security score (0–10)
-2. Top security findings (ranked by severity)
-3. IAM findings (wildcards, trust, least privilege)
-4. Secrets and encryption findings
-5. Remediation plan
-6. All findings tagged: evidence_type, confidence, severity
+2. Top security findings (ranked by severity) — **each with evidence, impact, remediation**
+3. IAM findings (missing roles, overly permissive policies)
+4. Encryption findings (S3, RDS, EBS)
+5. Secrets Manager usage (or absence)
+6. Network isolation (subnets, security groups)
+7. Remediation plan
+8. All findings tagged: evidence_type, confidence, severity

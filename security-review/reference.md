@@ -1,5 +1,17 @@
 # Security Review — Reference
 
+## Required Detection Areas (docs/security-analysis.md)
+
+Each finding must include: **evidence**, **impact**, **remediation**.
+
+| Detection | Terraform Patterns | Severity |
+|-----------|-------------------|----------|
+| Missing IAM roles | No `aws_iam_role`, `iam.tf` | High |
+| Overly permissive policies | `*`, `s3:*`, `Resource: "*"` | Critical–High |
+| Missing encryption (S3, RDS, EBS) | No `server_side_encryption_configuration`, `storage_encrypted` | High |
+| Missing Secrets Manager | No `aws_secretsmanager_secret`; hardcoded | High |
+| Missing network isolation | `0.0.0.0/0`, no private subnets | High |
+
 ## Evidence Sources
 
 | Resource | Terraform | What to Check |

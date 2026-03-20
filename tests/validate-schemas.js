@@ -49,17 +49,14 @@ function run() {
   let passed = 0;
   let failed = 0;
 
-  // 1. review-score
-  const r1 = validateWithPath(
-    path.join(SCHEMAS, "review-score.schema.json"),
-    path.join(EXAMPLES, "validated-review-output.json")
-  );
-  if (r1.valid) {
-    passed++;
-    console.log("  ✓ validated-review-output.json → review-score.schema.json");
+  // 1. Review artifacts (all must pass schema + custom checks)
+  const { run: runReviewValidation, REVIEW_ARTIFACTS } = require("../scripts/validate-reviews.js");
+  const reviewResult = runReviewValidation();
+  if (reviewResult.failed > 0) {
+    failed += reviewResult.failed;
+    reviewResult.allErrors?.forEach((e) => console.error("  ✗", e));
   } else {
-    failed++;
-    console.error("  ✗ review-score:", r1.error);
+    passed += reviewResult.validatedCount || 0;
   }
 
   // 2. Scenario files - extract and validate each artifact

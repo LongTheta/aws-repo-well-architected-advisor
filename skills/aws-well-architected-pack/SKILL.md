@@ -111,6 +111,14 @@ Use `scoring/report-template.md`. Include:
 - **Final**: weighted score, letter grade, production readiness, confidence level
 - See `scoring/scoring-model.md` and `scoring/review-score.schema.json`
 
+## Production Baseline
+
+Every review must include `production_baseline` per `docs/production-baseline.md`: required_components, missing_components, and **not_ready_reason** when NOT_READY. The reason must be explicit, not implied.
+
+## Remediation Ordering
+
+Order findings per `docs/remediation-ordering.md`: deployment_blocker → security_blocker → reliability → cost/optimization. Output `ordered_remediation_plan` and `ordering_reasoning`.
+
 ## Report Generation Model
 
 - Template: `scoring/report-template.md`

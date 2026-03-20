@@ -18,11 +18,26 @@ It produces evidence-based findings, control mappings, architecture decisions, a
 
 ## Evidence Model (MANDATORY)
 
-Every finding MUST include:
+Every finding MUST include (per `schemas/review-score.schema.json`):
 
+**Required for engineering execution:**
+- **id**, **title**, **severity**
+- **category**: Well-Architected pillar (security, reliability, cost_optimization, operational_excellence, performance_efficiency, sustainability, observability, compliance_evidence_quality, other)
+- **blocking_status**: deployment_blocker | security_blocker | improvement
+- **affected_files**: array of file paths or patterns
+- **evidence**: human-readable evidence summary
+- **impact**: consequence if unresolved (required for security findings per docs/security-analysis.md)
+- **recommendation**: actionable fix
+- **remediation_plan**: steps (ordered), terraform_resources, example_code, dependencies, validation_steps
+- **expected_score_impact**: weighted score improvement when resolved (from category_weight × category_score_delta per docs/scoring-model.md)
+- **implementation_effort**: low | medium | high
+
+**Evidence model:**
 - **evidence_type**: observed | inferred | missing | contradictory | unverifiable
 - **confidence**: Confirmed | Strongly Inferred | Assumed — or **confidence_score**: 0.0–1.0
 - **source_reference** (v3): file, path, pattern, or explicit absence
+
+**Production baseline** (per docs/production-baseline.md): Every review must include `production_baseline` with required_components, missing_components, and **not_ready_reason** when NOT_READY. The reason must be explicit, not implied.
 
 **Rules:**
 
