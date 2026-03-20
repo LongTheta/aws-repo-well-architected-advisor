@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Incremental Fix",
+  "description": "Patch-style fixes for existing repos per v3 Incremental Fix Mode. Prefer minimal targeted fixes over full rebuilds.",
+  "type": "object",
+  "properties": {
+    "fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "risk_reduction": { "type": "string", "description": "Impact: what risk is reduced" },
+          "affected_control_area": { "type": "string", "description": "NIST/DoD control area or Well-Architected pillar" },
+          "effort": { "type": "string", "enum": ["low", "medium", "high"] },
+          "priority": { "type": "string", "enum": ["P1", "P2", "P3"] },
+          "evidence_required_to_close": { "type": "string", "description": "What evidence closes this finding" },
+          "patch_type": { "type": "string", "enum": ["terraform", "iam", "cicd", "security", "config", "documentation"] },
+          "target_files": { "type": "array", "items": { "type": "string" } },
+          "patch_content": { "type": "string", "description": "Diff or patch content" }
+        },
+        "required": ["risk_reduction", "affected_control_area", "effort", "priority", "evidence_required_to_close"]
+      }
+    }
+  },
+  "required": ["fixes"]
+}

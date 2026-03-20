@@ -7,9 +7,13 @@
     "command": {
       "type": "string",
       "enum": [
+        "quick-review",
         "repo-assess",
         "solution-discovery",
         "platform-design",
+        "scaffold",
+        "design-and-implement",
+        "incremental-fix",
         "federal-checklist",
         "gitops-audit",
         "quality-gate",
@@ -28,7 +32,9 @@
         "federal-security-reviewer",
         "gitops-reviewer",
         "cloud-platform-reviewer",
-        "documentation-writer"
+        "documentation-writer",
+        "scaffold-implementer",
+        "design-and-implement-conductor"
       ]
     },
     "skills": {
@@ -37,7 +43,7 @@
     },
     "output_schema": {
       "type": "string",
-      "enum": ["review-score", "solution-brief", "target-architecture", "verification", null]
+      "enum": ["review-score", "solution-brief", "target-architecture", "incremental-fix", "verification", null]
     },
     "blocking": {
       "type": "string",

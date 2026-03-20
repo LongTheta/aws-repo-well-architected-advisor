@@ -17,7 +17,7 @@ AWS Well-Architected Pack — Install
 Usage: ./install.sh [options]
 
 Options:
-  --target opencode|cursor   Target harness (default: opencode)
+  --target opencode|cursor|claude   Target harness (default: opencode)
   --dest DIR                 Destination directory (default: current dir)
   --hooks                    Install pre-push hook for quality gate
   --help                     Show this help
@@ -76,20 +76,8 @@ echo "  - RULES.md, docs/"
 # Cursor
 if [[ "$TARGET" == "cursor" || "$TARGET" == "claude" ]]; then
   mkdir -p "$DEST_ABS/.cursor/rules"
-  cat > "$DEST_ABS/.cursor/rules/aws-well-architected.md" <<'RULES'
----
-description: AWS Well-Architected Pack — evidence-based architecture review
-globs: ["**/*.tf", "**/*.tfvars", "**/*.yaml", "**/*.yml", "**/Dockerfile", "**/.github/**"]
-alwaysApply: false
----
-
-- Use skills/aws-well-architected-pack for AWS architecture review
-- Evidence tags: Observed, Inferred, Missing Evidence
-- Never assume compliance without evidence
-- Run repo-discovery → architecture-inference → security-review → scoring
-- Output per schemas/review-score.schema.json
-RULES
-  echo "  - .cursor/rules/aws-well-architected.md"
+  [ -d "$REPO_ROOT/.cursor/rules" ] && cp "$REPO_ROOT/.cursor/rules/"*.md "$DEST_ABS/.cursor/rules/" 2>/dev/null || true
+  echo "  - .cursor/rules/"
 fi
 
 # Claude Code

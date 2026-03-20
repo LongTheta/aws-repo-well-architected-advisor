@@ -1,7 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "instructions": [
+    "docs/AI-CLOUD-ARCHITECT-AGENT.md",
+    "docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md",
+    "docs/modes.md",
     "skills/aws-well-architected-pack/SKILL.md",
+    "aws-repo-scaffolder/SKILL.md",
+    "cloud-architecture-ai-auditor/aws-app-platform-questionnaire.md",
+    "cloud-architecture-ai-auditor/infrastructure-governance-questionnaire.md",
     "RULES.md",
     "docs/OPERATING-MODEL.md"
   ],
@@ -9,13 +15,18 @@
     ".opencode/plugins/aws-well-architected-enforcement.ts"
   ],
   "command": {
+    "/quick-review": {
+      "template": "QUICK_REVIEW mode: light assessment. Execute: repo-discovery → top risks → score. Skip full multi-pass. Output: letter_grade, production_readiness, top 5 findings. Fast feedback.",
+      "description": "Light assessment (QUICK_REVIEW mode)",
+      "agent": "repo-auditor"
+    },
     "/repo-assess": {
-      "template": "Run full repository architecture assessment. Execute skill graph: repo-discovery → architecture-inference → security-review → networking-review → observability-review → scoring. Produce report per schemas/review-score.schema.json. Output: weighted scorecard, findings, production readiness.",
-      "description": "Full repository architecture assessment",
+      "template": "DEEP_ANALYSIS mode: full repository architecture assessment. Execute skill graph: repo-discovery → architecture-inference → security-review → networking-review → observability-review → scoring. Produce report per schemas/review-score.schema.json. Output: weighted scorecard, findings, production readiness.",
+      "description": "Full repository architecture assessment (DEEP_ANALYSIS mode)",
       "agent": "repo-auditor"
     },
     "/solution-discovery": {
-      "template": "Solution architect discovery. Ask: users, traffic, budget, compliance level, constraints. Synthesize requirements. Produce solution brief.",
+      "template": "Solution architect discovery. If repo context: run repo-discovery first. Ask (1) business requirements via aws-app-platform-questionnaire: users, traffic, budget, compliance. (2) Infrastructure & governance via infrastructure-governance-questionnaire: tagging (project, owner, cost_center, etc.), CIDR blocks, IAM roles (CI, developer, auditor). Synthesize. Produce solution brief per schemas/solution-brief.schema.json including infrastructure_config.",
       "description": "Requirements discovery for solution design",
       "agent": "product-manager-discovery"
     },
@@ -24,9 +35,24 @@
       "description": "Platform design and reference architecture",
       "agent": "cloud-platform-reviewer"
     },
+    "/scaffold": {
+      "template": "Generate IaC from architecture. Input: target architecture or review findings. Use aws-repo-scaffolder. Produce Terraform, CDK, or CloudFormation plus CI/CD configs (GitHub Actions, GitLab CI). Include required tags, security defaults, README. Mark as scaffolding — user reviews before apply.",
+      "description": "Generate Terraform and IaC from design or findings",
+      "agent": "scaffold-implementer"
+    },
+    "/design-and-implement": {
+      "template": "End-to-end: read repo → ask requirements → recommend → generate IaC. Flow: (1) repo-discovery, (2) solution-discovery: aws-app-platform-questionnaire + infrastructure-governance-questionnaire (tagging, CIDR, roles), (3) platform-design, (4) scaffold. MUST ask: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). Produce solution brief with infrastructure_config, target architecture, IaC files.",
+      "description": "Read repo, gather requirements, recommend, and code",
+      "agent": "design-and-implement-conductor"
+    },
+    "/incremental-fix": {
+      "template": "Incremental fix mode for existing repos. DO NOT rebuild. (1) Run repo-discovery or use prior /repo-assess findings. (2) Identify top gaps. (3) Generate patch-style fixes: Terraform patches, IAM corrections, CI/CD updates, security fixes. Each fix MUST include: risk_reduction, affected_control_area, effort, priority, evidence_required_to_close. Output per schemas/incremental-fix.schema.json.",
+      "description": "Targeted patch-style fixes for existing repos",
+      "agent": "scaffold-implementer"
+    },
     "/federal-checklist": {
-      "template": "Federal-grade evidence-based review. Execute: evidence extraction → control-family mapping (NIST AC, IA, SC, AU, SI, CM, IR) → readiness report. Never assume compliance without evidence. Stop for missing evidence on critical controls.",
-      "description": "Federal compliance checklist",
+      "template": "Federal-grade review per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD. Execute: discovery → standards mapping (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps) → control alignment → readiness. Output NIST_ALIGNMENT and DOD_ALIGNMENT. Never claim compliance; use allowed claims only. Stop for missing evidence on critical controls.",
+      "description": "Federal compliance checklist (NIST/DoD mode)",
       "agent": "federal-security-reviewer"
     },
     "/gitops-audit": {
@@ -71,7 +97,7 @@
     },
     "product-manager-discovery": {
       "description": "Requirements and constraints discovery",
-      "prompt": "You discover requirements: users, traffic, budget, compliance, constraints. Ask clarifying questions. Produce structured solution brief.",
+      "prompt": "You discover requirements: (1) Business: users, traffic, budget, compliance via aws-app-platform-questionnaire. (2) Infrastructure & governance via infrastructure-governance-questionnaire: tagging (project, environment, owner, cost_center, data_classification, lifecycle_stage, custom_tags), CIDR (vpc_cidr, az_count, constraints), IAM roles (CI, developer, auditor, platform admin). Ask all questions; use defaults only when user defers. Produce solution brief per schemas/solution-brief.schema.json including infrastructure_config.",
       "tools": {}
     },
     "repo-auditor": {
@@ -80,8 +106,8 @@
       "tools": {}
     },
     "federal-security-reviewer": {
-      "description": "Federal compliance and NIST reviewer",
-      "prompt": "You review for NIST, FedRAMP alignment. Map findings to control families. Never assume compliance without evidence. Stop for missing evidence on critical controls.",
+      "description": "Federal compliance and NIST/DoD reviewer",
+      "prompt": "You review per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD. Map findings to NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps. Output NIST_ALIGNMENT and DOD_ALIGNMENT. Use allowed claims only; never claim compliant, certified, FedRAMP authorized. Stop for missing evidence on critical controls.",
       "tools": {}
     },
     "gitops-reviewer": {
@@ -97,6 +123,16 @@
     "documentation-writer": {
       "description": "Architecture documentation writer",
       "prompt": "You sync docs with repo state. Update architecture.md from inferred design. Preserve evidence tags and findings. Enterprise tone.",
+      "tools": {}
+    },
+    "scaffold-implementer": {
+      "description": "Generates Terraform, CDK, CloudFormation, and CI/CD from architecture; also produces incremental patches",
+      "prompt": "You implement architecture as IaC. Use aws-repo-scaffolder. When infrastructure_config is provided, use its values for variables.tf and tags. For existing repos, use INCREMENTAL FIX MODE: prefer minimal targeted fixes over full rebuilds; generate patch-style changes; each fix must include risk_reduction, affected_control_area, effort, priority, evidence_required_to_close. Produce Terraform or CDK for compute, data, networking, IAM (including roles from infrastructure_config.roles). Add CI/CD. Include required tags, security defaults. Mark output as scaffolding — user must review before apply.",
+      "tools": {}
+    },
+    "design-and-implement-conductor": {
+      "description": "Orchestrates read-repo → requirements → recommendation → code",
+      "prompt": "You run the full design-and-implement flow. (1) Read and inventory the repo. (2) Ask requirements: aws-app-platform-questionnaire (business) + infrastructure-governance-questionnaire (tagging, CIDR, roles). MUST collect: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). (3) Produce target architecture. (4) Generate Terraform/CDK using infrastructure_config. Use aws-repo-scaffolder. Pass infrastructure_config into scaffold so variables.tf and tags match user answers.",
       "tools": {}
     }
   },

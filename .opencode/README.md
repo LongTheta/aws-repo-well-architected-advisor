@@ -28,6 +28,8 @@ This directory is the OpenCode control plane for the AWS Well-Architected Pack.
 | /repo-assess | repo-auditor | Full repository architecture assessment |
 | /solution-discovery | product-manager-discovery | Requirements discovery |
 | /platform-design | cloud-platform-reviewer | Platform design and reference architecture |
+| /scaffold | scaffold-implementer | Generate Terraform/CDK from design or findings |
+| /design-and-implement | design-and-implement-conductor | Read repo → requirements → recommend → code |
 | /federal-checklist | federal-security-reviewer | Federal compliance review |
 | /gitops-audit | gitops-reviewer | GitOps and DevSecOps audit |
 | /quality-gate | repo-auditor | Production readiness gate |
@@ -46,6 +48,8 @@ This directory is the OpenCode control plane for the AWS Well-Architected Pack.
 | federal-security-reviewer | NIST, FedRAMP |
 | gitops-reviewer | CI/CD, GitOps |
 | cloud-platform-reviewer | Platform design |
+| scaffold-implementer | IaC generation (Terraform, CDK, CI/CD) |
+| design-and-implement-conductor | Full flow: read → requirements → recommend → code |
 | documentation-writer | Doc sync |
 
 ## Plugins

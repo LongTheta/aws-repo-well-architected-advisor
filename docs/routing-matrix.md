@@ -7,6 +7,8 @@ Command → Agent → Skills → Output Schema
 | /repo-assess | repo-auditor | repo-discovery, architecture-inference, security, networking, observability | review-score |
 | /solution-discovery | product-manager-discovery | (agent-driven) | solution-brief |
 | /platform-design | cloud-platform-reviewer | repo-discovery, architecture-inference, aws-architecture-pattern-review | target-architecture |
+| /scaffold | scaffold-implementer | aws-repo-scaffolder | IaC files |
+| /design-and-implement | design-and-implement-conductor | repo-discovery, aws-app-platform-questionnaire, aws-architecture-pattern-review, aws-repo-scaffolder | solution-brief, target-architecture, IaC |
 | /federal-checklist | federal-security-reviewer | compliance-evidence-review, security-review | review-score |
 | /gitops-audit | gitops-reviewer | devops-operability-review, observability-review, security-review | review-score |
 | /quality-gate | repo-auditor | full pipeline | review-score + quality-gate-result.json |
@@ -32,5 +34,7 @@ Command → Agent → Skills → Output Schema
 | "production ready?" | /quality-gate |
 | "federal compliance" | /federal-checklist |
 | "design platform" | /platform-design |
+| "read this repo and recommend", "ask requirements then code" | /design-and-implement |
+| "scaffold from design", "generate Terraform" | /scaffold |
 | "sync docs" | /doc-sync |
 | "verify findings" | /verify |

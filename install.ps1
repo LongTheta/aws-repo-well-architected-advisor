@@ -73,20 +73,10 @@ Write-Host "  - RULES.md, docs/"
 if ($Target -in @("cursor", "claude")) {
     $cursorRules = Join-Path $DestAbs ".cursor\rules"
     New-Item -ItemType Directory -Force -Path $cursorRules | Out-Null
-    @"
----
-description: AWS Well-Architected Pack — evidence-based architecture review
-globs: ["**/*.tf", "**/*.tfvars", "**/*.yaml", "**/*.yml", "**/Dockerfile", "**/.github/**"]
-alwaysApply: false
----
-
-- Use skills/aws-well-architected-pack for AWS architecture review
-- Evidence tags: Observed, Inferred, Missing Evidence
-- Never assume compliance without evidence
-- Run repo-discovery → architecture-inference → security-review → scoring
-- Output per schemas/review-score.schema.json
-"@ | Set-Content -Path (Join-Path $cursorRules "aws-well-architected.md") -Encoding UTF8
-    Write-Host "  - .cursor/rules/aws-well-architected.md"
+    if (Test-Path (Join-Path $RepoRoot ".cursor\rules")) {
+        Copy-Item -Path "$RepoRoot\.cursor\rules\*.md" -Destination $cursorRules -Force
+    }
+    Write-Host "  - .cursor/rules/"
 }
 
 # Claude Code

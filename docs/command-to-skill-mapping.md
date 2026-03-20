@@ -35,6 +35,27 @@ repo-discovery
   → decision log
 ```
 
+## /scaffold
+
+```
+target architecture or review findings
+  → aws-repo-scaffolder
+  → Terraform / CDK / CloudFormation
+  → CI/CD configs (GitHub Actions, GitLab CI)
+  → README, required tags, security defaults
+```
+
+## /design-and-implement
+
+End-to-end flow: read repo → requirements → recommendation → code.
+
+```
+repo-discovery (inventory repo)
+  → solution-discovery (ask business requirements via aws-app-platform-questionnaire)
+  → platform-design (target architecture)
+  → scaffold (generate Terraform/CDK and CI/CD)
+```
+
 ## /federal-checklist
 
 ```

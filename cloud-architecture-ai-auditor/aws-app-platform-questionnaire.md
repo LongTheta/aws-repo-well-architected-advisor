@@ -269,3 +269,15 @@ Use aws-app-platform-questionnaire output format after answers.
 ## End Goal
 
 Produce a **real AWS platform design tailored to the application**, not a generic architecture.
+
+---
+
+## Follow-Up: Infrastructure & Governance
+
+After the core questions, **always** run the infrastructure-governance-questionnaire to collect:
+
+- **Tagging:** Project, Environment, Owner, CostCenter, DataClassification, Lifecycle, custom tags
+- **CIDR:** VPC CIDR block, AZ count, IP constraints
+- **Roles:** Terraform deployer, CI/CD, developer, auditor, platform admin
+
+See `infrastructure-governance-questionnaire.md`. These values flow into the scaffold (variables.tf, tags, IAM).

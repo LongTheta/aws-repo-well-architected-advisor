@@ -20,10 +20,18 @@ I have the following architecture design / review output. Scaffold a new AWS inf
 ## Remediation Plan (if from review)
 [Paste any required fixes: e.g., remove wildcard IAM, restrict DB access, add tags, enable CloudTrail]
 
+## Infrastructure & Governance (from discovery)
+- Project: [e.g., order-service]
+- Environment: [dev, prod]
+- Owner: [team name]
+- Cost center: [e.g., engineering]
+- VPC CIDR: [e.g., 10.0.0.0/16]
+- Roles needed: [CI, developer, auditor, platform admin]
+- Custom tags: [optional]
+
 ## Preferences
 - IaC: [Terraform | CDK]
 - CI/CD: [GitHub Actions | GitLab CI]
-- Project name: [e.g., order-service]
 
 Generate:
 1. Repo directory structure

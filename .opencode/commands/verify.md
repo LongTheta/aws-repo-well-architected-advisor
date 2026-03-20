@@ -22,10 +22,11 @@ Verify that findings have required evidence tags. Validate severity and confiden
 ## Steps
 
 1. Extract findings from context or input
-2. Check each finding for evidence_type (observed, inferred, missing, contradictory)
-3. Check each finding for confidence (Confirmed, Strongly Inferred, Assumed)
-4. Validate against schemas/review-score.schema.json
-5. Produce verification report: pass | pass_with_warnings | fail
+2. Check each finding for evidence_type (observed, inferred, missing, contradictory, unverifiable)
+3. Check each finding for confidence (Confirmed, Strongly Inferred, Assumed) and/or confidence_score (0–1)
+4. When federal mode: check source_reference, affected_standard, implementation_status
+5. Validate against schemas/review-score.schema.json
+6. Produce verification report: pass | pass_with_warnings | fail
 
 ## Routing to Agents/Skills
 

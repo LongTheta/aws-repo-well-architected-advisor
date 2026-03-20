@@ -9,6 +9,44 @@
     "compliance_level": { "type": "string" },
     "budget_tier": { "type": "string" },
     "traffic_expectations": { "type": "string" },
-    "users": { "type": "string" }
+    "users": { "type": "string" },
+    "infrastructure_config": {
+      "type": "object",
+      "description": "From infrastructure-governance-questionnaire; flows to scaffold",
+      "properties": {
+        "tags": {
+          "type": "object",
+          "properties": {
+            "project": { "type": "string" },
+            "environment": { "type": "string" },
+            "owner": { "type": "string" },
+            "cost_center": { "type": "string" },
+            "data_classification": { "type": "string" },
+            "lifecycle_stage": { "type": "string" },
+            "custom_tags": { "type": "object" }
+          }
+        },
+        "networking": {
+          "type": "object",
+          "properties": {
+            "vpc_cidr": { "type": "string" },
+            "az_count": { "type": "integer" },
+            "cidr_constraints": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "purpose": { "type": "string" }
+            }
+          }
+        },
+        "region": { "type": "string" },
+        "enable_vpc_flow_logs": { "type": "boolean" }
+      }
+    }
   }
 }

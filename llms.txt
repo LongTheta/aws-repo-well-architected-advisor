@@ -14,7 +14,7 @@ OpenCode operating system for repository architecture reviews, solution architec
 
 ## Command Surface
 
-/repo-assess, /solution-discovery, /platform-design, /federal-checklist, /gitops-audit, /quality-gate, /doc-sync, /verify, /checkpoint, /orchestrate
+/quick-review, /repo-assess, /solution-discovery, /platform-design, /scaffold, /design-and-implement, /incremental-fix, /federal-checklist, /gitops-audit, /quality-gate, /doc-sync, /verify, /checkpoint, /orchestrate
 
 ## Rules and Constraints
 
@@ -31,4 +31,5 @@ OpenCode operating system for repository architecture reviews, solution architec
 - Federal compliance (NIST, FedRAMP) review
 - GitOps/CI/CD audit
 - Platform design from requirements
+- Design-and-implement: read repo → ask requirements → recommend → generate Terraform/CDK
 - Architecture doc sync
