@@ -9,7 +9,10 @@
   },
   "scripts": {
     "test": "node tests/run-all.js",
-    "validate": "node -e \"require('child_process').execSync('npx --yes ajv validate -s schemas/review-score.schema.json -d examples/validated-review-output.json', {stdio:'inherit', cwd: process.cwd()})\""
+    "validate": "npx ajv-cli validate -s schemas/review-score.schema.json -d examples/validated-review-output.json"
+  },
+  "devDependencies": {
+    "ajv-cli": "^5.0.0"
   },
   "keywords": ["aws", "well-architected", "opencode", "architecture-review", "cursor", "claude-code"],
   "license": "MIT",

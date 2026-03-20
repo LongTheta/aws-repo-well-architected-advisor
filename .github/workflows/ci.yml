@@ -25,4 +25,4 @@ jobs:
         run: npm test
 
       - name: Schema validation
-        run: npx --yes ajv validate -s schemas/review-score.schema.json -d examples/validated-review-output.json
+        run: npx ajv-cli validate -s schemas/review-score.schema.json -d examples/validated-review-output.json

@@ -37,7 +37,7 @@ function testSchemaValidation() {
     return
   }
   try {
-    execSync(`npx --yes ajv validate -s "${schema}" -d "${example}"`, {
+    execSync(`npx ajv-cli validate -s "${schema}" -d "${example}"`, {
       cwd: REPO_ROOT,
       stdio: "pipe",
     })
