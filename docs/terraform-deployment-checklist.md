@@ -12,6 +12,8 @@ When generating Terraform (scaffold, incremental-fix, patches), agents MUST ensu
 | **IAM execution policy** | Terraform needs EKS, RDS, VPC, ECR, Secrets Manager, KMS, CloudTrail, etc. | Apply fails with permission errors |
 | **Secrets outside state** | RDS password, API keys in state = compliance risk | Use Secrets Manager or SSM SecureString; avoid `random_password` for prod DB |
 | **Globally unique names** | S3, CloudTrail bucket names are global | `BucketAlreadyExists` on apply |
+| **EKS IAM attachments** | When scaffolding EKS, **create** `aws_iam_role_policy_attachment` for cluster + node policies (AmazonEKSClusterPolicy, AmazonEKSWorkerNodePolicy, etc.) | Apply fails; cluster/node cannot assume role |
+| **KMS for encrypted resources** | When scaffolding RDS, Secrets Manager, S3, CloudTrail — **create** `aws_kms_key` and wire `kms_key_id`, `enable_key_rotation = true` | Default AWS keys; no compliance audit trail |
 | **Backend bootstrap** | S3 bucket and DynamoDB table must exist before first `terraform init` | Chicken-and-egg; provide `bootstrap-backend.sh` or equivalent |
 
 ---
@@ -20,7 +22,7 @@ When generating Terraform (scaffold, incremental-fix, patches), agents MUST ensu
 
 When producing Terraform patches or scaffolds for an assessed repo, include:
 
-1. **`terraform/iam-execution-policy.json`** — IAM policy document for the role/user running `terraform apply`
+1. **`terraform/iam-execution-policy.json`** — IAM policy document for the role/user running `terraform apply`. Prefer resource ARNs over `"Resource": "*"` per `docs/iam-least-privilege.md`.
 2. **`docs/iam-execution-requirements.md`** — How to attach the policy, use assume-role, or configure CI
 3. **`backend "s3"` block** — With comment: configure via `-backend-config=backend.hcl` or equivalent
 4. **Bootstrap instructions** — How to create S3 bucket + DynamoDB table for state before first apply
@@ -69,6 +71,10 @@ For production workloads, see `docs/terraform-production-guardrails.md`:
 
 ## See Also
 
+- `docs/terraform-architect-rules.md` — Core principles, naming, tags
+- `docs/terraform-iam-patterns.md` — Prefer AWS managed policies (EKS, RDS, Lambda, ECS)
+- `docs/terraform-kms-patterns.md` — Create KMS keys for RDS, Secrets Manager, S3, CloudTrail
 - `docs/terraform-apply-order.md` — Apply order and depends_on
 - `docs/terraform-production-guardrails.md` — Production safety
+- `docs/iam-least-privilege.md` — Avoid Resource: "*"; use ARN patterns (ELB, S3, EKS)
 - `docs/compliance-mapping.md` — Secrets in state gap

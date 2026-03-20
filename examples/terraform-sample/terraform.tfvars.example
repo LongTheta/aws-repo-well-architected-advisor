@@ -1,0 +1,33 @@
+# Example tfvars — copy to terraform.tfvars and adjust per environment
+
+project     = "sample-app"
+environment = "dev"
+aws_region  = "us-east-1"
+
+tags = {
+  Team = "platform"
+}
+
+# RDS
+rds_instance_class         = "db.t3.micro"
+rds_allocated_storage      = 20
+rds_backup_retention_period = 0
+rds_skip_final_snapshot    = true
+rds_engine_version         = "15.4"
+
+# DynamoDB
+dynamodb_point_in_time_recovery = false
+
+# Observability
+log_retention_days    = 14
+alarm_period_seconds  = 300
+
+# Lambda
+lambda_runtime = "nodejs20.x"
+
+# Prod example (uncomment and override)
+# environment = "prod"
+# rds_backup_retention_period = 7
+# rds_skip_final_snapshot    = false
+# dynamodb_point_in_time_recovery = true
+# log_retention_days = 30

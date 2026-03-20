@@ -32,7 +32,7 @@ Every security review must run these five detection areas. Each finding **must**
 | **Impact** | Lateral movement if credentials compromised; data exfiltration; privilege escalation |
 | **Remediation** | Replace wildcards with specific actions and resources; scope to bucket/prefix; add conditions where appropriate |
 
-**Patterns to flag:** `"*"`, `s3:*`, `dynamodb:*`, `ec2:*`, `lambda:*`, `"Resource": "*"`  
+**Patterns to flag:** `"*"`, `s3:*`, `dynamodb:*`, `ec2:*`, `lambda:*`, `"Resource": "*"` (prefer ARN patterns per `docs/iam-least-privilege.md`)  
 **Terraform:** `actions = ["*"]`, `resources = ["*"]` in `aws_iam_role_policy`  
 **CDK:** `actions: ['*']`, `resources: ['*']` in PolicyStatement  
 **CloudFormation:** `"Action": "*"`, `"Resource": "*"` in policy documents

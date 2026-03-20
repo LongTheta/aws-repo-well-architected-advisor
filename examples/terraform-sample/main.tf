@@ -1,17 +1,14 @@
-# Sample Terraform for IaC -> architecture graph parsing demo
-# Reference patterns only — guides what to add; not a full deployable stack.
-# See docs/observability.md, docs/runbook.md, docs/compliance-mapping.md
-# Deployment: docs/terraform-deployment-checklist.md, docs/terraform-production-guardrails.md
+# Sample Terraform — IaC reference patterns
+# See docs/terraform-deployment-checklist.md, docs/terraform-production-guardrails.md
+# KMS: kms.tf. See docs/terraform-kms-patterns.md.
 
 terraform {
   required_version = ">= 1.0"
   required_providers {
-    aws = { source = "hashicorp/aws", version = ">= 5.0" }
+    aws    = { source = "hashicorp/aws", version = ">= 5.0" }
     random = { source = "hashicorp/random", version = ">= 3.0" }
     archive = { source = "hashicorp/archive", version = ">= 2.0" }
   }
-  # Remote state: terraform init -backend-config=backend.hcl
-  # Bootstrap: create S3 bucket + DynamoDB table before first init. See docs/terraform-apply-order.md.
   backend "s3" {}
 }
 
@@ -20,15 +17,24 @@ provider "aws" {
 }
 
 locals {
-  name_prefix = "${var.project_name}-${var.environment}"
-  common_tags = {
+  name_prefix = "${var.project}-${var.environment}"
+  # Single source for tags: merge caller tags with standard env/project, then add Name per resource
+  common_tags = merge(var.tags, {
     Environment = var.environment
-    Project     = var.project_name
+    Project     = var.project
     CostCenter  = "platform"
+  })
+  # Resource name helpers — one place to change naming convention
+  resource_names = {
+    app_role   = "${local.name_prefix}-app-role"
+    app_policy = "${local.name_prefix}-app-policy"
+    api_handler = "${local.name_prefix}-api-handler"
+    rds_sg     = "${local.name_prefix}-rds-sg"
+    main_db    = "${local.name_prefix}-main-db"
+    cache      = "${local.name_prefix}-cache"
+    assets     = "${local.name_prefix}-assets"
   }
 }
-
-# --- Uniqueness pattern for globally unique names (S3, DynamoDB) ---
 
 resource "random_id" "suffix" {
   byte_length = 4
@@ -37,32 +43,47 @@ resource "random_id" "suffix" {
 # --- IAM ---
 
 resource "aws_iam_role" "app" {
-  name               = "${local.name_prefix}-app-role"
+  name               = local.resource_names.app_role
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
       Principal = { Service = "lambda.amazonaws.com" }
     }]
   })
-  tags = local.common_tags
+  tags = merge(local.common_tags, { Name = local.resource_names.app_role })
+}
+
+resource "aws_iam_role_policy_attachment" "app_basic_execution" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.app.name
 }
 
 resource "aws_iam_role_policy" "app" {
-  name   = "${local.name_prefix}-app-policy"
+  name   = local.resource_names.app_policy
   role   = aws_iam_role.app.id
+  # Scoped to this bucket only — per docs/iam-least-privilege.md
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["s3:GetObject", "s3:ListBucket"]
-      Resource = [aws_s3_bucket.assets.arn, "${aws_s3_bucket.assets.arn}/*"]
-    }]
+    Statement = [
+      {
+        Sid    = "ListBucket"
+        Effect = "Allow"
+        Action = ["s3:ListBucket"]
+        Resource = [aws_s3_bucket.assets.arn]
+      },
+      {
+        Sid    = "GetObject"
+        Effect = "Allow"
+        Action = ["s3:GetObject"]
+        Resource = ["${aws_s3_bucket.assets.arn}/*"]
+      }
+    ]
   })
 }
 
-# --- Lambda (deployable pattern: archive_file + source) ---
+# --- Lambda ---
 
 data "archive_file" "lambda" {
   type        = "zip"
@@ -71,16 +92,16 @@ data "archive_file" "lambda" {
 }
 
 resource "aws_lambda_function" "api" {
-  function_name    = "${local.name_prefix}-api-handler"
-  runtime          = "nodejs20.x"
+  function_name    = local.resource_names.api_handler
+  runtime          = var.lambda_runtime
   handler          = "index.handler"
   role             = aws_iam_role.app.arn
   filename         = data.archive_file.lambda.output_path
   source_code_hash = data.archive_file.lambda.output_base64sha256
-  tags             = local.common_tags
+  tags             = merge(local.common_tags, { Name = local.resource_names.api_handler })
 }
 
-# --- RDS (allocated_storage required; single-AZ minimal) ---
+# --- RDS ---
 
 data "aws_vpc" "default" {
   default = true
@@ -89,27 +110,29 @@ data "aws_vpc" "default" {
 data "aws_availability_zones" "available" {}
 
 resource "aws_security_group" "rds" {
-  name        = "${local.name_prefix}-rds-sg"
+  name        = local.resource_names.rds_sg
   description = "RDS access"
   vpc_id      = data.aws_vpc.default.id
-  tags        = local.common_tags
+  tags        = merge(local.common_tags, { Name = local.resource_names.rds_sg })
 }
 
 resource "aws_db_instance" "main" {
-  identifier         = "${local.name_prefix}-main-db-${random_id.suffix.hex}"
+  identifier         = "${local.resource_names.main_db}-${random_id.suffix.hex}"
   engine             = "postgres"
-  engine_version     = "15.4"
-  instance_class     = "db.t3.micro"
-  allocated_storage  = 20
-  storage_encrypted  = true
+  engine_version     = var.rds_engine_version
+  instance_class     = var.rds_instance_class
+  allocated_storage  = var.rds_allocated_storage
+  storage_encrypted   = true
+  kms_key_id         = aws_kms_key.keys["rds"].arn
   availability_zone  = data.aws_availability_zones.available.names[0]
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_name            = "appdb"
   username           = "appuser"
-  password           = random_password.db.result # For prod: use Secrets Manager. See docs/compliance-mapping.md.
-  skip_final_snapshot = true                     # For prod: set false. See docs/terraform-production-guardrails.md.
+  password           = random_password.db.result
+  skip_final_snapshot    = var.rds_skip_final_snapshot
+  backup_retention_period = var.rds_backup_retention_period
   enabled_cloudwatch_logs_exports = ["postgresql"]
-  tags               = local.common_tags
+  tags               = merge(local.common_tags, { Name = local.resource_names.main_db })
 }
 
 resource "random_password" "db" {
@@ -120,31 +143,45 @@ resource "random_password" "db" {
 # --- DynamoDB ---
 
 resource "aws_dynamodb_table" "cache" {
-  name         = "${local.name_prefix}-cache-${random_id.suffix.hex}"
+  name         = "${local.resource_names.cache}-${random_id.suffix.hex}"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "id"
+  server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.keys["dynamodb"].arn
+  }
+  point_in_time_recovery {
+    enabled = var.dynamodb_point_in_time_recovery
+  }
   attribute {
     name = "id"
     type = "S"
   }
-  tags = local.common_tags
+  tags = merge(local.common_tags, { Name = local.resource_names.cache })
 }
 
-# --- S3 (uniqueness-safe pattern) ---
+# --- S3 ---
 
 resource "aws_s3_bucket" "assets" {
-  bucket = "${local.name_prefix}-assets-${random_id.suffix.hex}"
-  tags   = local.common_tags
+  bucket = "${local.resource_names.assets}-${random_id.suffix.hex}"
+  tags   = merge(local.common_tags, { Name = local.resource_names.assets })
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
   bucket = aws_s3_bucket.assets.id
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.keys["s3"].arn
     }
   }
 }
 
-# --- ALB: When used, wire target group + listener + lambda permission.
-# See docs/observability.md for ALB 5XX alarm pattern.
+resource "aws_s3_bucket_public_access_block" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}

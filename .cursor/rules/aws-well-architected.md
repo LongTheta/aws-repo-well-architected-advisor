@@ -14,7 +14,7 @@ Evaluate repositories against AWS Well-Architected pillars and federal standards
 
 **Advisor role:** Analyze repo → infer workload → compare AWS options → recommend best-fit. Do NOT generate fixed architectures. Recommend only what is justified; avoid over-engineering; choose simplest viable first. Never assume default stack (EKS, ALB, etc.) for all repos.
 
-**Output location:** Always write findings, patches, and assessment docs to the repo being assessed. Do not write to the advisor repo. The assessed repo receives outputs; the advisor repo stays unchanged.
+**Output location:** Always write to the assessed repo or its platform-infra. **When repo is NOT ready for Terraform:** Create `{app-name}-platform-infra` with README ("You need to fix these"), `docs/assessment/`, and `fixes/` (one stub per finding). No Terraform until baseline met. See docs/core-ai-guidance.md § Output Location — Consistent Workflow.
 
 **Workload inference:** Determine workload_type, traffic_profile, statefulness, availability, security_level, cost_sensitivity before recommending. Output `workload_profile` with type, confidence, reasoning. See `docs/workload-type-profiles.md`.
 
@@ -44,6 +44,8 @@ When designing or recommending: consider full AWS service scope (no fixed shortl
 
 ## Terraform (Enforced)
 
+**Architect rules:** Security first, least privilege, cost-aware, minimal, explainable. Naming: `${var.project}-${var.environment}-<resource>`. Tags: always `merge(var.tags, { Name = "..." })`. See `docs/terraform-architect-rules.md`.
+
 **Apply order:** CloudTrail MUST have `depends_on` on S3 bucket policy; VPC interface endpoints MUST reference a security group defined before them. See `docs/terraform-apply-order.md`.
 
 **Deployment checklist:** When generating Terraform, follow `docs/terraform-deployment-checklist.md` — remote backend, IAM execution policy (`terraform/iam-execution-policy.json` + `docs/iam-execution-requirements.md`), secrets outside state, globally unique names (random_id for S3/CloudTrail).
@@ -51,6 +53,10 @@ When designing or recommending: consider full AWS service scope (no fixed shortl
 **Production:** See `docs/terraform-production-guardrails.md` for RDS, EKS, VPC guardrails.
 
 **DRY:** Prefer Terraform modules and `locals` for repeated patterns. See `docs/terraform-deployment-checklist.md` § DRY.
+
+**IAM:** Prefer resource ARNs over `"Resource": "*"` in policies. See `docs/iam-least-privilege.md` for ELB, S3, EKS patterns. When scaffolding EKS, **create** (not just document) `aws_iam_role_policy_attachment` for AmazonEKSClusterPolicy, AmazonEKSWorkerNodePolicy, AmazonEKS_CNI_Policy, AmazonEC2ContainerRegistryReadOnly. See `docs/terraform-iam-patterns.md`.
+
+**KMS:** When scaffolding RDS, Secrets Manager, S3, CloudTrail — **create** `aws_kms_key` and wire `kms_key_id`. See `docs/terraform-kms-patterns.md`.
 
 **DORA:** When assessing CI/CD, include optional `dora_assessment` (deployment frequency, lead time, change failure rate, MTTR). See `docs/dora-assessment.md`.
 

@@ -135,6 +135,47 @@ All outputs validate against JSON schemas in `schemas/`. CI fails if validation 
 
 ---
 
+## Configuration Model (Terraform Output)
+
+Terraform produced by the advisor follows a **variable-driven configuration model**. Users configure infrastructure through `.tfvars` files — not by editing resource files.
+
+| Layer | Purpose |
+|-------|---------|
+| **variables.tf** | Defines all configurable inputs (project, environment, feature flags, sizing, compute/database mode) |
+| **.tfvars files** | Where users make changes — `terraform.tfvars` or per-environment files (`dev.tfvars`, `prod.tfvars`) |
+| **Resource files** (.tf) | Consume variables only; do not edit unless extending the platform |
+
+### Example: dev.tfvars
+
+```hcl
+# dev.tfvars — copy to terraform.tfvars or use: terraform plan -var-file=dev.tfvars
+project     = "taskforge"
+environment = "dev"
+
+# Security defaults (override when justified)
+enable_cloudtrail = false
+eks_endpoint_public_access = true   # for kubectl from laptop
+
+# Workload-aware choices (exact variables depend on scaffolded workload)
+# compute_mode  = "ecs"      # or "eks", "lambda"
+# database_mode = "rds"      # or "dynamodb", "none"
+```
+
+Exact variables depend on the scaffolded architecture. See `terraform.tfvars.example` in the generated repo and `docs/terraform-architect-rules.md` for the variable-driven pattern.
+
+### How the Advisor Makes Decisions
+
+The advisor uses workload profiles (Startup, Federal, Brownfield, etc.) to recommend:
+
+- **Compute** — Lambda vs ECS vs EKS based on traffic, complexity, compliance
+- **Database** — DynamoDB vs RDS vs none based on consistency and scale needs
+- **Security** — KMS, CloudTrail, alarms — enabled when workload justifies
+- **Cost** — NAT optional, single-AZ default; multi-AZ when HA required
+
+All choices are exposed as variables so users can safely override defaults without modifying core Terraform.
+
+---
+
 ## Getting Started
 
 ### Prerequisites

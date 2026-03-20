@@ -248,3 +248,8 @@ Reusable prompts for common workflows. See `prompt-template.md` for full templat
 ```
 Assess the TaskForge stack: read taskforge-backend and taskforge-security, infer the full architecture, produce recommendations, and update this repo with assessments and Terraform patches.
 ```
+
+**App repo not ready for Terraform** — creates `{app-name}-platform-infra` with fixes stubs (no Terraform until baseline met):
+```
+Assess [app-repo-path]. Create {app-repo-name}-platform-infra with README ("You need to fix these"), docs/assessment/, fixes/ (one stub per finding). No Terraform until app meets baseline.
+```

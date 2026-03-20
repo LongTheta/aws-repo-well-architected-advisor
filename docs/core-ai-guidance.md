@@ -24,12 +24,33 @@ It produces evidence-based findings, control mappings, architecture decisions, a
 
 - **Findings, scorecard, review report** → `docs/assessment/` (or equivalent) in the assessed repo
 - **Terraform patches, incremental fixes** → `terraform/` (or IaC root) in the assessed repo
-- **IAM execution requirements (required for Terraform)** → `terraform/iam-execution-policy.json` and `docs/iam-execution-requirements.md` — the permissions needed for the role/user running Terraform apply (EKS, RDS, VPC, ECR, Secrets Manager, KMS, CloudTrail, etc.). MUST include when generating Terraform patches or scaffolds.
+- **IAM execution requirements (required for Terraform)** → `terraform/iam-execution-policy.json` and `docs/iam-execution-requirements.md` — the permissions needed for the role/user running Terraform apply (EKS, RDS, VPC, ECR, Secrets Manager, KMS, CloudTrail, etc.). MUST include when generating Terraform patches or scaffolds. Prefer resource ARNs over `"Resource": "*"` per `docs/iam-least-privilege.md`.
 - **Compliance mapping, runbooks** → `docs/` in the assessed repo
 
 The advisor repo remains unchanged. It provides guidance; the assessed repo receives the outputs.
 
 **Terraform deployment checklist:** When generating Terraform, follow `docs/terraform-deployment-checklist.md` — remote backend, IAM policy, secrets outside state, globally unique names.
+
+---
+
+## Output Location — Consistent Workflow (REQUIRED)
+
+**Apply the same workflow every time.** Do not vary by repo type.
+
+| Scenario | Output target | Action |
+|----------|---------------|--------|
+| **Multi-repo stack with existing platform-infra** (e.g. TaskForge: backend + security + platform-infra) | Existing `*-platform-infra` repo | Write assessment, Terraform patches, IAM requirements there. Run assessment from platform-infra. |
+| **App repo not ready for Terraform** (no infra yet; K8s-only, or app-only) | Create `{app-repo-name}-platform-infra` | Create directory with: README ("You need to fix these"), `docs/assessment/` (review-report.json, README), `fixes/` (one stub per finding: "You need to fix: [title] — apply in [app-repo path]"). Do NOT scaffold Terraform until app is ready. |
+| **App repo ready for Terraform** (has or needs infra) | Create `{app-repo-name}-platform-infra` | Create repo, scaffold Terraform, write assessment, IAM requirements there. |
+| **Single-repo with Terraform** | That repo | Write to `docs/assessment/`, `terraform/` in that repo. |
+
+**Rule when repo is NOT ready for AWS Terraform creation:** Always create `{app-repo-name}-platform-infra` with:
+- `README.md` — "You need to fix these" + findings table
+- `docs/assessment/review-report.json` — Full assessment
+- `docs/assessment/README.md` — Summary, top fixes
+- `fixes/F{n}-*.md` — One stub per finding: title, "apply in [path]", brief recommendation
+
+No Terraform until the app meets production baseline (cost tags, observability, probes, etc.). The fixes direct the user to apply changes in the app repo.
 
 ---
 
@@ -209,7 +230,11 @@ flowchart LR
 - `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` — Federal mode spec
 - `docs/terraform-apply-order.md` — **Enforced** Terraform apply-order rules (CloudTrail depends_on, VPC endpoints)
 - `docs/terraform-deployment-checklist.md` — **Enforced** Pre-deploy requirements (backend, IAM, secrets, uniqueness)
+- `docs/terraform-architect-rules.md` — Core principles, naming, tags (security first, least privilege, cost-aware, minimal)
+- `docs/terraform-iam-patterns.md` — Prefer `aws_iam_role_policy_attachment` + AWS managed policies (EKS, RDS, Lambda, ECS)
+- `docs/terraform-kms-patterns.md` — Create KMS keys for RDS, Secrets Manager, S3, CloudTrail; wire `kms_key_id`
 - `docs/terraform-production-guardrails.md` — Production safety (RDS, EKS, VPC)
+- `docs/iam-least-privilege.md` — Avoid Resource: "*"; use ARN patterns (ELB, S3, EKS)
 - `docs/dora-assessment.md` — DORA metrics (deployment frequency, lead time, MTTR, change failure rate)
 
 ---

@@ -50,3 +50,8 @@ Review my application repo for AWS Well-Architected alignment.
 ```
 Assess the TaskForge stack: read taskforge-backend and taskforge-security, infer the full architecture, produce recommendations, and update this repo with assessments and Terraform patches.
 ```
+
+**App repo not ready for Terraform** — creates `{app-name}-platform-infra` with fixes stubs:
+```
+Assess [app-repo-path]. Create {app-repo-name}-platform-infra with README ("You need to fix these"), docs/assessment/, and fixes/ (one stub per finding). No Terraform until app meets baseline. Follow docs/core-ai-guidance.md § Consistent Workflow.
+```

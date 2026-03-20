@@ -1,4 +1,5 @@
 node_modules/
+.terraform/
 .e2e-output/
 .patch-output*.json
 .patch-backups/
