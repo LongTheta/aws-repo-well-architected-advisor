@@ -43,15 +43,15 @@ This repo is an AI-powered advisor that evaluates repositories against AWS Well-
 ```mermaid
 flowchart TB
     subgraph Assessment
-        QR[/quick-review]
-        RA[/repo-assess]
-        FC[/federal-checklist]
-        QG[/quality-gate]
+        QR["/quick-review"]
+        RA["/repo-assess"]
+        FC["/federal-checklist"]
+        QG["/quality-gate"]
     end
     
     subgraph Build
-        DI[/design-and-implement]
-        IF[/incremental-fix]
+        DI["/design-and-implement"]
+        IF["/incremental-fix"]
     end
     
     RA -.-> DI

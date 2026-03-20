@@ -9,29 +9,29 @@ All commands supported by the AWS Repo Well-Architected Advisor. Defined in `.op
 ```mermaid
 flowchart TB
     subgraph Assessment
-        QR[/quick-review]
-        RA[/repo-assess]
-        FC[/federal-checklist]
-        GA[/gitops-audit]
-        QG[/quality-gate]
+        QR["/quick-review"]
+        RA["/repo-assess"]
+        FC["/federal-checklist"]
+        GA["/gitops-audit"]
+        QG["/quality-gate"]
     end
     
     subgraph Design
-        SD[/solution-discovery]
-        PD[/platform-design]
-        DI[/design-and-implement]
+        SD["/solution-discovery"]
+        PD["/platform-design"]
+        DI["/design-and-implement"]
     end
     
     subgraph Implementation
-        SC[/scaffold]
-        IF[/incremental-fix]
+        SC["/scaffold"]
+        IF["/incremental-fix"]
     end
     
     subgraph Utilities
-        V[/verify]
-        DS[/doc-sync]
-        CP[/checkpoint]
-        O[/orchestrate]
+        V["/verify"]
+        DS["/doc-sync"]
+        CP["/checkpoint"]
+        O["/orchestrate"]
     end
     
     SD --> PD

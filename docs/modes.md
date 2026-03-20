@@ -15,12 +15,12 @@ flowchart LR
     end
     
     subgraph Commands
-        C1[/quick-review]
-        C2[/repo-assess]
-        C3[/orchestrate]
-        C4[/design-and-implement]
-        C5[/scaffold]
-        C6[/federal-checklist]
+        C1["/quick-review"]
+        C2["/repo-assess"]
+        C3["/orchestrate"]
+        C4["/design-and-implement"]
+        C5["/scaffold"]
+        C6["/federal-checklist"]
     end
     
     QR --> C1
