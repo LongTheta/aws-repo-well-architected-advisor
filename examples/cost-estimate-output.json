@@ -111,13 +111,13 @@
     }
   ],
   "savings_opportunities": [
-    "NLB for high throughput",
-    "HTTP API for lower cost",
     "Reserved capacity",
-    "S3 Intelligent-Tiering",
     "Lifecycle policies",
+    "NLB for high throughput",
+    "On-demand for variable",
+    "S3 Intelligent-Tiering",
     "Reserved concurrency if steady",
-    "On-demand for variable"
+    "HTTP API for lower cost"
   ],
   "decision_score": 0.65,
   "service_options": [

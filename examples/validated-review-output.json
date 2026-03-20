@@ -10,167 +10,150 @@
   },
   "categories": {
     "security": {
-      "score": 4,
-      "rationale": "No IAM; no encryption config",
-      "evidence_found": ["terraform/vpc.tf"],
-      "missing_evidence": ["IAM roles", "encryption config"],
-      "key_risks": ["No IAM roles or policies defined"],
-      "recommended_actions": ["Add iam.tf with roles and least-privilege policies"]
+      "score": 8,
+      "rationale": "IAM roles with least-privilege; encryption at rest in terraform-sample; cost tags. Secrets Manager not yet in use.",
+      "evidence_found": [
+        "cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/iam.tf",
+        "examples/terraform-sample/main.tf"
+      ],
+      "missing_evidence": ["Secrets Manager or SSM SecureString for secrets"],
+      "key_risks": [],
+      "recommended_actions": ["Add aws_secretsmanager_secret for app secrets when needed"]
     },
     "reliability": {
-      "score": 3,
-      "rationale": "VPC has no subnets; deployment will fail",
-      "evidence_found": ["terraform/vpc.tf"],
-      "missing_evidence": ["Subnet configuration", "Multi-AZ"],
-      "key_risks": ["VPC has no subnet configuration"],
-      "recommended_actions": ["Add aws_subnet resources for public/private"]
+      "score": 9,
+      "rationale": "VPC with multi-AZ subnets; route tables; deployment can succeed.",
+      "evidence_found": [
+        "cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/vpc.tf"
+      ],
+      "missing_evidence": [],
+      "key_risks": [],
+      "recommended_actions": []
     },
     "cost_optimization": {
-      "score": 5,
-      "rationale": "Minimal tags; no cost allocation",
-      "evidence_found": ["terraform/vpc.tf"],
-      "missing_evidence": ["Cost allocation tags"],
-      "key_risks": ["No cost allocation tags"],
-      "recommended_actions": ["Add tags: Environment, Project, CostCenter"]
+      "score": 8,
+      "rationale": "Cost allocation tags (Environment, Project, CostCenter) on all resources.",
+      "evidence_found": [
+        "cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/vpc.tf",
+        "examples/terraform-sample/main.tf"
+      ],
+      "missing_evidence": ["VPC endpoints for S3/DynamoDB to reduce data transfer"],
+      "key_risks": [],
+      "recommended_actions": ["Add VPC endpoints where NAT Gateway traffic to AWS APIs"]
     },
     "operational_excellence": {
-      "score": 6,
-      "rationale": "CI present; plan only, no apply",
-      "evidence_found": [".github/workflows/plan.yml"],
-      "missing_evidence": ["Apply workflow", "approval gates"],
-      "key_risks": ["Terraform plan only; no apply workflow"],
-      "recommended_actions": ["Add apply workflow with manual approval for prod"]
+      "score": 8.5,
+      "rationale": "Terraform plan and apply workflows; apply has approval gate (environment: prod).",
+      "evidence_found": [
+        "cloud-architecture-ai-auditor/samples/sample_infra_repo/.github/workflows/plan.yml",
+        "cloud-architecture-ai-auditor/samples/sample_infra_repo/.github/workflows/apply.yml"
+      ],
+      "missing_evidence": ["Runbook documentation"],
+      "key_risks": [],
+      "recommended_actions": ["Add docs/runbook.md for operational procedures"]
+    },
+    "performance_efficiency": {
+      "score": 7,
+      "rationale": "Basic resources (ALB, Lambda, RDS, DynamoDB, S3); right-sized instance classes.",
+      "evidence_found": ["examples/terraform-sample/main.tf"],
+      "missing_evidence": ["Auto-scaling config", "Caching layer"],
+      "key_risks": [],
+      "recommended_actions": []
+    },
+    "observability": {
+      "score": 5,
+      "rationale": "No CloudWatch alarms or structured logging config in samples.",
+      "evidence_found": [],
+      "missing_evidence": ["CloudWatch alarms", "Structured logging", "Metrics"],
+      "key_risks": ["No alerting for critical paths"],
+      "recommended_actions": ["Add terraform/cloudwatch.tf with alarms for RDS, Lambda errors"]
+    },
+    "compliance_evidence_quality": {
+      "score": 5,
+      "rationale": "No compliance mapping or evidence documentation.",
+      "evidence_found": [],
+      "missing_evidence": ["Control-to-evidence mapping", "Compliance checklist"],
+      "key_risks": [],
+      "recommended_actions": ["Add docs/compliance-mapping.md for regulated workloads"]
     }
   },
-  "weighted_overall_score": 4.5,
-  "letter_grade": "D",
-  "production_readiness": "NOT_READY",
+  "weighted_overall_score": 7.4,
+  "letter_grade": "B",
+  "production_readiness": "READY",
   "production_baseline": {
     "required_components": [
       { "id": "networking_subnets", "component": "VPC subnet configuration", "category": "reliability" },
+      { "id": "network_isolation", "component": "Network isolation constructs", "category": "security" },
       { "id": "iam_roles", "component": "IAM roles and policies", "category": "security" },
+      { "id": "encryption_at_rest", "component": "Encryption for sensitive data", "category": "security" },
       { "id": "cost_allocation_tags", "component": "Cost allocation tags", "category": "cost_optimization" },
-      { "id": "cicd_apply", "component": "CI/CD with apply capability", "category": "operational_excellence" }
+      { "id": "cicd_apply", "component": "CI/CD with apply capability", "category": "operational_excellence" },
+      { "id": "approval_gate_prod", "component": "Approval gate for production", "category": "operational_excellence" }
     ],
-    "missing_components": [
-      { "component_id": "networking_subnets", "reason": "No aws_subnet resources; deployment will fail", "finding_ids": ["I1"] },
-      { "component_id": "iam_roles", "reason": "No iam.tf or IAM resources; security blocker", "finding_ids": ["I2"] }
-    ],
-    "not_ready_reason": "NOT_READY because: (1) VPC has no subnet configuration — deployment will fail without subnets. (2) No IAM roles or policies defined — security blocker; least privilege cannot be assessed."
+    "missing_components": []
   },
-  "confidence_level": "Strongly Inferred",
+  "confidence_level": "Confirmed",
   "findings": [
     {
-      "id": "I1",
-      "title": "VPC has no subnet configuration",
-      "summary": "VPC exists but no subnets; deployment will fail.",
-      "severity": "HIGH",
-      "category": "reliability",
-      "blocking_status": "deployment_blocker",
-      "affected_files": ["terraform/vpc.tf"],
-      "evidence": "No aws_subnet resources found; VPC exists but deployment will fail without subnets",
-      "impact": "Deployment will fail; workloads cannot be placed; no network isolation.",
-      "recommendation": "Add aws_subnet resources for public/private",
-      "remediation_plan": {
-        "steps": [
-          "Add aws_subnet resource blocks for public subnets (one per AZ)",
-          "Add aws_subnet resource blocks for private subnets (one per AZ)",
-          "Create aws_route_table_association for each subnet",
-          "Update terraform/vpc.tf and run terraform plan"
-        ],
-        "terraform_resources": ["aws_subnet", "aws_route_table_association"],
-        "example_code": "resource \"aws_subnet\" \"public\" {\n  vpc_id = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n  availability_zone = \"us-east-1a\"\n  map_public_ip_on_launch = true\n  tags = { Name = \"public-1a\" }\n}",
-        "dependencies": [],
-        "validation_steps": ["terraform plan succeeds", "Subnets appear in AWS console", "Deployment completes without subnet errors"]
-      },
-      "expected_score_impact": 0.69,
-      "implementation_effort": "medium",
-      "fix_priority": 1,
-      "evidence_type": "missing",
-      "confidence": "Strongly Inferred",
-      "role_filter": ["architect", "developer"]
-    },
-    {
-      "id": "I2",
-      "title": "No IAM roles or policies defined",
-      "summary": "No IAM roles or policies; least privilege cannot be assessed.",
-      "severity": "HIGH",
-      "category": "security",
-      "blocking_status": "security_blocker",
-      "affected_files": [],
-      "evidence": "No iam.tf or IAM resources found; least privilege cannot be assessed",
-      "impact": "Workloads may run with overly broad credentials; blast radius of compromise is high; least privilege cannot be enforced.",
-      "recommendation": "Add iam.tf with roles and least-privilege policies",
-      "remediation_plan": {
-        "steps": [
-          "Create iam.tf with aws_iam_role for CI, developer, and application",
-          "Add aws_iam_role_policy with least-privilege actions (no wildcards)",
-          "Create aws_iam_instance_profile if using EC2",
-          "Reference roles in compute/CI resources"
-        ],
-        "terraform_resources": ["aws_iam_role", "aws_iam_role_policy", "aws_iam_instance_profile"],
-        "example_code": "resource \"aws_iam_role\" \"app\" {\n  name = \"app-role\"\n  assume_role_policy = data.aws_iam_policy_document.assume.json\n}",
-        "dependencies": [],
-        "validation_steps": ["iam.tf applies successfully", "Roles visible in IAM console", "No wildcard * in policy actions"]
-      },
-      "expected_score_impact": 0.92,
-      "implementation_effort": "high",
-      "fix_priority": 2,
-      "evidence_type": "missing",
-      "confidence": "Strongly Inferred",
-      "role_filter": ["security", "architect"]
-    },
-    {
-      "id": "I3",
-      "title": "No cost allocation tags",
-      "summary": "VPC has minimal tags; no cost allocation.",
-      "severity": "MEDIUM",
+      "id": "O1",
+      "title": "Add VPC endpoints for cost optimization",
+      "summary": "NAT Gateway in use; VPC endpoints could reduce data transfer cost.",
+      "severity": "LOW",
       "category": "cost_optimization",
       "blocking_status": "improvement",
-      "affected_files": ["terraform/vpc.tf"],
-      "evidence": "VPC has minimal tags; no Environment, Project, or CostCenter tags observed",
-      "impact": "Cost allocation and chargeback cannot be performed; resource ownership unclear.",
-      "recommendation": "Add tags: Environment, Project, CostCenter",
+      "affected_files": ["cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/vpc.tf"],
+      "evidence": "No aws_vpc_endpoint resources; NAT Gateway traffic to S3/DynamoDB incurs data transfer cost",
+      "impact": "Higher data transfer costs; minor cost optimization opportunity.",
+      "recommendation": "Add VPC endpoints for S3, DynamoDB where applicable",
       "remediation_plan": {
-        "steps": [
-          "Add tags block to aws_vpc and all subnet resources",
-          "Include Environment, Project, CostCenter per infrastructure-governance-questionnaire",
-          "Apply tags to existing resources via terraform apply"
-        ],
-        "terraform_resources": [],
-        "example_code": "tags = {\n  Environment = \"dev\"\n  Project     = \"my-app\"\n  CostCenter  = \"platform\"\n}",
-        "dependencies": [],
-        "validation_steps": ["Tags visible in AWS Cost Explorer", "Cost allocation report shows tagged resources"]
+        "steps": ["Add aws_vpc_endpoint for S3", "Evaluate DynamoDB endpoint", "Update route tables"]
       },
-      "expected_score_impact": 0.46,
+      "expected_score_impact": 0.2,
       "implementation_effort": "low",
-      "fix_priority": 3,
       "evidence_type": "observed",
-      "confidence": "Confirmed",
-      "role_filter": ["developer", "operations"]
+      "confidence": "Confirmed"
+    },
+    {
+      "id": "O2",
+      "title": "Add CloudWatch alarms for observability",
+      "summary": "No alarms or metrics config in samples.",
+      "severity": "MEDIUM",
+      "category": "observability",
+      "blocking_status": "improvement",
+      "affected_files": ["examples/terraform-sample/main.tf"],
+      "evidence": "No aws_cloudwatch_metric_alarm or cloudwatch_log_group in terraform",
+      "impact": "No alerting for failures; operational visibility limited.",
+      "recommendation": "Add CloudWatch alarms for RDS, Lambda errors, and critical paths",
+      "remediation_plan": {
+        "steps": ["Create cloudwatch.tf", "Add alarms for RDS CPU, Lambda errors", "Add log groups"]
+      },
+      "expected_score_impact": 0.7,
+      "implementation_effort": "medium",
+      "evidence_type": "missing",
+      "confidence": "Confirmed"
     }
   ],
   "remediation_summary": {
-    "immediate_blockers": ["I1", "I2"],
-    "ordered_remediation_plan": ["I1", "I2", "I3"],
-    "ordering_reasoning": "I1 (deployment_blocker) first — VPC has no subnets; deployment will fail without subnet configuration. I2 (security_blocker) second — no IAM roles or policies; blocks production readiness. I3 (improvement, cost_optimization) third — cost allocation tags; non-blocking optimization.",
-    "first_3_fixes_to_apply": ["I1", "I2", "I3"],
+    "immediate_blockers": [],
+    "ordered_remediation_plan": ["O2", "O1"],
+    "ordering_reasoning": "O2 (observability) first — improves operational visibility. O1 (cost) second — optional optimization.",
+    "first_3_fixes_to_apply": ["O2", "O1"],
     "score_projection": {
-      "current_score": 4.5,
+      "current_score": 7.4,
       "score_after_each_fix": [
-        { "finding_id": "I1", "score_after": 5.2, "category_impact": { "reliability": 3.0 } },
-        { "finding_id": "I2", "score_after": 6.1, "category_impact": { "security": 3.0 } },
-        { "finding_id": "I3", "score_after": 6.6, "category_impact": { "cost_optimization": 2.0 } }
+        { "finding_id": "O2", "score_after": 8.1, "category_impact": { "observability": 2.0 } },
+        { "finding_id": "O1", "score_after": 8.3, "category_impact": { "cost_optimization": 0.5 } }
       ],
-      "score_after_top_3_fixes": 6.6,
-      "final_projected_score": 7.2
+      "score_after_top_3_fixes": 8.3,
+      "final_projected_score": 8.3
     }
   },
-  "evidence_found": ["terraform/vpc.tf", ".github/workflows/plan.yml"],
-  "missing_evidence": ["Subnet configuration", "IAM roles", "encryption config", "Apply workflow"],
-  "top_remediation_priorities": [
-    "Add subnet configuration",
-    "Add IAM roles and policies",
-    "Add cost allocation tags"
-  ]
+  "evidence_found": [
+    "cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/vpc.tf",
+    "cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/iam.tf",
+    "cloud-architecture-ai-auditor/samples/sample_infra_repo/.github/workflows/apply.yml",
+    "examples/terraform-sample/main.tf"
+  ],
+  "missing_evidence": ["Secrets Manager", "VPC endpoints", "CloudWatch alarms", "Compliance mapping"],
+  "top_remediation_priorities": ["Add CloudWatch alarms", "Add VPC endpoints"]
 }

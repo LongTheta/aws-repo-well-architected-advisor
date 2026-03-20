@@ -8,6 +8,15 @@
     ],
     "missing_components": []
   },
+  "categories": {
+    "security": { "score": 8, "rationale": "IAM and encryption in place; Secrets Manager optional" },
+    "reliability": { "score": 9, "rationale": "Multi-AZ subnets configured" },
+    "cost_optimization": { "score": 8, "rationale": "Tags on all resources; VPC endpoints optional" },
+    "operational_excellence": { "score": 8.5, "rationale": "CI/CD with plan and apply; approval gate for prod" },
+    "performance_efficiency": { "score": 7, "rationale": "Basic right-sized resources" },
+    "observability": { "score": 5, "rationale": "CloudWatch alarms not yet added" },
+    "compliance_evidence_quality": { "score": 5, "rationale": "Compliance mapping not documented" }
+  },
   "findings": [
     {
       "id": "R1",
@@ -15,7 +24,7 @@
       "severity": "LOW",
       "category": "cost_optimization",
       "blocking_status": "improvement",
-      "affected_files": ["terraform/vpc.tf"],
+      "affected_files": ["cloud-architecture-ai-auditor/samples/sample_infra_repo/terraform/vpc.tf"],
       "evidence": "NAT Gateway in use; VPC endpoints could reduce data transfer cost",
       "impact": "Higher data transfer costs; minor cost optimization opportunity.",
       "recommendation": "Add VPC endpoints for S3, DynamoDB where applicable",
@@ -32,14 +41,14 @@
     "ordering_reasoning": "R1 (improvement, cost) — optional optimization; non-blocking.",
     "first_3_fixes_to_apply": ["R1"],
     "score_projection": {
-      "current_score": 8.5,
+      "current_score": 7.4,
       "score_after_each_fix": [
-        { "finding_id": "R1", "score_after": 8.7, "category_impact": { "cost_optimization": 0.5 } }
+        { "finding_id": "R1", "score_after": 7.6, "category_impact": { "cost_optimization": 0.5 } }
       ],
-      "score_after_top_3_fixes": 8.7,
-      "final_projected_score": 8.7
+      "score_after_top_3_fixes": 7.6,
+      "final_projected_score": 7.6
     }
   },
-  "weighted_overall_score": 8.5,
+  "weighted_overall_score": 7.4,
   "letter_grade": "B"
 }
