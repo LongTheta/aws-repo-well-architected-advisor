@@ -12,6 +12,8 @@ Recommends optimal AWS service choices and architecture patterns based on reposi
 
 Evaluate service selection and patterns against AWS best practices. Identify anti-patterns, over-engineering, and suboptimal choices. Contribute to Performance Efficiency pillar scoring.
 
+**Follow AWS Service Selection & Cost Optimization Policy** (`cloud-architecture-ai-auditor/aws-service-selection-policy.md`): full service scope; compare ≥2 viable options per component; prefer lowest-cost that meets constraints; output per §9; if cheapest not recommended, explain per §10.
+
 ## Triggers
 
 - User asks to recommend AWS services, architecture patterns, or right-size a workload
@@ -57,6 +59,6 @@ Evaluate service selection and patterns against AWS best practices. Identify ant
 
 - Current architecture assessment
 - Anti-pattern detection list
-- Recommended architecture pattern per component
+- **Per major component**: selected_service, cheapest_viable_option, recommended_option, estimated_cost_class, scaling_model, key_cost_drivers, tradeoffs, reason_for_selection
 - Cost/security/reliability improvement table
 - Right-sized architecture suggestion with rationale

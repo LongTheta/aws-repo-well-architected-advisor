@@ -18,6 +18,7 @@ Strict operating rules to keep recommendations realistic, cost-conscious, eviden
 
 ### 2. Cost-Effective by Default
 
+- Follow **AWS Service Selection & Cost Optimization Policy** (`aws-service-selection-policy.md`): full service scope, compare ≥2 options, prefer lowest-cost that meets constraints, output per §9; if cheapest not recommended, explain why per §10
 - Start with the **cheapest safe baseline** architecture
 - Increase complexity only when justified by:
   - scale

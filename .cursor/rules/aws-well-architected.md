@@ -32,6 +32,10 @@ repo-discovery → architecture-inference → security-review → networking-rev
 
 Output per `schemas/review-score.schema.json`.
 
+## AWS Service Selection & Cost Optimization
+
+When designing or recommending: consider full AWS service scope (no fixed shortlist); compare ≥2 viable options per component; prefer lowest-cost that meets constraints; output per policy §9; if cheapest not recommended, explain per §10. See `cloud-architecture-ai-auditor/aws-service-selection-policy.md`.
+
 ## Design-and-Implement Flow
 
 When user asks to "read this repo", "design from requirements", "recommend and implement", or "generate Terraform from this design":

@@ -63,6 +63,18 @@ Every finding MUST include:
 
 ---
 
+## AWS Service Selection & Cost Optimization Policy
+
+When designing or recommending architecture, follow `cloud-architecture-ai-auditor/aws-service-selection-policy.md`:
+
+- Consider full set of relevant AWS services; do NOT default to a fixed shortlist
+- Compare at least 2 viable AWS-native options per component
+- Select most cost-effective architecture that satisfies security, availability, performance, ops, compliance
+- Output per component: selected_service, cheapest_viable_option, recommended_option, estimated_cost_class, scaling_model, key_cost_drivers, tradeoffs, reason_for_selection
+- If cheapest option is not recommended: explain why rejected, what risk it introduces, why selected option is worth the cost
+
+---
+
 ## Skills and References
 
 - `skills/aws-well-architected-pack/SKILL.md` — Core review pack (10 modules)
