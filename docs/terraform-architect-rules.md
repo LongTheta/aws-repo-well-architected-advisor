@@ -42,12 +42,22 @@ tags = merge(var.tags, {
 - **All customer-configurable choices** must be exposed through variables in `variables.tf`.
 - **Customers configure** via environment-specific `.tfvars` files — not by editing resource files.
 - **Resource files** consume variables and locals only; no direct edits required unless extending the platform.
+- **No hardcoded defaults** for customer-specific values (project, environment, aws_region, owner, sizing, RDS config, etc.) — require them via tfvars. See `docs/terraform-tfvars-templates.md` § variables.tf.
 - **Examples:** ECR repos, secrets workloads, CloudTrail options, KMS settings, RDS log exports — all via variables.
+
+---
+
+### tfvars Templates
+
+- **Always create** `dev.tfvars.example`, `stage.tfvars.example`, `prod.tfvars.example`
+- **Template-style only** — use `ADD_VALUE_HERE`, `REPLACE_WITH_SECURE_PASSWORD`; never guess customer values
+- See `docs/terraform-tfvars-templates.md` for full rules and section order
 
 ---
 
 ## See Also
 
+- `docs/terraform-tfvars-templates.md` — Environment-specific tfvars template rules
 - `docs/terraform-deployment-checklist.md` — Pre-deploy requirements, IAM, uniqueness, DRY
 - `docs/terraform-iam-patterns.md` — Prefer `aws_iam_role_policy_attachment` + AWS managed policies (EKS, RDS, Lambda, ECS)
 - `docs/terraform-apply-order.md` — Apply order and depends_on

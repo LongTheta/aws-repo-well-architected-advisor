@@ -31,6 +31,7 @@ Scaffolds AWS infrastructure repos from architecture decisions or review finding
 
 - Repo structure (directories, files)
 - Terraform or CDK scaffolding for recommended services
+- **tfvars templates**: `dev.tfvars.example`, `stage.tfvars.example`, `prod.tfvars.example` — template-style with `ADD_VALUE_HERE` and `REPLACE_WITH_SECURE_PASSWORD`; never guess customer values. See `docs/terraform-tfvars-templates.md`.
 - Required tags on all resources
 - Security defaults (private subnets, no 0.0.0.0/0, Secrets Manager for creds)
 - CI/CD skeleton (GitHub Actions or GitLab CI)

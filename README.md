@@ -142,26 +142,22 @@ Terraform produced by the advisor follows a **variable-driven configuration mode
 | Layer | Purpose |
 |-------|---------|
 | **variables.tf** | Defines all configurable inputs (project, environment, feature flags, sizing, compute/database mode) |
-| **.tfvars files** | Where users make changes — `terraform.tfvars` or per-environment files (`dev.tfvars`, `prod.tfvars`) |
+| **.tfvars files** | Where users make changes — per-environment templates (`dev.tfvars`, `stage.tfvars`, `prod.tfvars`) or `terraform.tfvars` |
 | **Resource files** (.tf) | Consume variables only; do not edit unless extending the platform |
 
-### Example: dev.tfvars
+### tfvars Templates
 
-```hcl
-# dev.tfvars — copy to terraform.tfvars or use: terraform plan -var-file=dev.tfvars
-project     = "taskforge"
-environment = "dev"
+Scaffolded Terraform **always** includes environment-specific tfvars templates:
 
-# Security defaults (override when justified)
-enable_cloudtrail = false
-eks_endpoint_public_access = true   # for kubectl from laptop
+| File | Purpose |
+|------|---------|
+| `dev.tfvars.example` | Copy to `dev.tfvars`; replace `ADD_VALUE_HERE` and `REPLACE_WITH_*` placeholders |
+| `stage.tfvars.example` | Copy to `stage.tfvars` |
+| `prod.tfvars.example` | Copy to `prod.tfvars` |
 
-# Workload-aware choices (exact variables depend on scaffolded workload)
-# compute_mode  = "ecs"      # or "eks", "lambda"
-# database_mode = "rds"      # or "dynamodb", "none"
-```
+Templates use **placeholder values only** — never guess customer-specific values. Section order: Core → Ownership → Required → Secrets → Architecture (when applicable) → Tags.
 
-Exact variables depend on the scaffolded architecture. See `terraform.tfvars.example` in the generated repo and `docs/terraform-architect-rules.md` for the variable-driven pattern.
+See `docs/terraform-tfvars-templates.md` for full rules.
 
 ### How the Advisor Makes Decisions
 

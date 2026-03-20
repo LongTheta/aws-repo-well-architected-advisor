@@ -106,7 +106,7 @@ Design flows apply **Service Selection** and **FinOps & Decision Optimization** 
 
 **Expected inputs**: Target architecture or review findings; optionally `infrastructure_config`
 
-**Expected outputs**: IaC files (Terraform/CDK), CI/CD configs (GitHub Actions, GitLab CI), README, runbooks. Marked as scaffolding — user reviews before apply.
+**Expected outputs**: IaC files (Terraform/CDK), CI/CD configs (GitHub Actions, GitLab CI), README, runbooks. **tfvars templates**: `dev.tfvars.example`, `stage.tfvars.example`, `prod.tfvars.example` with `ADD_VALUE_HERE` placeholders (see `docs/terraform-tfvars-templates.md`). Marked as scaffolding — user reviews before apply.
 
 **When to use**: Have design or findings; need IaC
 

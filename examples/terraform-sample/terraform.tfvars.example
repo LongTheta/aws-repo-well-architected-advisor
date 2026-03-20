@@ -1,11 +1,12 @@
 # Example tfvars — copy to terraform.tfvars and adjust per environment
+# Values marked ADD_VALUE_HERE must be replaced before apply.
 
-project     = "sample-app"
-environment = "dev"
-aws_region  = "us-east-1"
+environment = "ADD_VALUE_HERE"   # e.g. dev, prod
+project     = "ADD_VALUE_HERE"   # your project name
+aws_region  = "ADD_VALUE_HERE"   # e.g. us-east-1
 
 tags = {
-  Team = "platform"
+  Team = "ADD_VALUE_HERE"
 }
 
 # RDS

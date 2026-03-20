@@ -41,9 +41,12 @@ Provide:
 
 - `infra/` or `terraform/` directory structure
 - `main.tf`, `variables.tf`, `outputs.tf` (or CDK equivalents)
+- **tfvars templates**: `dev.tfvars.example`, `stage.tfvars.example`, `prod.tfvars.example` — template-style with `ADD_VALUE_HERE` and `REPLACE_WITH_SECURE_PASSWORD`; never guess customer values
 - Required tags on all resources
 - `.github/workflows/deploy.yml` or `.gitlab-ci.yml` skeleton
 - README with setup steps
+
+See `docs/terraform-tfvars-templates.md` for tfvars template rules.
 
 ---
 
