@@ -44,7 +44,7 @@ Realistic examples for common workflows.
 
 ---
 
-## Example 2: Designing Infrastructure for a New App
+## Example 2: Designing Infrastructure for a New App (vNext Lifecycle)
 
 **Scenario**: New app; need architecture and Terraform from requirements.
 
@@ -55,15 +55,16 @@ Realistic examples for common workflows.
    ```
    /design-and-implement
    ```
-3. Answer questionnaires:
+3. Advisor follows vNext lifecycle: Discover → Infer (app type, runtime, data patterns) → Model (normalized architecture) → Decide (platform selection, data strategy) → Design → Validate (preflight) → Generate.
+4. Answer questionnaires:
    - Project name, environment, owner, cost_center
    - vpc_cidr (e.g., 10.0.0.0/16)
    - Roles: CI, developer, auditor
    - Users, traffic, budget, compliance
-4. Advisor produces: solution brief, target architecture, Terraform/CDK files.
-5. Review and run `terraform plan` (apply is manual).
+5. Advisor produces: solution brief, architecture model, decision log, target architecture, Terraform/CDK files, testing plan, runbooks, cost estimate, verification checklist.
+6. Review and run `terraform plan` (apply is manual).
 
-**Expected output**: `solution-brief.json`, `terraform/` or `cdk/` directory, CI/CD config (e.g., `.github/workflows/`).
+**Expected output**: `solution-brief.json`, `terraform/` or `cdk/` directory, CI/CD config (e.g., `.github/workflows/`), runbooks, cost estimate.
 
 ---
 

@@ -129,14 +129,20 @@ Confirm the plugin loads and hooks work:
 Validate review output against the schema:
 
 ```bash
-# Unix/macOS
+# Using npm script (uses ajv-cli from devDependencies)
+npm run validate
+
+# Or with custom path
+npx ajv-cli validate -s schemas/review-score.schema.json -d path/to/review-output.json
+
+# Unix/macOS script
 ./scripts/validate-review-output.sh [path-to.json]
 
-# Windows PowerShell
+# Windows PowerShell script
 .\scripts\validate-review-output.ps1 [path-to.json]
 ```
 
-Default path: `examples/validated-review-output.json`. Requires Node.js and `npx`.
+Default path: `examples/validated-review-output.json`. Requires Node.js and `npm install` (ajv-cli is a devDependency).
 
 ---
 

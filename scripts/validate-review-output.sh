@@ -20,5 +20,5 @@ if [ ! -f "$DATA" ]; then
 fi
 
 echo "Validating $DATA against $SCHEMA..."
-npx --yes ajv validate -s "$SCHEMA" -d "$DATA"
+npx ajv-cli validate -s "$SCHEMA" -d "$DATA"
 echo "Validation passed."

@@ -9,7 +9,7 @@ How to contribute to the AWS Repo Well-Architected Advisor.
 1. Clone the repo.
 2. Run `npm install` and `cd .opencode && bun install` (or `npm install`).
 3. Run `npm test` to verify tests pass.
-4. Run `./scripts/validate-review-output.sh examples/validated-review-output.json` to verify schema.
+4. Run `npm run validate` or `./scripts/validate-review-output.sh examples/validated-review-output.json` to verify schema.
 
 ---
 
@@ -47,7 +47,7 @@ How to contribute to the AWS Repo Well-Architected Advisor.
 
 1. Edit the schema file.
 2. Update `examples/validated-review-output.json` (or create a new example) to match.
-3. Run `./scripts/validate-review-output.sh` to verify.
+3. Run `npm run validate` or `./scripts/validate-review-output.sh` to verify.
 4. Update docs that reference the schema.
 
 ---

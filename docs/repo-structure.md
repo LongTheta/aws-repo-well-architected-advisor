@@ -110,6 +110,7 @@ Documentation.
 |------|---------|------|
 | `docs/AI-CLOUD-ARCHITECT-AGENT.md` | v2 agent spec | Docs |
 | `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` | v3 NIST/DoD overlay | Docs |
+| `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` | vNext: end-to-end implementation engine | Docs |
 | `docs/core-ai-guidance.md` | Canonical AI guidance (AGENTS.md, CLAUDE.md, .cursor/rules) | Docs |
 | `docs/architecture.md` | Architecture overview | Docs |
 | `docs/commands.md` | Command reference | Docs |

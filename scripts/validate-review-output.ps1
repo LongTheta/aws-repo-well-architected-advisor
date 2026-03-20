@@ -22,5 +22,5 @@ if (-not (Test-Path $Data)) {
 }
 
 Write-Host "Validating $Data against $Schema..."
-npx --yes ajv validate -s $Schema -d $Data
+npx ajv-cli validate -s $Schema -d $Data
 Write-Host "Validation passed."

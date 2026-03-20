@@ -15,6 +15,7 @@ This is the AWS Repo Well-Architected Advisor. It evaluates repositories against
 ## Key Files
 
 - `docs/core-ai-guidance.md` — Canonical AI guidance (single source of truth)
+- `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` — vNext: full lifecycle implementation engine
 - `AGENTS.md` — OpenCode agent definitions
 - `.claude/CLAUDE.md` — Claude Code instructions
 - `.cursor/rules/aws-well-architected.md` — Cursor rule for IaC review

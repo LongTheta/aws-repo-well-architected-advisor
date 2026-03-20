@@ -3,6 +3,7 @@
   "instructions": [
     "docs/AI-CLOUD-ARCHITECT-AGENT.md",
     "docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md",
+    "docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md",
     "docs/modes.md",
     "skills/aws-well-architected-pack/SKILL.md",
     "aws-repo-scaffolder/SKILL.md",

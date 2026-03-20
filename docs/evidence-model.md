@@ -4,6 +4,33 @@ How findings are tagged and why the advisor never claims compliance from code al
 
 ---
 
+## Evidence Type Flow
+
+```mermaid
+flowchart TD
+    subgraph EvidenceTypes
+        O[observed]
+        I[inferred]
+        M[missing]
+        C[contradictory]
+        U[unverifiable]
+    end
+    
+    subgraph Confidence
+        CF[Confirmed]
+        SI[Strongly Inferred]
+        A[Assumed]
+    end
+    
+    O --> CF
+    I --> SI
+    M --> A
+    C --> A
+    U --> A
+```
+
+---
+
 ## evidence_type Values
 
 | Value | Definition | When to Use |

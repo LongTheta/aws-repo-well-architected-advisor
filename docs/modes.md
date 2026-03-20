@@ -2,11 +2,41 @@
 
 Per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD §12. Modes determine scope, depth, and standards overlay.
 
+```mermaid
+flowchart LR
+    subgraph Modes
+        QR[QUICK_REVIEW]
+        DA[DEEP_ANALYSIS]
+        BM[BUILD_MODE]
+        FM[FEDERAL_MODE]
+        DZ[DOD_ZERO_TRUST]
+        CO[COST_OPTIMIZED]
+        HA[HIGH_AVAILABILITY]
+    end
+    
+    subgraph Commands
+        C1[/quick-review]
+        C2[/repo-assess]
+        C3[/orchestrate]
+        C4[/design-and-implement]
+        C5[/scaffold]
+        C6[/federal-checklist]
+    end
+    
+    QR --> C1
+    DA --> C2
+    DA --> C3
+    BM --> C4
+    BM --> C5
+    FM --> C6
+    DZ --> C6
+```
+
 | Mode | Command(s) | Behavior |
 |------|------------|----------|
 | **QUICK_REVIEW** | `/quick-review` | Light assessment: discovery → top risks → score. Skip full multi-pass. Output: grade, readiness, top 5 findings. |
 | **DEEP_ANALYSIS** | `/repo-assess`, `/orchestrate` | Full multi-pass: discovery → standards mapping → risk/gap → architecture decisions → implementation plan → validation → output. |
-| **BUILD_MODE** | `/design-and-implement`, `/scaffold` | Design and generate IaC. Read repo → requirements → architecture → Terraform/CDK. |
+| **BUILD_MODE** | `/design-and-implement`, `/scaffold` | vNext lifecycle: Discover → Infer → Model → Decide → Design → Validate → Generate. IaC + runbooks + testing plan + cost estimate. |
 | **FEDERAL_MODE** | `/federal-checklist` | NIST 800-series + DoD overlay. Control mapping, NIST_ALIGNMENT, DOD_ALIGNMENT. Allowed claims only. |
 | **DOD_ZERO_TRUST_MODE** | `/federal-checklist` (DoD focus) | Same as FEDERAL_MODE; emphasize DoD Zero Trust pillars (User, Device, Network, Application, Data, Visibility, Automation). |
 | **COST_OPTIMIZED** | `/repo-assess` (cost focus) | Review with Cost pillar weighted higher; cost-focused recommendations. |
@@ -49,9 +79,9 @@ Per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD §12. Modes determine scope, depth, and st
 
 ### BUILD_MODE
 
-- **What changes**: Design and IaC generation; read repo → requirements → architecture → Terraform/CDK
-- **When to use**: Greenfield design, scaffold from requirements
-- **Outputs**: Solution brief, target architecture, IaC files
+- **What changes**: vNext lifecycle; design and IaC generation; read repo → infer app → model → decide → design → validate → generate. Includes runbooks, testing plan, cost estimate, verification checklist.
+- **When to use**: Greenfield design, scaffold from requirements, full implementation
+- **Outputs**: Solution brief, architecture model, decision log, target architecture, IaC files, runbooks, testing plan, cost estimate
 - **Limitations**: Does not run `terraform apply`; user applies manually
 
 ### FEDERAL_MODE / DOD_ZERO_TRUST_MODE

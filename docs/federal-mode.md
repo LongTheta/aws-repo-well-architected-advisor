@@ -105,6 +105,28 @@ For formal authorization or assessment work, beyond repo review:
 
 ## Control Mapping Categories
 
+```mermaid
+flowchart TB
+    subgraph ControlCategories
+        AC[Access Control / Identity]
+        AU[Audit / Logging / Monitoring]
+        CM[Configuration / Change Control]
+        SC[System / Communications Protection]
+        SU[Supply Chain / CI-CD Security]
+        CP[Contingency / Resilience]
+    end
+    
+    subgraph ZeroTrustPillars["Zero Trust Alignment"]
+        U[User]
+        D[Device]
+        N[Network]
+        A[Application]
+        DA[Data]
+        V[Visibility]
+        AU2[Automation]
+    end
+```
+
 When federal mode runs, findings are mapped to:
 
 | Category | Examples |

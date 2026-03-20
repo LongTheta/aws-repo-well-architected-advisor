@@ -73,6 +73,8 @@ Terraform infrastructure repo. Pre-production readiness check.
 A schema-conformant JSON example is in `examples/validated-review-output.json`. Validate any review output with:
 
 ```bash
+npm run validate
+# or with custom path:
 ./scripts/validate-review-output.sh path/to/review-output.json
 ```
 

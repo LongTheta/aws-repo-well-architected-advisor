@@ -6,7 +6,41 @@ How the AWS Repo Well-Architected Advisor works.
 
 ## Purpose
 
-The advisor evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It produces evidence-based findings, control mappings, architecture decisions, and production-ready Terraform/CDK scaffolding. It operates as a Principal Cloud Architect and federal-grade DevSecOps reviewer.
+The advisor evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a **full lifecycle implementation engine** (vNext): translating repository reality, user requirements, and platform constraints into a deployable, validated, observable, and operable AWS platform. It produces evidence-based findings, control mappings, architecture decisions, runbooks, and production-ready Terraform/CDK scaffolding. It operates as a Principal Cloud Architect and federal-grade DevSecOps reviewer.
+
+---
+
+## vNext Lifecycle (11 Steps)
+
+Per `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md`, design-and-implement and scaffold workflows follow:
+
+```mermaid
+flowchart TB
+    D1[1. Discover] --> D2[2. Infer]
+    D2 --> D3[3. Model]
+    D3 --> D4[4. Decide]
+    D4 --> D5[5. Design]
+    D5 --> D6[6. Validate]
+    D6 --> D7[7. Generate]
+    D7 --> D8[8. Verify]
+    D8 --> D9[9. Operate]
+    D9 --> D10[10. Document]
+    D10 --> D11[11. Improve]
+```
+
+| Step | Purpose |
+|------|---------|
+| 1. Discover | Analyze repo and inputs |
+| 2. Infer | Determine application architecture (app type, runtime, data patterns) |
+| 3. Model | Build normalized architecture model (app_type, trust_boundary, traffic_profile, availability_target, etc.) |
+| 4. Decide | Make architecture decisions (platform selection, data strategy) |
+| 5. Design | Produce target architecture (environment/account strategy, bootstrap layer) |
+| 6. Validate | Preflight checks (CIDR, AZ, quotas, HA) before generation |
+| 7. Generate | Terraform/CDK + CI/CD + configs |
+| 8. Verify | Testing + validation plan |
+| 9. Operate | Observability + runbooks |
+| 10. Document | Evidence + audit + onboarding |
+| 11. Improve | Roadmap + optimization plan |
 
 ---
 

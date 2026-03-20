@@ -56,6 +56,7 @@ If Ravvix supports project instructions:
 |------|---------|
 | `docs/core-ai-guidance.md` | **Canonical** AI guidance (single source of truth) |
 | `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` | Full agent spec (NIST/DoD) |
+| `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` | vNext: full lifecycle implementation engine |
 | `AGENTS.md` | OpenCode agent definitions |
 | `.claude/CLAUDE.md` | Claude Code instructions (adapt for Ravvix) |
 | `.cursor/rules/aws-well-architected.md` | Cursor rules (if Ravvix supports) |

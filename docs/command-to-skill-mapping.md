@@ -2,16 +2,36 @@
 
 Deterministic mapping from commands to skill graphs.
 
+## Overview
+
+```mermaid
+flowchart TB
+    subgraph repo-assess["/repo-assess"]
+        RD[repo-discovery] --> AI[architecture-inference]
+        AI --> SR[security-review]
+        SR --> NR[networking-review]
+        NR --> OR[observability-review]
+        OR --> SC[scoring]
+        SC --> RP[report]
+    end
+    
+    subgraph design-implement["/design-and-implement"]
+        RD2[repo-discovery] --> SD[solution-discovery]
+        SD --> PD[platform-design]
+        PD --> SC2[scaffold]
+    end
+```
+
 ## /repo-assess
 
-```
-repo-discovery
-  → architecture-inference
-  → security-review
-  → networking-review
-  → observability-review
-  → scoring (review-score)
-  → report (report-template)
+```mermaid
+flowchart LR
+    RD[repo-discovery] --> AI[architecture-inference]
+    AI --> SR[security-review]
+    SR --> NR[networking-review]
+    NR --> OR[observability-review]
+    OR --> SC[scoring]
+    SC --> RP[report]
 ```
 
 ## /solution-discovery

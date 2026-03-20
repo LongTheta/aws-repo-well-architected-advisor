@@ -61,6 +61,13 @@ Tests cover: schema validation, review-score logic, install script presence.
 
 ## Adding a New Skill
 
+```mermaid
+flowchart LR
+    A[Create SKILL.md] --> B[Add to opencode.json]
+    B --> C[Create/Extend Agent]
+    C --> D[Document in commands.md]
+```
+
 1. Create a `SKILL.md` file (e.g., `skills/my-skill/SKILL.md`).
 2. Follow the SKILL.md format:
    - Frontmatter: `name`, `description`, `risk_tier`
@@ -135,6 +142,7 @@ When updating core AI guidance:
 1. Edit `docs/core-ai-guidance.md` first (canonical source)
 2. Sync AGENTS.md, .claude/CLAUDE.md, .cursor/rules/aws-well-architected.md to match
 3. Preserve tool-specific conventions (OpenCode agents, Claude project instructions, Cursor globs)
+4. Agent specs: v2 (`AI-CLOUD-ARCHITECT-AGENT.md`), v3 NIST/DoD (`AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md`), vNext (`AI-CLOUD-ARCHITECT-AGENT-VNEXT.md`)
 
 ---
 

@@ -4,6 +4,44 @@ All commands supported by the AWS Repo Well-Architected Advisor. Defined in `.op
 
 ---
 
+## Command Flow Overview
+
+```mermaid
+flowchart TB
+    subgraph Assessment
+        QR[/quick-review]
+        RA[/repo-assess]
+        FC[/federal-checklist]
+        GA[/gitops-audit]
+        QG[/quality-gate]
+    end
+    
+    subgraph Design
+        SD[/solution-discovery]
+        PD[/platform-design]
+        DI[/design-and-implement]
+    end
+    
+    subgraph Implementation
+        SC[/scaffold]
+        IF[/incremental-fix]
+    end
+    
+    subgraph Utilities
+        V[/verify]
+        DS[/doc-sync]
+        CP[/checkpoint]
+        O[/orchestrate]
+    end
+    
+    SD --> PD
+    PD --> SC
+    DI --> SC
+    RA --> IF
+```
+
+---
+
 ## /quick-review
 
 **What it does**: Light assessment. Discovery → top risks → score. Skips full multi-pass.
@@ -62,11 +100,11 @@ All commands supported by the AWS Repo Well-Architected Advisor. Defined in `.op
 
 ## /scaffold
 
-**What it does**: Generate IaC from architecture. Uses aws-repo-scaffolder. Produces Terraform, CDK, or CloudFormation plus CI/CD configs.
+**What it does**: Generate IaC from architecture per vNext. Uses aws-repo-scaffolder. Produces Terraform, CDK, or CloudFormation plus CI/CD configs. Includes: VPC, subnets, security groups, KMS, IAM/IRSA, observability (logs, metrics, alarms), CI/CD with SAST, dependency scan, image scan, IaC scan, SBOM. Tagging enforced. Preflight validation before generation.
 
 **Expected inputs**: Target architecture or review findings; optionally `infrastructure_config`
 
-**Expected outputs**: IaC files (Terraform/CDK), CI/CD configs (GitHub Actions, GitLab CI), README. Marked as scaffolding — user reviews before apply.
+**Expected outputs**: IaC files (Terraform/CDK), CI/CD configs (GitHub Actions, GitLab CI), README, runbooks. Marked as scaffolding — user reviews before apply.
 
 **When to use**: Have design or findings; need IaC
 
@@ -76,13 +114,13 @@ All commands supported by the AWS Repo Well-Architected Advisor. Defined in `.op
 
 ## /design-and-implement
 
-**What it does**: End-to-end flow. (1) repo-discovery, (2) solution-discovery (questionnaires), (3) platform-design, (4) scaffold. MUST collect: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor).
+**What it does**: End-to-end flow per vNext lifecycle. (1) Discover repo and inputs, (2) Infer application architecture, (3) Model normalized architecture, (4) Decide (platform selection, data strategy), (5) Design target architecture, (6) Validate preflight, (7) Generate Terraform/CDK + CI/CD. MUST collect: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). Produces runbooks, testing plan, cost estimate, verification checklist.
 
 **Expected inputs**: Repo context; user answers to questionnaires
 
-**Expected outputs**: Solution brief, target architecture, IaC files
+**Expected outputs**: Solution brief, architecture model, decision log, target architecture, IaC files, testing plan, runbooks, cost estimate, verification checklist
 
-**When to use**: Read repo → requirements → recommend → code in one flow
+**When to use**: Read repo → requirements → recommend → code in one flow; full lifecycle implementation
 
 **Example prompt**: "Run /design-and-implement" or "Read this repo, ask requirements, and generate Terraform"
 

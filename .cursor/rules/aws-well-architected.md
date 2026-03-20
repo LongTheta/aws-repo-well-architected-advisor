@@ -43,3 +43,7 @@ When user asks to "read this repo", "design from requirements", "recommend and i
 ## Commands
 
 /quick-review, /repo-assess, /solution-discovery, /platform-design, /scaffold, /design-and-implement, /incremental-fix, /federal-checklist, /gitops-audit, /quality-gate, /verify, /doc-sync
+
+## vNext Lifecycle (design-and-implement, scaffold)
+
+Discover → Infer → Model → Decide → Design → Validate → Generate → Verify → Operate → Document → Improve. See `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md`.

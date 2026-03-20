@@ -6,7 +6,7 @@ Evidence-based repository architecture reviews for AWS Well-Architected pillars,
 
 ## Summary
 
-This repo is an AI-powered advisor that evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It produces structured, evidence-based findings with production-readiness verdicts. It never assumes compliance from code alone; every finding is tagged with evidence type and confidence.
+This repo is an AI-powered advisor that evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a **full lifecycle implementation engine** (vNext): discover → infer → model → decide → design → validate → generate → verify → operate → document → improve. It produces structured, evidence-based findings, deployable Terraform/CDK, runbooks, and production-readiness verdicts. It never assumes compliance from code alone; every finding is tagged with evidence type and confidence.
 
 ---
 
@@ -14,10 +14,12 @@ This repo is an AI-powered advisor that evaluates repositories against AWS Well-
 
 1. **Assesses** repositories (IaC, CI/CD, Kubernetes) for Well-Architected alignment
 2. **Discovers** business and infrastructure requirements via questionnaires
-3. **Designs** target architectures from requirements
-4. **Scaffolds** Terraform, CDK, or CloudFormation with security defaults
-5. **Reviews** for federal alignment (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps)
-6. **Enforces** quality gates (READY / CONDITIONAL / NOT_READY) and can block `git push` when configured
+3. **Models** application architecture (app type, runtime, data patterns, scaling) into a normalized architecture model
+4. **Designs** target architectures with platform selection (EKS/ECS/Lambda/EC2), data strategy, environment/account strategy
+5. **Validates** preflight (CIDR, AZ, quotas, HA) before generation
+6. **Scaffolds** Terraform, CDK, or CloudFormation with security defaults, observability, CI/CD, runbooks
+7. **Reviews** for federal alignment (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps)
+8. **Enforces** quality gates (READY / CONDITIONAL / NOT_READY) and can block `git push` when configured
 
 ---
 
@@ -37,6 +39,24 @@ This repo is an AI-powered advisor that evaluates repositories against AWS Well-
 ---
 
 ## Supported Workflows
+
+```mermaid
+flowchart TB
+    subgraph Assessment
+        QR[/quick-review]
+        RA[/repo-assess]
+        FC[/federal-checklist]
+        QG[/quality-gate]
+    end
+    
+    subgraph Build
+        DI[/design-and-implement]
+        IF[/incremental-fix]
+    end
+    
+    RA -.-> DI
+    RA -.-> IF
+```
 
 1. **Quick review** — Light assessment, top 5 findings (`/quick-review`)
 2. **Full assessment** — Multi-pass review, scorecard, findings (`/repo-assess`)
@@ -201,6 +221,8 @@ See [docs/federal-mode.md](docs/federal-mode.md).
 Validate output:
 
 ```bash
+npm run validate
+# or with custom path:
 ./scripts/validate-review-output.sh path/to/review-output.json
 ```
 
@@ -231,6 +253,7 @@ Validate output:
 | [docs/core-ai-guidance.md](docs/core-ai-guidance.md) | Canonical AI guidance (AGENTS.md, CLAUDE.md, .cursor/rules) |
 | [docs/AI-CLOUD-ARCHITECT-AGENT.md](docs/AI-CLOUD-ARCHITECT-AGENT.md) | v2 agent spec: multi-pass reasoning, evidence model |
 | [docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md](docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md) | v3 NIST/DoD overlay |
+| [docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md](docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md) | vNext: end-to-end implementation engine, 11-step lifecycle |
 | [docs/modes.md](docs/modes.md) | Mode routing |
 | [.opencode/opencode.json](.opencode/opencode.json) | Commands, agents, plugin |
 | [skills/aws-well-architected-pack/](skills/aws-well-architected-pack/) | 10 specialist modules |

@@ -10,6 +10,7 @@ OpenCode loads instructions from the config file (`opencode.json` or `.opencode/
 
 - `docs/AI-CLOUD-ARCHITECT-AGENT.md` — Base agent spec
 - `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` — NIST/DoD overlay
+- `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` — vNext: full lifecycle implementation engine (11-step lifecycle)
 - `docs/modes.md` — Mode routing
 - `skills/aws-well-architected-pack/SKILL.md` — Core skill pack
 - `aws-repo-scaffolder/SKILL.md` — IaC generation
