@@ -63,7 +63,7 @@ Current system based on repo evidence. Tag each: **Observed** / **Inferred** / *
 | IAM/security model | [Roles, policies, secrets, encryption] | Observed / Inferred / Missing |
 | Observability setup | [CloudWatch, Prometheus, Grafana] | Observed / Inferred / Missing |
 
-*[Optional: ASCII or Mermaid diagram]*
+*[Mermaid diagram per docs/diagram-conventions.md — inferred architecture template]*
 
 ---
 

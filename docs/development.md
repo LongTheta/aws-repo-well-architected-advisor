@@ -142,7 +142,7 @@ When updating core AI guidance:
 1. Edit `docs/core-ai-guidance.md` first (canonical source)
 2. Sync AGENTS.md, .claude/CLAUDE.md, .cursor/rules/aws-well-architected.md to match
 3. Preserve tool-specific conventions (OpenCode agents, Claude project instructions, Cursor globs)
-4. Agent specs: v2 (`AI-CLOUD-ARCHITECT-AGENT.md`), v3 NIST/DoD (`AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md`), vNext (`AI-CLOUD-ARCHITECT-AGENT-VNEXT.md`)
+4. Agent specs: v5 (`AI-CLOUD-ARCHITECT-AGENT-V5.md`) primary; v2 (`AI-CLOUD-ARCHITECT-AGENT.md`), v3 NIST/DoD (`AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md`)
 
 ---
 

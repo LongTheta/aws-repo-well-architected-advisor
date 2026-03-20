@@ -1,0 +1,91 @@
+{
+  "organization_id": "o-ct",
+  "management_account": {
+    "account_id": "111111111111",
+    "name": "Management"
+  },
+  "shared_accounts": [
+    {
+      "account_id": "222222222222",
+      "purpose": "audit",
+      "name": "Audit"
+    },
+    {
+      "account_id": "333333333333",
+      "purpose": "log-archive",
+      "name": "Log Archive"
+    }
+  ],
+  "workload_accounts": [
+    {
+      "account_id": "444444444444",
+      "environment": "dev",
+      "ou_path": "Workloads/Dev",
+      "name": "Dev"
+    },
+    {
+      "account_id": "555555555555",
+      "environment": "prod",
+      "ou_path": "Workloads/Prod",
+      "name": "Prod"
+    }
+  ],
+  "ous": [
+    {
+      "id": "root",
+      "name": "Root",
+      "parent_id": ""
+    },
+    {
+      "id": "ou-workloads",
+      "name": "Workloads",
+      "parent_id": "root"
+    },
+    {
+      "id": "ou-dev",
+      "name": "Dev",
+      "parent_id": "ou-workloads"
+    },
+    {
+      "id": "ou-prod",
+      "name": "Prod",
+      "parent_id": "ou-workloads"
+    }
+  ],
+  "environment_mapping": {
+    "dev": "444444444444",
+    "prod": "555555555555"
+  },
+  "control_tower_managed": true,
+  "enrolled_accounts": [
+    "444444444444",
+    "555555555555"
+  ],
+  "guardrail_context": {
+    "preventive": [
+      "SCP",
+      "Guardrails"
+    ],
+    "detective": [
+      "Config",
+      "CloudTrail"
+    ]
+  },
+  "cross_account_roles": [
+    {
+      "role_name": "AWSControlTowerExecution",
+      "trusted_account": "111111111111",
+      "purpose": "control-tower"
+    },
+    {
+      "role_name": "OrganizationAccountAccessRole",
+      "trusted_account": "111111111111",
+      "purpose": "bootstrap"
+    }
+  ],
+  "logging_topology": {
+    "audit_account": "222222222222",
+    "log_archive_account": "333333333333",
+    "central_logging_region": "us-east-1"
+  }
+}

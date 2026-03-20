@@ -1,0 +1,40 @@
+{
+  "drift_type": "iac_vs_deployed",
+  "scope": ".",
+  "detected_at": "2026-03-20T12:30:19.009358Z",
+  "resources_checked": 6,
+  "drifted_resources": [],
+  "missing_resources": [
+    {
+      "resource_id": "aws_lb.app",
+      "expected_from": "examples\\terraform-sample\\main.tf"
+    },
+    {
+      "resource_id": "aws_lambda_function.api",
+      "expected_from": "examples\\terraform-sample\\main.tf"
+    },
+    {
+      "resource_id": "aws_db_instance.main",
+      "expected_from": "examples\\terraform-sample\\main.tf"
+    },
+    {
+      "resource_id": "aws_dynamodb_table.cache",
+      "expected_from": "examples\\terraform-sample\\main.tf"
+    },
+    {
+      "resource_id": "aws_s3_bucket.assets",
+      "expected_from": "examples\\terraform-sample\\main.tf"
+    },
+    {
+      "resource_id": "aws_vpc.main",
+      "expected_from": "cloud-architecture-ai-auditor\\samples\\sample_infra_repo\\terraform\\vpc.tf"
+    }
+  ],
+  "unexpected_resources": [],
+  "severity": "low",
+  "evidence": [
+    "No state file provided; partial mode (repo-only)"
+  ],
+  "recommended_action": "Provide --state for full comparison",
+  "verification_status": "cannot_verify"
+}

@@ -51,14 +51,16 @@ None directly. Inferred architecture feeds other modules; used in report section
 
 ## Expected Output
 
+Produce Mermaid diagram per `docs/diagram-conventions.md`. Prefer `flowchart TB` with `subgraph` for VPC, compute, data layers.
+
 ```markdown
 ## Inferred Architecture
 
-[ASCII or Mermaid diagram]
+[Mermaid flowchart — see docs/diagram-conventions.md templates]
 
 **Assumptions**:
 - [Assumption 1] (Observed / Inferred / Missing Evidence)
 - [Assumption 2] (Observed / Inferred / Missing Evidence)
 ```
 
-Rules: Tag assumptions; call out unknowns; do not fabricate components without evidence.
+For schema output, include `diagram` object (type, format, content, caption, confidence). Rules: Tag assumptions; call out unknowns; do not fabricate components without evidence.

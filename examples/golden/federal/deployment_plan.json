@@ -1,0 +1,8 @@
+{
+  "phases": [
+    { "name": "Foundation", "apply_order": 1, "validation_gates": ["VPC Flow Logs"] },
+    { "name": "Security", "apply_order": 2, "validation_gates": ["KMS", "IAM"] },
+    { "name": "Compute", "apply_order": 3 }
+  ],
+  "rollback_notes": "Full rollback procedure per change management"
+}

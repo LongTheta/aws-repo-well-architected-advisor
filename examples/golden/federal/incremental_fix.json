@@ -1,0 +1,16 @@
+{
+  "fixes": [
+    {
+      "id": "F1",
+      "title": "Tighten IAM policy for ECS task role",
+      "patch_type": "iam",
+      "target_files": ["terraform/iam.tf"],
+      "risk_reduction": "Reduces overprivileged access; supports NIST AC-6",
+      "affected_control_area": "NIST_AC_6",
+      "effort": "medium",
+      "priority": "P1",
+      "evidence_required_to_close": "IAM policy with least-privilege; no wildcard",
+      "patch_content": "Minimal policy for RDS, KMS, CloudWatch only"
+    }
+  ]
+}

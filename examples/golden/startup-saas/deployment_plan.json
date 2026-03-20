@@ -1,0 +1,9 @@
+{
+  "phases": [
+    { "name": "Foundation", "apply_order": 1, "resources": ["VPC", "IAM"] },
+    { "name": "Compute", "apply_order": 2, "resources": ["Lambda", "API Gateway"] },
+    { "name": "Data", "apply_order": 3, "resources": ["DynamoDB", "S3"] }
+  ],
+  "prerequisites": ["AWS CLI configured", "Terraform installed"],
+  "rollback_notes": "Revert Terraform state; DynamoDB data retained"
+}

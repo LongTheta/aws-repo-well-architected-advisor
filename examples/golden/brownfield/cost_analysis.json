@@ -1,0 +1,20 @@
+{
+  "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+  "cost_summary": { "total_min": 50, "total_max": 150, "currency": "USD" },
+  "estimated_monthly_cost_range": { "min": 50, "max": 150, "currency": "USD" },
+  "assumptions": ["NAT Gateway", "VPC endpoints optional"],
+  "confidence_score": 0.7,
+  "service_options": [
+    { "component": "networking", "option": "VPC with private subnets", "cost_min": 35, "cost_max": 100 }
+  ],
+  "savings_opportunities": ["VPC endpoints for AWS services"],
+  "decision_score": 0.75,
+  "components": [
+    {
+      "component": "networking",
+      "recommended_option": "VPC with private subnets",
+      "cost_drivers": ["NAT Gateway", "data transfer"],
+      "savings_opportunities": ["VPC endpoints for AWS services"]
+    }
+  ]
+}

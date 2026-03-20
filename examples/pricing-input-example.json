@@ -1,0 +1,21 @@
+{
+  "region": "us-east-1",
+  "currency": "USD",
+  "workload_profile": {
+    "detected_profile": "Startup",
+    "traffic_pattern": "low",
+    "availability_target": "99.5%"
+  },
+  "usage_assumptions": {
+    "monthly_requests": 100000,
+    "storage_gb": 50,
+    "lambda_memory_mb": 256,
+    "lambda_avg_duration_ms": 200
+  },
+  "selected_services": {
+    "compute": "Lambda",
+    "api": "API Gateway",
+    "data": "DynamoDB",
+    "storage": "S3"
+  }
+}

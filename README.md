@@ -1,262 +1,268 @@
 # AWS Repo Well-Architected Advisor
 
-Evidence-based repository architecture reviews for AWS Well-Architected pillars, NIST/DoD federal compliance, and GitOps. Runs on OpenCode, Cursor, and Claude Code.
+Schema-driven AWS architecture advisor and generator for repository analysis and platform design.
 
 ---
 
-## Summary
+## What This Repository Does
 
-This repo is an AI-powered advisor that evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a **full lifecycle implementation engine** (vNext): discover → infer → model → decide → design → validate → generate → verify → operate → document → improve. It produces structured, evidence-based findings, deployable Terraform/CDK, runbooks, and production-readiness verdicts. It never assumes compliance from code alone; every finding is tagged with evidence type and confidence.
-
----
-
-## What the Repo Does
-
-1. **Assesses** repositories (IaC, CI/CD, Kubernetes) for Well-Architected alignment
-2. **Discovers** business and infrastructure requirements via questionnaires
-3. **Models** application architecture (app type, runtime, data patterns, scaling) into a normalized architecture model
-4. **Designs** target architectures with platform selection (EKS/ECS/Lambda/EC2), data strategy, environment/account strategy
-5. **Validates** preflight (CIDR, AZ, quotas, HA) before generation
-6. **Scaffolds** Terraform, CDK, or CloudFormation with security defaults, observability, CI/CD, runbooks
-7. **Reviews** for federal alignment (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps)
-8. **Enforces** quality gates (READY / CONDITIONAL / NOT_READY) and can block `git push` when configured
+- Analyzes IaC and application repositories (Terraform, CDK, CloudFormation, CI/CD, Kubernetes)
+- Generates AWS architectures (EKS, ECS, Lambda, EC2) from workload profiles
+- Produces structured, schema-backed outputs validated against JSON schemas
+- Generates Mermaid diagrams from architecture models (graph-first, not freeform)
+- Produces cost analysis with min/max USD/month estimates (heuristic today)
+- Generates deployment plans, verification checklists, and operations runbooks
+- Supports federal/NIST-aligned evaluations via `/federal-checklist` and control evidence mapping
 
 ---
 
 ## Key Capabilities
 
-| Capability | Description |
-|------------|-------------|
-| Repository assessment | Full architecture review: IaC (Terraform, CDK, CloudFormation), CI/CD, Kubernetes. Weighted scorecard, findings, production readiness. |
-| Solution discovery | Requirements: users, traffic, budget, compliance; tagging (project, owner, cost_center); CIDR; IAM roles. Produces solution brief with `infrastructure_config`. |
-| Platform design | Reference architecture from discovery. Decision log, tradeoffs. |
-| Design-and-implement | End-to-end: read repo → ask requirements → recommend → generate Terraform/CDK/CI configs. |
-| Incremental fix | Patch-style fixes for existing repos (no full rebuild). |
-| Federal compliance | NIST control mapping, DoD Zero Trust pillars. Evidence-based; never claims compliance. |
-| GitOps audit | CI/CD, ArgoCD/Flux, deployment safety, observability. |
-| Quality gate | Verdict READY / CONDITIONAL / NOT_READY. Can block push when enforced. |
+### Architecture & Design
+
+- Workload profiling (Startup, Federal, Brownfield, Internal, Data Pipeline)
+- Architecture model normalization (app_type, trust_boundary, traffic_profile, availability_target)
+- Decision log with options considered, cheapest/optimized/recommended options, rationale, tradeoffs
+- Platform selection (Lambda, ECS, EC2) with multi-factor scoring
+
+### Validation & Quality Gates
+
+- Schema validation for all artifacts (`npm run validate:schemas`)
+- Quality gate verdict (READY / CONDITIONAL / NOT_READY)
+- Evidence-based findings (observed, inferred, missing, contradictory, unverifiable)
+- CI enforcement: tests, schema validation, diagram validation, documentation validation
+
+### Diagrams
+
+- Architecture graph → Mermaid pipeline (build_architecture_graph, graph_to_mermaid, validate_mermaid)
+- Deterministic diagram generation from structured graph; no AI-generated prose
+- Zone-based layout (internet, edge, compute, data, security)
+
+### Cost Analysis
+
+- Heuristic cost estimates (min/max USD/month per component)
+- Cost drivers, savings opportunities, confidence scores
+- Schema: `cost-analysis.schema.json`
+
+### Operations
+
+- Deployment plan (phased apply order, validation gates)
+- Verification checklist (post-deploy checks)
+- Operations runbook (procedures, rollback notes)
+
+### Compliance
+
+- Federal mode: NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps
+- Control evidence mapping (`control-evidence.schema.json`)
+- Alignment ratings (STRONG / PARTIAL / WEAK); never claims compliance or certification
 
 ---
 
-## Supported Workflows
+## How It Works (System Flow)
 
 ```mermaid
-flowchart TB
-    subgraph Assessment
-        QR["/quick-review"]
-        RA["/repo-assess"]
-        FC["/federal-checklist"]
-        QG["/quality-gate"]
+flowchart LR
+    subgraph Input["Input"]
+        Repo[Repository]
     end
     
-    subgraph Build
-        DI["/design-and-implement"]
-        IF["/incremental-fix"]
+    subgraph Analysis["Analysis"]
+        Discovery[Discovery]
+        Profile[Workload Profile]
+        Model[Architecture Model]
     end
     
-    RA -.-> DI
-    RA -.-> IF
+    subgraph Output["Output"]
+        Decisions[Decision Log]
+        Cost[Cost Analysis]
+        Graph[Architecture Graph]
+        Diagram[Mermaid Diagram]
+        Deploy[Deployment Plan]
+        Verify[Verification]
+    end
+    
+    Repo --> Discovery --> Profile --> Model
+    Model --> Decisions
+    Model --> Cost
+    Model --> Graph --> Diagram
+    Model --> Deploy --> Verify
 ```
 
-1. **Quick review** — Light assessment, top 5 findings (`/quick-review`)
-2. **Full assessment** — Multi-pass review, scorecard, findings (`/repo-assess`)
-3. **Design-and-implement** — Read repo → requirements → architecture → IaC (`/design-and-implement`)
-4. **Incremental fix** — Patch-style fixes for existing repos (`/incremental-fix`)
-5. **Federal checklist** — NIST/DoD control mapping (`/federal-checklist`)
-6. **Quality gate** — Production readiness verdict (`/quality-gate`)
+1. **Repo** → Discovery inventories IaC, CI/CD, Kubernetes artifacts
+2. **Workload Profile** → Infers type (Startup, Federal, Brownfield, etc.) and constraints
+3. **Architecture Model** → Normalizes app_type, trust_boundary, selected services
+4. **Decision Log** → Records options, rationale, tradeoffs, recommended choices
+5. **Cost Analysis** → Estimates min/max monthly cost per component
+6. **Architecture Graph** → Structured nodes/edges for diagram generation
+7. **Mermaid Diagram** → Rendered from graph; validated for consistency
+8. **Deployment Plan** → Phased apply order, validation gates
+9. **Verification** → Checklist and runbook for post-deploy validation
 
 ---
 
-## Who This Repo Is For
+## Outputs (Schema-Driven Artifacts)
 
-- Platform engineers and SREs reviewing AWS infrastructure repos
-- DevSecOps teams preparing for federal or regulated environments
-- Architects designing from requirements and generating IaC
-- Teams using OpenCode, Cursor, or Claude Code for AI-assisted review
+All outputs validate against JSON schemas in `schemas/`. CI fails if validation fails.
+
+| Artifact | Schema | Produced By |
+|----------|--------|-------------|
+| workload_profile | workload-profile.schema.json | /solution-discovery, /design-and-implement |
+| architecture_model | architecture-model.schema.json | /platform-design |
+| decision_log | decision-log.schema.json | /platform-design |
+| cost_analysis | cost-analysis.schema.json | /platform-design |
+| architecture_graph | architecture-graph.schema.json | /design-and-implement |
+| Mermaid diagram | — | Rendered from architecture_graph |
+| deployment_plan | deployment-plan.schema.json | /scaffold |
+| verification_checklist | verification-checklist.schema.json | /scaffold |
+| operations_runbook | operations-runbook.schema.json | /scaffold |
+| incremental_fix | incremental-fix.schema.json | /incremental-fix |
+| control_evidence | control-evidence.schema.json | /federal-checklist |
+| Review output | review-score.schema.json | /repo-assess |
 
 ---
 
 ## Repository Structure
 
-```
-aws-repo-well-architected-advisor/
-├── .opencode/           # OpenCode config, commands, plugins, tools
-├── .claude/             # Claude Code config (CLAUDE.md)
-├── .cursor/rules/       # Cursor rules (aws-well-architected.md)
-├── skills/              # AWS Well-Architected Pack (10 modules)
-├── aws-repo-scaffolder/ # IaC generation skill
-├── cloud-architecture-ai-auditor/  # Questionnaires, discovery
-├── schemas/             # review-score, solution-brief, incremental-fix
-├── docs/                # Documentation
-├── examples/            # Sample output, quality-gate result
-├── scripts/             # Validation, install
-├── hooks/               # Pre-push quality gate
-├── opencode.json        # Root config (symlink or copy of .opencode)
-├── install.sh           # Unix install script
-└── install.ps1          # Windows install script
-```
-
-See [docs/repo-structure.md](docs/repo-structure.md) for details.
+| Path | Purpose |
+|------|---------|
+| `schemas/` | JSON schemas for all artifacts |
+| `scripts/` | build_architecture_graph, graph_to_mermaid, validate_mermaid, cost_estimator, estimate_costs, validate_docs |
+| `examples/` | Golden scenarios (startup-saas, federal, brownfield), incremental-fix examples, validated-review-output.json |
+| `docs/` | Usage, architecture, schemas, diagram conventions, cost model, testing |
+| `tests/` | Schema validation, scenario tests, golden scenario validation, skill contract tests |
+| `skills/` | AWS Well-Architected Pack (10 modules) |
+| `.opencode/` | OpenCode config, commands, tools |
 
 ---
 
-## Quick Start
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 18
+- Python 3.x (for scripts)
+- OpenCode (for full command set) or Cursor/Claude Code (subset)
+
+### Install
 
 ```bash
 git clone https://github.com/Jade/aws-repo-well-architected-advisor.git
 cd aws-repo-well-architected-advisor
-cd .opencode && bun install   # or: npm install
+npm install
+cd .opencode && bun install   # or npm install
+```
+
+### Run
+
+```bash
 opencode run "/repo-assess"
 ```
 
-Produces: weighted scorecard, findings with evidence tags, production readiness verdict.
+Or: `opencode run "/quick-review"` for fast triage, `opencode run "/design-and-implement"` for end-to-end flow.
 
----
-
-## Installation / Setup by Tool
-
-### OpenCode
-
-1. Clone this repo or run `./install.sh --dest /path/to/your-repo`
-2. Ensure OpenCode is installed.
-3. Set config: copy `.opencode/opencode.json` to `opencode.json` at repo root, or set `OPENCODE_CONFIG=.opencode/opencode.json`
-4. Install plugin deps: `cd .opencode && bun install` (or `npm install`)
-5. Run: `opencode run "/repo-assess"` or use commands in TUI.
-
-See [docs/opencode.md](docs/opencode.md).
-
-### Cursor
-
-1. Open repo in Cursor.
-2. Rules are in `.cursor/rules/aws-well-architected.md` (auto-applied for IaC/CI files).
-3. Use chat or agent mode: "Run AWS Well-Architected review" or "Run /repo-assess".
-4. To install into another repo: `./install.sh --target cursor --dest /path/to/repo`
-
-See [docs/cursor.md](docs/cursor.md).
-
-### Claude Code
-
-1. Open repo in Claude Code.
-2. Reference `.claude/CLAUDE.md` for instructions.
-3. Use commands: "Run full assessment", "Run federal compliance review".
-
-See [docs/claude.md](docs/claude.md).
-
-### Ravvix
-
-No Ravvix-specific integration is present. See [docs/ravvix.md](docs/ravvix.md) for provisional guidance.
-
----
-
-## Commands
-
-| Command | Use When |
-|---------|----------|
-| `/quick-review` | Fast light assessment; top 5 findings |
-| `/repo-assess` | Full repository architecture assessment |
-| `/solution-discovery` | Starting design; need requirements |
-| `/platform-design` | Have requirements; need reference architecture |
-| `/scaffold` | Have design or findings; need Terraform/CDK |
-| `/design-and-implement` | Full flow: read repo → requirements → recommend → code |
-| `/incremental-fix` | Existing repo; patch-style fixes |
-| `/federal-checklist` | NIST/DoD compliance review |
-| `/gitops-audit` | CI/CD, ArgoCD, Flux assessment |
-| `/quality-gate` | Production readiness gate |
-| `/verify` | Validate findings have evidence tags |
-| `/doc-sync` | Sync architecture docs with repo state |
-| `/checkpoint` | Checkpoint review state |
-| `/orchestrate` | Multi-phase review orchestration |
-
-See [docs/commands.md](docs/commands.md).
-
----
-
-## Modes
-
-| Mode | Command(s) | Behavior |
-|------|------------|----------|
-| QUICK_REVIEW | `/quick-review` | Light assessment: discovery → top risks → score |
-| DEEP_ANALYSIS | `/repo-assess`, `/orchestrate` | Full multi-pass review |
-| BUILD_MODE | `/design-and-implement`, `/scaffold` | Design and generate IaC |
-| FEDERAL_MODE | `/federal-checklist` | NIST 800-series + DoD overlay |
-| DOD_ZERO_TRUST_MODE | `/federal-checklist` | DoD Zero Trust pillars emphasis |
-| COST_OPTIMIZED | `/repo-assess` (user request) | Cost-focused review |
-| HIGH_AVAILABILITY | `/design-and-implement`, `/scaffold` (user request) | HA defaults |
-
-See [docs/modes.md](docs/modes.md).
-
----
-
-## Evidence Model
-
-Every finding must have:
-
-- **evidence_type**: `observed` | `inferred` | `missing` | `contradictory` | `unverifiable`
-- **confidence**: `Confirmed` | `Strongly Inferred` | `Assumed` (or **confidence_score** 0.0–1.0 in v3)
-
-We never assume compliance. We never fabricate evidence.
-
-See [docs/evidence-model.md](docs/evidence-model.md).
-
----
-
-## Federal / NIST / DoD Support
-
-When `/federal-checklist` runs:
-
-- Maps findings to NIST 800-53, 800-37, 800-190, 800-204
-- Maps to DoD Zero Trust and DoD DevSecOps
-- Outputs **NIST_ALIGNMENT** and **DOD_ALIGNMENT** (STRONG | PARTIAL | WEAK)
-- Uses **allowed claims only**: "aligned with", "supports", "lacks evidence for" — never "compliant", "certified", "FedRAMP authorized"
-
-See [docs/federal-mode.md](docs/federal-mode.md).
-
----
-
-## Output Examples
-
-- `examples/validated-review-output.json` — Schema-conformant review output
-- `examples/quality-gate-result-sample.json` — Quality gate verdict
-
-Validate output:
+### Validate
 
 ```bash
-npm run validate
-# or with custom path:
-./scripts/validate-review-output.sh path/to/review-output.json
+npm test
+npm run validate:schemas
+npm run validate:diagrams
+python3 scripts/validate_docs.py
+```
+
+If any fails, the pipeline fails. See [docs/testing.md](docs/testing.md).
+
+---
+
+## Example Workflow
+
+**Input**: Repository with Terraform or app description (e.g., "API with Lambda, DynamoDB, 100K requests/month")
+
+**Output**:
+
+1. **workload_profile** — Startup, API, variable traffic
+2. **architecture_model** — Lambda, DynamoDB, API Gateway
+3. **decision_log** — Lambda vs ECS vs EC2; rationale and tradeoffs
+4. **cost_analysis** — e.g., $50–150/month (heuristic)
+5. **architecture_graph** — Nodes: Users, API Gateway, Lambda, DynamoDB; edges: HTTPS, Invoke, Query
+6. **Mermaid diagram** — Rendered flowchart
+7. **deployment_plan** — Phases: Foundation → Security → Compute
+8. **verification_checklist** — Post-deploy checks
+9. **operations_runbook** — Procedures, rollback notes
+
+```bash
+# Build graph from scenario
+python3 scripts/build_architecture_graph.py --scenario examples/scenarios/startup-workload.json
+
+# Render Mermaid
+python3 scripts/graph_to_mermaid.py examples/architecture-graph-built.json examples/architecture-diagram-generated.mmd
+
+# Cost estimate (CLI)
+python3 scripts/cost_estimator.py --traffic 100000 --storage 50 --compute lambda
 ```
 
 ---
 
-## Development and Contribution
+## Diagram System (Mermaid)
 
-- Run tests: `npm test`
-- Add skills: see [docs/development.md](docs/development.md)
-- Add commands: edit `.opencode/opencode.json` and `opencode.json`
-- See [CONTRIBUTING.md](CONTRIBUTING.md)
+- Diagrams are generated from `architecture_graph` (structured JSON)
+- Not freeform AI text; graph is source of truth
+- Validated for syntax, node existence, edge consistency, zone grouping
+- Pipeline: `build_architecture_graph` → `graph_to_mermaid` → `validate_mermaid`
 
----
-
-## Limitations / Non-Goals
-
-- **Does not claim compliance** — Alignment ratings only; no FedRAMP/ATO certification
-- **Does not run `terraform apply`** — IaC generation only; user applies manually
-- **Does not replace human review** — Advisor assists; final decisions are human
-- **OpenCode primary** — Full command set and plugin require OpenCode; Cursor/Claude use subset
+See [docs/diagram-conventions.md](docs/diagram-conventions.md).
 
 ---
 
-## Key Files
+## Cost Model
 
-| File | Purpose |
-|------|---------|
-| [docs/core-ai-guidance.md](docs/core-ai-guidance.md) | Canonical AI guidance (AGENTS.md, CLAUDE.md, .cursor/rules) |
-| [docs/AI-CLOUD-ARCHITECT-AGENT.md](docs/AI-CLOUD-ARCHITECT-AGENT.md) | v2 agent spec: multi-pass reasoning, evidence model |
-| [docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md](docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md) | v3 NIST/DoD overlay |
-| [docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md](docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md) | vNext: end-to-end implementation engine, 11-step lifecycle |
-| [docs/modes.md](docs/modes.md) | Mode routing |
-| [.opencode/opencode.json](.opencode/opencode.json) | Commands, agents, plugin |
-| [skills/aws-well-architected-pack/](skills/aws-well-architected-pack/) | 10 specialist modules |
-| [schemas/review-score.schema.json](schemas/review-score.schema.json) | Output schema |
-| [INSTALL.md](INSTALL.md) | Full installation |
-| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | FAQ |
+**Current state**: Heuristic. Fixed rates in code; no live AWS pricing API calls.
+
+**Assumptions**: Traffic (requests/month), storage (GB), compute type (lambda, ecs, ec2). Output: `estimated_monthly_cost_range` (min/max USD), component breakdown, confidence score.
+
+**Not implemented**: AWS Price List API, Cost Explorer. Integration points documented in [docs/pricing-integration.md](docs/pricing-integration.md).
+
+---
+
+## Testing & Validation
+
+- **Schema validation**: All examples and golden scenarios validate against schemas
+- **Golden scenarios**: `examples/golden/startup-saas/`, `federal/`, `brownfield/` — full artifact sets
+- **Incremental fix examples**: `examples/incremental-fix/` — Terraform, IAM, CI/CD patches
+- **CI enforcement**: `npm test`, `validate:schemas`, `validate:diagrams`, `validate_docs.py`
+- **Failure**: Any validation failure causes CI to fail
+
+---
+
+## Limitations
+
+- **Pricing**: Heuristic only; Price List API and Cost Explorer not implemented
+- **IaC parsing**: Terraform resource mapping is demonstrative; partial coverage
+- **No automatic remediation**: Patch generation is simulation-only; no auto-apply
+- **No terraform apply**: IaC generation only; user applies manually
+- **Compliance**: Alignment ratings only; does not claim compliance, certification, or FedRAMP authorization
+- **OpenCode primary**: Full command set requires OpenCode; Cursor/Claude use subset
+
+---
+
+## Roadmap
+
+- Pricing API integration (Price List, Cost Explorer)
+- Drift detection (repo vs deployed state)
+- Multi-account / org topology modeling
+- Remediation simulation (patch apply simulation)
+
+---
+
+## Contributing
+
+- **Add schema**: Add to `schemas/`, add example to `examples/`, add to `tests/validate-schemas.js`
+- **Add test**: Add to `tests/`; ensure `npm test` passes
+- **Add scenario**: Add JSON to `examples/scenarios/` or `examples/golden/`; ensure it validates in `tests/scenarios/run-scenarios.js` or `run-golden.js`
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+## License
+
+MIT

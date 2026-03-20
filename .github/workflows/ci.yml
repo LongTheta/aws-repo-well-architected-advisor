@@ -26,3 +26,61 @@ jobs:
 
       - name: Schema validation
         run: npx ajv-cli validate -s schemas/review-score.schema.json -d examples/validated-review-output.json
+
+      - name: All schema validation
+        run: npm run validate:schemas
+
+      - name: Diagram validation
+        run: npm run validate:diagrams
+
+      - name: Scenario tests
+        run: node tests/scenarios/run-scenarios.js
+
+      - name: Skill contract tests
+        run: node tests/skills/architecture-inference.test.js && node tests/skills/repo-assess.test.js
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Diagram pipeline (graph → Mermaid)
+        run: |
+          python3 scripts/build_architecture_graph.py --scenario examples/scenarios/startup-workload.json
+          python3 scripts/graph_to_mermaid.py examples/architecture-graph-built.json examples/architecture-diagram-generated.mmd
+
+      - name: Mermaid validation (Python)
+        run: python3 scripts/validate_mermaid.py examples/architecture-graph-example.json examples/architecture-diagram-example.mmd
+
+      - name: Diagram from graph enforcement
+        run: |
+          python3 scripts/validate_mermaid.py examples/architecture-graph-built.json examples/architecture-diagram-generated.mmd
+
+      - name: Cost estimator
+        run: python3 scripts/cost_estimator.py --traffic 100000 --storage 50 --compute lambda
+
+      - name: Required artifacts (workload_profile, cost_analysis, decision_log)
+        run: |
+          node -e "
+          const fs = require('fs');
+          const s = JSON.parse(fs.readFileSync('examples/scenarios/startup-workload.json','utf8'));
+          const missing = [];
+          if (!s.workload_profile?.detected_profile && !s.workload_profile?.profile_name) missing.push('workload_profile.detected_profile');
+          if (!s.cost_analysis?.estimated_monthly_cost_range) missing.push('cost_analysis.estimated_monthly_cost_range');
+          if (!Array.isArray(s.decision_log) || s.decision_log.length === 0) missing.push('decision_log');
+          if (missing.length) { console.error('Missing required:', missing.join(', ')); process.exit(1); }
+          console.log('Required artifacts present');
+          "
+
+      - name: Golden scenario validation
+        run: node tests/scenarios/run-golden.js
+
+      - name: Incremental fix validation
+        run: |
+          for f in examples/incremental-fix/*.json; do
+            [ -f "$f" ] || continue
+            npx ajv-cli validate -s schemas/incremental-fix.schema.json -d "$f" || exit 1
+          done
+
+      - name: Documentation validation
+        run: python3 scripts/validate_docs.py

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Patch Apply Output",
+  "description": "Output from apply_patch.py: patch preview, modified files, rollback instructions.",
+  "type": "object",
+  "required": ["patch_preview", "modified_files", "rollback_instructions", "dry_run", "fixes_processed"],
+  "properties": {
+    "patch_preview": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fix_id", "target_file", "diff"],
+        "properties": {
+          "fix_id": { "type": "string" },
+          "target_file": { "type": "string" },
+          "diff": { "type": "string", "description": "Unified diff or content preview" }
+        }
+      }
+    },
+    "modified_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rollback_instructions": {
+      "type": "string"
+    },
+    "dry_run": { "type": "boolean" },
+    "fixes_processed": { "type": "integer", "minimum": 0 }
+  }
+}

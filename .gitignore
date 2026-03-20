@@ -1,1 +1,5 @@
 node_modules/
+.e2e-output/
+.patch-output*.json
+.patch-backups/
+.tmp-*.json

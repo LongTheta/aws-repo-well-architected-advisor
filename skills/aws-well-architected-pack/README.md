@@ -126,6 +126,13 @@ Ensure OpenCode is configured to load skills from `skills/` and to route command
 - **Composable**: Can run alongside other skill packs (e.g., Azure, GCP, generic security)
 - **No hardcoded assumptions**: Works with any repository structure; routing is pattern-based
 
+## Cost & FinOps
+
+The **finops-cost-review** module applies:
+
+- [cloud-architecture-ai-auditor/aws-service-selection-policy.md](../../cloud-architecture-ai-auditor/aws-service-selection-policy.md) — Service selection, compare 2+ options, cheapest_viable + recommended
+- [docs/aws-finops-decision-optimization.md](../../docs/aws-finops-decision-optimization.md) — Cost model, savings optimization, multi-factor scoring (Cost 35%, Perf 20%, Rel 15%, Sec 15%, Ops 15%)
+
 ## References
 
 - [SKILL.md](SKILL.md) — Core conductor logic

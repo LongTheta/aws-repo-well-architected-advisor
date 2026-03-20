@@ -1,0 +1,5 @@
+{
+  "service_name": "federal-api",
+  "alerts": [{ "name": "Encryption failure", "severity": "critical" }],
+  "escalation_notes": "Follow incident response per NIST 800-61"
+}

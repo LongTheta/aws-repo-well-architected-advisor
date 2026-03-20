@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph internet["Internet"]
+        users[Users]
+    end
+
+    subgraph edge["Edge"]
+        cf[CloudFront]
+    end
+
+    subgraph compute["Compute"]
+        api[API Gateway]
+        lambda[Lambda]
+    end
+
+    subgraph data["Data"]
+        dynamodb[(DynamoDB)]
+        s3[(S3)]
+    end
+
+    users -->|HTTPS| cf
+    cf -->|API| api
+    api -->|Invoke| lambda
+    lambda -->|Query| dynamodb
+    lambda -->|GetObject| s3

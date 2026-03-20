@@ -1,0 +1,113 @@
+{
+  "nodes": [
+    {
+      "id": "users",
+      "label": "Users",
+      "zone": "internet",
+      "type": "external",
+      "public_exposure": true
+    },
+    {
+      "id": "aws_lb_app",
+      "label": "ALB (app)",
+      "zone": "compute",
+      "type": "network",
+      "public_exposure": true
+    },
+    {
+      "id": "aws_lambda_function_api",
+      "label": "Lambda (api)",
+      "zone": "compute",
+      "type": "compute",
+      "public_exposure": false
+    },
+    {
+      "id": "aws_db_instance_main",
+      "label": "RDS (main)",
+      "zone": "data",
+      "type": "data",
+      "public_exposure": false
+    },
+    {
+      "id": "aws_dynamodb_table_cache",
+      "label": "DynamoDB (cache)",
+      "zone": "data",
+      "type": "data",
+      "public_exposure": false
+    },
+    {
+      "id": "aws_s3_bucket_assets",
+      "label": "S3 (assets)",
+      "zone": "data",
+      "type": "data",
+      "public_exposure": false
+    }
+  ],
+  "edges": [
+    {
+      "from": "users",
+      "to": "aws_lb_app",
+      "label": "HTTPS",
+      "data_flow": true
+    },
+    {
+      "from": "aws_lb_app",
+      "to": "aws_lambda_function_api",
+      "label": "Invoke",
+      "data_flow": true
+    },
+    {
+      "from": "aws_lambda_function_api",
+      "to": "aws_db_instance_main",
+      "label": "Query",
+      "data_flow": true
+    },
+    {
+      "from": "aws_lambda_function_api",
+      "to": "aws_dynamodb_table_cache",
+      "label": "Query",
+      "data_flow": true
+    },
+    {
+      "from": "aws_lambda_function_api",
+      "to": "aws_s3_bucket_assets",
+      "label": "Query",
+      "data_flow": true
+    }
+  ],
+  "zones": [
+    {
+      "id": "internet",
+      "label": "Internet",
+      "parent": null
+    },
+    {
+      "id": "edge",
+      "label": "Edge",
+      "parent": "internet"
+    },
+    {
+      "id": "compute",
+      "label": "Compute",
+      "parent": "vpc"
+    },
+    {
+      "id": "data",
+      "label": "Data",
+      "parent": "vpc"
+    }
+  ],
+  "trust_boundaries": [
+    {
+      "name": "VPC",
+      "zones": [
+        "compute",
+        "data"
+      ]
+    }
+  ],
+  "public_exposure": [
+    "users",
+    "aws_lb_app"
+  ]
+}

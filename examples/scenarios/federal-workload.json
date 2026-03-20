@@ -1,0 +1,133 @@
+{
+  "workload_profile": {
+    "detected_profile": "Federal",
+    "profile_name": "Federal",
+    "confidence_score": 0.9,
+    "reasoning": "Compliance-driven, audit requirements, security-first",
+    "app_type": "api",
+    "traffic_pattern": "steady",
+    "availability_target": "99.9%",
+    "cost_sensitivity": "low",
+    "compliance_mode": "federal",
+    "team_maturity": "large",
+    "scaling_pattern": "auto"
+  },
+  "architecture_model": {
+    "app_type": "api",
+    "trust_boundary": "multi-boundary",
+    "traffic_profile": "steady",
+    "availability_target": "99.9%",
+    "data_classification": "confidential",
+    "auth_model": "Cognito + IAM",
+    "deployment_model": "blue-green",
+    "cost_sensitivity": "low",
+    "compliance_mode": "federal",
+    "environments": ["dev", "test", "stage", "prod"],
+    "account_strategy": "multi-account",
+    "selected_services": {
+      "compute": "ECS",
+      "data": "RDS",
+      "networking": "Private ALB",
+      "security": "KMS",
+      "logging": "CloudWatch"
+    }
+  },
+  "decision_log": [
+    {
+      "decision_id": "D1",
+      "component": "compute",
+      "options_considered": ["ECS Fargate", "EC2", "Lambda"],
+      "cheapest_option": "Lambda",
+      "optimized_option": "ECS Fargate",
+      "recommended_option": "ECS Fargate",
+      "decision_score": 0.88,
+      "rationale": "Private networking, KMS, audit trail; ECS Fargate meets federal isolation and encryption requirements",
+      "tradeoffs": "Higher cost vs Lambda; better isolation and compliance posture",
+      "risk_level": "low",
+      "cost_impact": "higher",
+      "affected_controls_or_principles": ["NIST AC-2", "SC-28"]
+    }
+  ],
+  "cost_analysis": {
+    "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+    "cost_summary": { "total_min": 400, "total_max": 1200, "currency": "USD" },
+    "estimated_monthly_cost_range": { "min": 400, "max": 1200, "currency": "USD" },
+    "assumptions": ["ECS Fargate 2 vCPU/4GB", "RDS db.t3.medium", "Cost secondary to compliance"],
+    "confidence_score": 0.85,
+    "service_options": [
+      { "component": "compute", "option": "ECS Fargate", "cost_min": 150, "cost_max": 400 }
+    ],
+    "savings_opportunities": ["Savings Plans"],
+    "decision_score": 0.85,
+    "components": [
+      {
+        "component": "compute",
+        "recommended_option": "ECS Fargate",
+        "cost_drivers": ["vCPU", "memory"],
+        "savings_opportunities": ["Savings Plans"]
+      }
+    ]
+  },
+  "architecture_graph": {
+    "nodes": [
+      { "id": "vpc", "label": "VPC", "zone": "network", "type": "network" },
+      { "id": "alb", "label": "ALB", "zone": "compute", "type": "network" },
+      { "id": "ecs", "label": "ECS", "zone": "compute", "type": "compute" },
+      { "id": "rds", "label": "RDS", "zone": "data", "type": "data" },
+      { "id": "kms", "label": "KMS", "zone": "security", "type": "network" }
+    ],
+    "edges": [
+      { "from": "alb", "to": "ecs", "label": "HTTPS" },
+      { "from": "ecs", "to": "rds", "label": "TLS" },
+      { "from": "ecs", "to": "kms", "label": "Encrypt" }
+    ]
+  },
+  "deployment_plan": {
+    "phases": [
+      { "name": "Foundation", "apply_order": 1, "validation_gates": ["VPC Flow Logs"] },
+      { "name": "Security", "apply_order": 2, "validation_gates": ["KMS", "IAM"] },
+      { "name": "Compute", "apply_order": 3 }
+    ],
+    "rollback_notes": "Full rollback procedure per change management"
+  },
+  "deployment_model": {
+    "bootstrap_order": ["VPC", "KMS", "IAM", "ALB", "ECS", "RDS"],
+    "apply_phases": [
+      { "name": "Foundation", "apply_order": 1, "dependencies": [] },
+      { "name": "Security", "apply_order": 2, "dependencies": ["Foundation"] },
+      { "name": "Compute", "apply_order": 3, "dependencies": ["Security"] }
+    ],
+    "dependencies": [{ "from": "VPC", "to": "ECS" }, { "from": "KMS", "to": "RDS" }]
+  },
+  "scaling_model": {
+    "scalable_components": [
+      { "component": "ECS", "scale_type": "horizontal", "min_capacity": 2, "max_capacity": 10 },
+      { "component": "RDS", "scale_type": "vertical" }
+    ],
+    "triggers": [{ "component": "ECS", "metric": "CPUUtilization", "threshold": "70%" }],
+    "limits": [{ "component": "RDS", "limit": "Connections", "bottleneck": true }],
+    "cost_scaling_impact": "ECS scales with tasks; RDS fixed"
+  },
+  "slo_sli_model": {
+    "availability_target": "99.9%",
+    "latency_expectations": { "p50_ms": 50, "p95_ms": 200, "p99_ms": 500 },
+    "error_thresholds": [{ "metric": "ErrorRate", "threshold": "0.1%", "severity": "critical" }],
+    "monitoring_signals": ["CloudTrail", "VPC Flow Logs", "ECS health"]
+  },
+  "runtime_constraints": {
+    "constraints": [
+      { "type": "aws_quota", "description": "ECS service limits", "limit": "Per-account", "mitigation": "Request increase" }
+    ]
+  },
+  "verification_checklist": {
+    "checks": [
+      { "id": "V1", "category": "security", "expected_result": "Encryption at rest", "severity_if_failed": "critical" },
+      { "id": "V2", "category": "observability", "expected_result": "CloudTrail enabled", "severity_if_failed": "critical" }
+    ]
+  },
+  "operations_runbook": {
+    "service_name": "federal-api",
+    "alerts": [{ "name": "Encryption failure", "severity": "critical" }],
+    "escalation_notes": "Follow incident response per NIST 800-61"
+  }
+}

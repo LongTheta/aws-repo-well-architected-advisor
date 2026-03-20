@@ -50,7 +50,7 @@ Use allowed claims only: "aligned with", "supports", "lacks evidence for". Never
 - `skills/aws-well-architected-pack/SKILL.md` — Core review pack
 - `aws-repo-scaffolder/SKILL.md` — IaC scaffolding
 - `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` — Federal mode spec
-- `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` — vNext: full lifecycle (Discover → Infer → Model → Decide → Design → Validate → Generate → Verify → Operate → Document → Improve)
+- `docs/AI-CLOUD-ARCHITECT-AGENT-V5.md` — v5: full lifecycle, Workload Profile, Service Selection, FinOps
 
 ---
 

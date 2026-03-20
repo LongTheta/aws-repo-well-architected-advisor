@@ -1,0 +1,16 @@
+[
+  {
+    "decision_id": "D1",
+    "component": "compute",
+    "context": "Startup web app",
+    "options_considered": ["Lambda", "ECS", "EC2"],
+    "cheapest_option": "Lambda",
+    "optimized_option": "Lambda",
+    "recommended_option": "Lambda",
+    "decision_score": 0.9,
+    "rationale": "Serverless fits variable traffic; scale to zero",
+    "tradeoffs": "Cold starts acceptable for web",
+    "risk_level": "low",
+    "cost_impact": "lower"
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pricing Estimate",
+  "description": "Per-component pricing estimate with source, assumptions, and quality indicators.",
+  "type": "object",
+  "required": ["estimates"],
+  "properties": {
+    "estimates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component", "service_name", "pricing_source", "assumptions", "estimated_monthly_cost_min", "estimated_monthly_cost_max", "confidence_score"],
+        "properties": {
+          "component": { "type": "string" },
+          "service_name": { "type": "string" },
+          "pricing_source": {
+            "type": "string",
+            "enum": ["price_list_api", "bulk_catalog", "cost_explorer", "heuristic_fallback"]
+          },
+          "assumptions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "unit_dimensions": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "estimated_monthly_cost_min": { "type": "number" },
+          "estimated_monthly_cost_max": { "type": "number" },
+          "confidence_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "optimization_notes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "missing_assumptions": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "total_min": { "type": "number" },
+    "total_max": { "type": "number" },
+    "currency": { "type": "string", "default": "USD" },
+    "pricing_mode": {
+      "type": "string",
+      "enum": ["api", "heuristic", "partial"]
+    }
+  }
+}

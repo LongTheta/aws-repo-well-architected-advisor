@@ -1,0 +1,20 @@
+{
+  "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+  "cost_summary": { "total_min": 400, "total_max": 1200, "currency": "USD" },
+  "estimated_monthly_cost_range": { "min": 400, "max": 1200, "currency": "USD" },
+  "assumptions": ["ECS Fargate 2 vCPU/4GB", "RDS db.t3.medium", "Cost secondary to compliance"],
+  "confidence_score": 0.85,
+  "service_options": [
+    { "component": "compute", "option": "ECS Fargate", "cost_min": 150, "cost_max": 400 }
+  ],
+  "savings_opportunities": ["Savings Plans"],
+  "decision_score": 0.85,
+  "components": [
+    {
+      "component": "compute",
+      "recommended_option": "ECS Fargate",
+      "cost_drivers": ["vCPU", "memory"],
+      "savings_opportunities": ["Savings Plans"]
+    }
+  ]
+}

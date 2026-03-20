@@ -9,20 +9,38 @@
       "items": {
         "type": "object",
         "properties": {
-          "id": { "type": "string" },
-          "title": { "type": "string" },
+          "id": { "type": "string", "description": "Unique identifier for the fix" },
+          "title": { "type": "string", "description": "Human-readable title" },
+          "patch_type": {
+            "type": "string",
+            "enum": ["terraform", "iam", "cicd", "security", "config", "documentation"],
+            "description": "Type of patch to apply"
+          },
+          "target_files": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Files to create or modify. Required for terraform, iam, cicd, security, config."
+          },
           "risk_reduction": { "type": "string", "description": "Impact: what risk is reduced" },
           "affected_control_area": { "type": "string", "description": "NIST/DoD control area or Well-Architected pillar" },
           "effort": { "type": "string", "enum": ["low", "medium", "high"] },
           "priority": { "type": "string", "enum": ["P1", "P2", "P3"] },
           "evidence_required_to_close": { "type": "string", "description": "What evidence closes this finding" },
-          "patch_type": { "type": "string", "enum": ["terraform", "iam", "cicd", "security", "config", "documentation"] },
-          "target_files": { "type": "array", "items": { "type": "string" } },
           "patch_content": { "type": "string", "description": "Diff or patch content" }
         },
-        "required": ["risk_reduction", "affected_control_area", "effort", "priority", "evidence_required_to_close"]
+        "required": ["id", "title", "patch_type", "risk_reduction", "affected_control_area", "effort", "priority", "evidence_required_to_close"],
+        "allOf": [
+          {
+            "if": {
+              "properties": { "patch_type": { "enum": ["terraform", "iam", "cicd", "security", "config"] } },
+              "required": ["patch_type"]
+            },
+            "then": { "required": ["target_files"] }
+          }
+        ]
       }
     }
   },
   "required": ["fixes"]
 }
+    

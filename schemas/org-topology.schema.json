@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Organization Topology",
+  "description": "AWS Organizations / Control Tower landing zone and account topology.",
+  "type": "object",
+  "required": ["organization_id", "management_account", "workload_accounts"],
+  "properties": {
+    "organization_id": { "type": "string" },
+    "management_account": {
+      "type": "object",
+      "properties": {
+        "account_id": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "shared_accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "purpose": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "workload_accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "environment": { "type": "string" },
+          "ou_path": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "ous": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "parent_id": { "type": "string" }
+        }
+      }
+    },
+    "environment_mapping": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "control_tower_managed": { "type": "boolean" },
+    "enrolled_accounts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "guardrail_context": {
+      "type": "object",
+      "properties": {
+        "preventive": { "type": "array", "items": { "type": "string" } },
+        "detective": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "cross_account_roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_name": { "type": "string" },
+          "trusted_account": { "type": "string" },
+          "purpose": { "type": "string" }
+        }
+      }
+    },
+    "logging_topology": {
+      "type": "object",
+      "properties": {
+        "audit_account": { "type": "string" },
+        "log_archive_account": { "type": "string" },
+        "central_logging_region": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Architecture Model",
+  "description": "Normalized architecture model. All decisions derive from this.",
+  "type": "object",
+  "required": ["app_type", "traffic_profile", "availability_target", "cost_sensitivity", "compliance_mode"],
+  "properties": {
+    "app_type": {
+      "type": "string",
+      "description": "API, web, internal tool, data pipeline, event-driven"
+    },
+    "trust_boundary": {
+      "type": "string",
+      "description": "Trust boundary model (e.g. public/private, multi-tenant)"
+    },
+    "traffic_profile": {
+      "type": "string",
+      "description": "Traffic characteristics"
+    },
+    "availability_target": {
+      "type": "string",
+      "description": "Availability requirement"
+    },
+    "data_classification": {
+      "type": "string",
+      "enum": ["public", "internal", "confidential", "restricted"],
+      "description": "Data sensitivity"
+    },
+    "auth_model": {
+      "type": "string",
+      "description": "Authentication approach"
+    },
+    "deployment_model": {
+      "type": "string",
+      "description": "Deployment approach (blue/green, canary, etc.)"
+    },
+    "cost_sensitivity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "very_high"]
+    },
+    "compliance_mode": {
+      "type": "string",
+      "enum": ["none", "standard", "federal", "regulated"]
+    },
+    "environments": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "dev, test, stage, prod"
+    },
+    "account_strategy": {
+      "type": "string",
+      "description": "Single account, multi-account, OU structure"
+    },
+    "selected_services": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Component -> AWS service mapping"
+    }
+  }
+}

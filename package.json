@@ -8,8 +8,22 @@
     "url": "https://github.com/Jade/aws-repo-well-architected-advisor.git"
   },
   "scripts": {
+    "score": "node scripts/run-score.js",
+    "e2e": "node scripts/run-e2e-pipeline.js && node tests/e2e/startup-saas.test.js",
     "test": "node tests/run-all.js",
-    "validate": "npx ajv-cli validate -s schemas/review-score.schema.json -d examples/validated-review-output.json"
+    "validate": "npx ajv-cli validate -s schemas/review-score.schema.json -d examples/validated-review-output.json",
+    "validate:schemas": "node tests/validate-schemas.js",
+    "validate:diagrams": "node scripts/validate-mermaid.js examples/architecture-graph-example.json examples/architecture-diagram-example.mmd",
+    "render:mermaid": "node scripts/render-mermaid.js",
+    "build:graph": "python scripts/build_architecture_graph.py --scenario examples/scenarios/startup-workload.json",
+    "graph:mermaid": "python scripts/graph_to_mermaid.py examples/architecture-graph-built.json",
+    "cost:estimate": "python scripts/cost_estimator.py --traffic 100000 --storage 50 --compute lambda",
+    "pricing:estimate": "python scripts/estimate_costs.py --input examples/pricing-input-example.json",
+    "drift:detect": "python scripts/compare_repo_to_state.py --repo .",
+    "org:topology": "python scripts/build_org_topology.py --mode single",
+    "remediation:plan": "python scripts/generate_patch_plan.py",
+    "remediation:simulate": "python scripts/simulate_patch_apply.py --plan examples/remediation/sample-remediation-plan.json",
+    "remediation:patch": "python scripts/apply_patch.py --input examples/incremental-fix/sample-incremental-fix.json"
   },
   "devDependencies": {
     "ajv-cli": "^5.0.0"

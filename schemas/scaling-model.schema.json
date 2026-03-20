@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scaling Model",
+  "description": "What scales, how scaling is triggered, limits, cost impact. Required for every architecture.",
+  "type": "object",
+  "required": ["scalable_components", "triggers", "limits"],
+  "properties": {
+    "scalable_components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["component", "scale_type"],
+        "properties": {
+          "component": { "type": "string" },
+          "scale_type": {
+            "type": "string",
+            "enum": ["horizontal", "vertical", "serverless", "queue-based", "none"]
+          },
+          "min_capacity": { "type": "integer" },
+          "max_capacity": { "type": "integer" },
+          "target_utilization": { "type": "number" }
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "component": { "type": "string" },
+          "metric": { "type": "string" },
+          "threshold": { "type": "string" }
+        }
+      }
+    },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "component": { "type": "string" },
+          "limit": { "type": "string" },
+          "bottleneck": { "type": "boolean" }
+        }
+      }
+    },
+    "cost_scaling_impact": {
+      "type": "string",
+      "description": "How cost scales with load"
+    }
+  }
+}

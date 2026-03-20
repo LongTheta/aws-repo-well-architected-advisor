@@ -1,0 +1,124 @@
+{
+  "workload_profile": {
+    "detected_profile": "Internal",
+    "profile_name": "Internal",
+    "confidence_score": 0.88,
+    "reasoning": "Low external exposure, internal users, moderate usage",
+    "app_type": "internal tool",
+    "traffic_pattern": "moderate",
+    "availability_target": "99%",
+    "cost_sensitivity": "high",
+    "compliance_mode": "standard",
+    "team_maturity": "moderate",
+    "scaling_pattern": "static"
+  },
+  "architecture_model": {
+    "app_type": "internal tool",
+    "trust_boundary": "private",
+    "traffic_profile": "moderate",
+    "availability_target": "99%",
+    "data_classification": "internal",
+    "auth_model": "IAM / SSO",
+    "deployment_model": "rolling",
+    "cost_sensitivity": "high",
+    "compliance_mode": "standard",
+    "environments": ["dev", "prod"],
+    "account_strategy": "single",
+    "selected_services": {
+      "compute": "ECS",
+      "data": "RDS",
+      "storage": "S3",
+      "networking": "Private ALB"
+    }
+  },
+  "decision_log": [
+    {
+      "decision_id": "D1",
+      "component": "compute",
+      "context": "Internal tool",
+      "options_considered": ["ECS Fargate", "Lambda", "EC2"],
+      "cheapest_option": "Lambda",
+      "optimized_option": "ECS Fargate",
+      "recommended_option": "ECS Fargate",
+      "decision_score": 0.82,
+      "rationale": "Simple container deployment, minimal HA; ECS fits internal tool pattern",
+      "tradeoffs": "Slightly higher cost than Lambda; better for long-running containers",
+      "risk_level": "low",
+      "cost_impact": "neutral"
+    }
+  ],
+  "cost_analysis": {
+    "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+    "cost_summary": { "total_min": 150, "total_max": 400, "currency": "USD" },
+    "estimated_monthly_cost_range": { "min": 150, "max": 400, "currency": "USD" },
+    "assumptions": ["ECS Fargate 0.5 vCPU/1GB", "RDS db.t3.micro"],
+    "confidence_score": 0.85,
+    "service_options": [
+      { "component": "compute", "option": "ECS Fargate", "cost_min": 50, "cost_max": 150 }
+    ],
+    "savings_opportunities": ["Spot for non-critical"],
+    "decision_score": 0.82,
+    "components": [
+      {
+        "component": "compute",
+        "recommended_option": "ECS Fargate",
+        "cost_drivers": ["vCPU", "memory"],
+        "savings_opportunities": ["Spot for non-critical"]
+      }
+    ]
+  },
+  "architecture_graph": {
+    "nodes": [
+      { "id": "alb", "label": "ALB", "zone": "compute", "type": "network", "public_exposure": false },
+      { "id": "ecs", "label": "ECS", "zone": "compute", "type": "compute", "public_exposure": false },
+      { "id": "rds", "label": "RDS", "zone": "data", "type": "data", "public_exposure": false }
+    ],
+    "edges": [
+      { "from": "alb", "to": "ecs", "label": "HTTPS" },
+      { "from": "ecs", "to": "rds", "label": "TLS" }
+    ],
+    "zones": [
+      { "id": "compute", "label": "Compute" },
+      { "id": "data", "label": "Data" }
+    ]
+  },
+  "deployment_plan": {
+    "phases": [
+      { "name": "Foundation", "apply_order": 1, "resources": ["VPC", "ALB"] },
+      { "name": "Compute", "apply_order": 2, "resources": ["ECS", "RDS"] }
+    ],
+    "rollback_notes": "Revert ECS service"
+  },
+  "deployment_model": {
+    "bootstrap_order": ["VPC", "ALB", "ECS", "RDS"],
+    "apply_phases": [
+      { "name": "Foundation", "apply_order": 1, "dependencies": [] },
+      { "name": "Compute", "apply_order": 2, "dependencies": ["Foundation"] }
+    ],
+    "dependencies": [{ "from": "ALB", "to": "ECS" }, { "from": "ECS", "to": "RDS" }]
+  },
+  "scaling_model": {
+    "scalable_components": [
+      { "component": "ECS", "scale_type": "horizontal", "min_capacity": 1, "max_capacity": 4 }
+    ],
+    "triggers": [{ "component": "ECS", "metric": "CPUUtilization", "threshold": "80%" }],
+    "limits": []
+  },
+  "slo_sli_model": {
+    "availability_target": "99%",
+    "latency_expectations": { "p95_ms": 500 },
+    "error_thresholds": [{ "metric": "ErrorRate", "threshold": "1%", "severity": "high" }]
+  },
+  "runtime_constraints": {
+    "constraints": [{ "type": "api_rate_limit", "description": "Internal ALB", "limit": "Per-ALB" }]
+  },
+  "verification_checklist": {
+    "checks": [
+      { "id": "V1", "category": "compute", "expected_result": "ECS tasks running", "severity_if_failed": "high" }
+    ]
+  },
+  "operations_runbook": {
+    "service_name": "internal-tool",
+    "alerts": [{ "name": "ECS unhealthy", "severity": "high" }]
+  }
+}

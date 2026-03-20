@@ -1,0 +1,1 @@
+[{"resource_id":"aws_vpc.main","resource_type":"aws_vpc"},{"resource_id":"aws_lambda_function.api","resource_type":"aws_lambda_function"}]

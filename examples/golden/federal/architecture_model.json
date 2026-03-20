@@ -1,0 +1,20 @@
+{
+  "app_type": "api",
+  "trust_boundary": "multi-boundary",
+  "traffic_profile": "steady",
+  "availability_target": "99.9%",
+  "data_classification": "confidential",
+  "auth_model": "Cognito + IAM",
+  "deployment_model": "blue-green",
+  "cost_sensitivity": "low",
+  "compliance_mode": "federal",
+  "environments": ["dev", "test", "stage", "prod"],
+  "account_strategy": "multi-account",
+  "selected_services": {
+    "compute": "ECS",
+    "data": "RDS",
+    "networking": "Private ALB",
+    "security": "KMS",
+    "logging": "CloudWatch"
+  }
+}

@@ -48,6 +48,6 @@ When user asks to "read this repo", "design from requirements", "recommend and i
 
 /quick-review, /repo-assess, /solution-discovery, /platform-design, /scaffold, /design-and-implement, /incremental-fix, /federal-checklist, /gitops-audit, /quality-gate, /verify, /doc-sync
 
-## vNext Lifecycle (design-and-implement, scaffold)
+## v5 Lifecycle (design-and-implement, scaffold)
 
-Discover → Infer → Model → Decide → Design → Validate → Generate → Verify → Operate → Document → Improve. See `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md`.
+Discover → Infer → Model → Decide → Design → Validate → Generate → Verify → Operate → Document → Improve. See `docs/AI-CLOUD-ARCHITECT-AGENT-V5.md`. Workload Profile Engine per `docs/workload-type-profiles.md`.

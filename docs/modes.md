@@ -36,7 +36,7 @@ flowchart LR
 |------|------------|----------|
 | **QUICK_REVIEW** | `/quick-review` | Light assessment: discovery → top risks → score. Skip full multi-pass. Output: grade, readiness, top 5 findings. |
 | **DEEP_ANALYSIS** | `/repo-assess`, `/orchestrate` | Full multi-pass: discovery → standards mapping → risk/gap → architecture decisions → implementation plan → validation → output. |
-| **BUILD_MODE** | `/design-and-implement`, `/scaffold` | vNext lifecycle: Discover → Infer → Model → Decide → Design → Validate → Generate. IaC + runbooks + testing plan + cost estimate. |
+| **BUILD_MODE** | `/design-and-implement`, `/scaffold` | v5 lifecycle: Discover → Infer → Model → Decide → Design → Validate → Generate. IaC + runbooks + testing plan + cost estimate. |
 | **FEDERAL_MODE** | `/federal-checklist` | NIST 800-series + DoD overlay. Control mapping, NIST_ALIGNMENT, DOD_ALIGNMENT. Allowed claims only. |
 | **DOD_ZERO_TRUST_MODE** | `/federal-checklist` (DoD focus) | Same as FEDERAL_MODE; emphasize DoD Zero Trust pillars (User, Device, Network, Application, Data, Visibility, Automation). |
 | **COST_OPTIMIZED** | `/repo-assess` (cost focus) | Review with Cost pillar weighted higher; cost-focused recommendations. |
@@ -79,7 +79,7 @@ flowchart LR
 
 ### BUILD_MODE
 
-- **What changes**: vNext lifecycle; design and IaC generation; read repo → infer app → model → decide → design → validate → generate. Includes runbooks, testing plan, cost estimate, verification checklist.
+- **What changes**: v5 lifecycle; design and IaC generation; read repo → infer app → model → decide → design → validate → generate. Includes runbooks, testing plan, cost estimate, verification checklist.
 - **When to use**: Greenfield design, scaffold from requirements, full implementation
 - **Outputs**: Solution brief, architecture model, decision log, target architecture, IaC files, runbooks, testing plan, cost estimate
 - **Limitations**: Does not run `terraform apply`; user applies manually

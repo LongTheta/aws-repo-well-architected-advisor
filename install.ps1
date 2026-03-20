@@ -59,7 +59,7 @@ Write-Host "  - schemas/"
 # Docs
 $docsDest = Join-Path $DestAbs "docs"
 New-Item -ItemType Directory -Force -Path $docsDest | Out-Null
-@("RULES.md", "docs\OPERATING-MODEL.md", "docs\scoring-model.md", "docs\command-to-skill-mapping.md", "docs\LEGACY-SKILLS.md") | ForEach-Object {
+@("RULES.md", "docs\OPERATING-MODEL.md", "docs\scoring-model.md", "docs\command-to-skill-mapping.md") | ForEach-Object {
     if (Test-Path "$RepoRoot\$_") {
         $targetDir = Split-Path (Join-Path $DestAbs $_) -Parent
         New-Item -ItemType Directory -Force -Path $targetDir | Out-Null

@@ -85,7 +85,7 @@ cloud-architecture-ai-auditor
 
 **Anti-patterns detected**: Public backend exposure, K8s overuse, hardcoded secrets, no autoscaling, missing logging, excessive NAT cost.
 
-See [aws-architecture-decision-engine.md](aws-architecture-decision-engine.md) and [aws-decision-engine.md](aws-decision-engine.md) for full rule-based logic.
+See [aws-architecture-decision-engine.md](aws-architecture-decision-engine.md), [aws-decision-engine.md](aws-decision-engine.md), [aws-service-selection-policy.md](aws-service-selection-policy.md), and [../docs/aws-finops-decision-optimization.md](../docs/aws-finops-decision-optimization.md) for full rule-based logic and FinOps decision flow.
 
 ## Cost-Aware Refinement System
 
@@ -201,6 +201,7 @@ All outputs must follow [cloud-architecture-ai-auditor-rules.md](cloud-architect
 | `aws-app-platform-questionnaire.md` | **Platform questionnaire** — 12 questions to right-size design |
 | `eks-justification-checklist.md` | **EKS justification** — when EKS is appropriate |
 | `aws-federal-grade-checklist.md` | **Federal-grade evaluation** — NIST, FedRAMP, DoD, Zero Trust |
+| `aws-service-selection-policy.md` | **Service selection & cost optimization** — full AWS service scope, compare 2+ options, cheapest_viable + recommended |
 | `glossary.md` | **Glossary** — terms and definitions |
 | `cost-bands.yaml` | **Cost bands** — machine-readable cost estimation |
 | `well-architected-scoring-engine/SKILL.md` | Orchestrator |

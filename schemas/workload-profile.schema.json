@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workload Profile",
+  "description": "Detected workload type and characteristics. Drives architecture decision weights.",
+  "type": "object",
+  "required": ["detected_profile", "confidence_score", "reasoning"],
+  "properties": {
+    "detected_profile": {
+      "type": "string",
+      "enum": ["Startup", "Enterprise", "Federal", "High-Scale", "Internal", "Data Pipeline"],
+      "description": "Detected workload profile (canonical field)"
+    },
+    "profile_name": {
+      "type": "string",
+      "enum": ["Startup", "Enterprise", "Federal", "High-Scale", "Internal", "Data Pipeline"],
+      "description": "Deprecated: use detected_profile"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "0.0–1.0 confidence in profile detection"
+    },
+    "reasoning": {
+      "type": "string",
+      "description": "Why this profile was selected"
+    },
+    "app_type": {
+      "type": "string",
+      "description": "API, web, internal tool, data pipeline, event-driven"
+    },
+    "traffic_pattern": {
+      "type": "string",
+      "enum": ["low", "moderate", "steady", "high", "bursty", "batch"],
+      "description": "Expected traffic pattern"
+    },
+    "availability_target": {
+      "type": "string",
+      "description": "e.g. 99.9%, 99.5%, best-effort"
+    },
+    "cost_sensitivity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "very_high"],
+      "description": "Cost optimization priority"
+    },
+    "compliance_mode": {
+      "type": "string",
+      "enum": ["none", "standard", "federal", "regulated"],
+      "description": "Compliance requirements"
+    },
+    "team_maturity": {
+      "type": "string",
+      "enum": ["small", "moderate", "large", "enterprise"],
+      "description": "Team size and operational maturity"
+    },
+    "scaling_pattern": {
+      "type": "string",
+      "enum": ["static", "manual", "auto", "serverless", "event-driven"],
+      "description": "Expected scaling behavior"
+    }
+  }
+}

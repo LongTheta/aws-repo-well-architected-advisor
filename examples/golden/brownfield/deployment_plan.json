@@ -1,0 +1,7 @@
+{
+  "phases": [
+    { "name": "Subnets", "apply_order": 1, "resources": ["aws_subnet"] },
+    { "name": "IAM", "apply_order": 2, "resources": ["iam.tf"] }
+  ],
+  "rollback_notes": "Revert Terraform"
+}

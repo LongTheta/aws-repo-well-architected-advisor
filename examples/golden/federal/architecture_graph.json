@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    { "id": "vpc", "label": "VPC", "zone": "network", "type": "network", "public_exposure": false },
+    { "id": "alb", "label": "ALB", "zone": "compute", "type": "network", "public_exposure": false },
+    { "id": "ecs", "label": "ECS", "zone": "compute", "type": "compute", "public_exposure": false },
+    { "id": "rds", "label": "RDS", "zone": "data", "type": "data", "public_exposure": false },
+    { "id": "kms", "label": "KMS", "zone": "security", "type": "network", "public_exposure": false }
+  ],
+  "edges": [
+    { "from": "alb", "to": "ecs", "label": "HTTPS", "data_flow": true },
+    { "from": "ecs", "to": "rds", "label": "TLS", "data_flow": true },
+    { "from": "ecs", "to": "kms", "label": "Encrypt", "data_flow": true }
+  ],
+  "zones": [
+    { "id": "network", "label": "Network" },
+    { "id": "compute", "label": "Compute" },
+    { "id": "data", "label": "Data" },
+    { "id": "security", "label": "Security" }
+  ],
+  "trust_boundaries": [{ "name": "VPC", "zones": ["compute", "data"] }],
+  "public_exposure": []
+}

@@ -1,0 +1,40 @@
+{
+  "fixes": [
+    {
+      "id": "F1",
+      "title": "Add IAM roles for least privilege",
+      "patch_type": "iam",
+      "target_files": ["terraform/iam.tf"],
+      "risk_reduction": "Reduces risk of overprivileged execution; supports NIST AC-6",
+      "affected_control_area": "NIST_AC_6",
+      "effort": "medium",
+      "priority": "P1",
+      "evidence_required_to_close": "iam.tf with role and policy; no wildcard actions",
+      "patch_content": "resource \"aws_iam_role\" \"app\" {\n  name = \"app-role\"\n  assume_role_policy = jsonencode({...})\n}\n"
+    },
+    {
+      "id": "F2",
+      "title": "Add cost allocation tags",
+      "patch_type": "terraform",
+      "target_files": ["terraform/main.tf"],
+      "risk_reduction": "Enables cost allocation; supports Cost Optimization pillar",
+      "affected_control_area": "AWS_WELL_ARCHITECTED_COST",
+      "effort": "low",
+      "priority": "P2",
+      "evidence_required_to_close": "Tags: Environment, Project, CostCenter on all resources",
+      "patch_content": "tags = {\n  Environment = var.environment\n  Project    = var.project\n  CostCenter = var.cost_center\n}\n"
+    },
+    {
+      "id": "F3",
+      "title": "Add SAST to CI pipeline",
+      "patch_type": "cicd",
+      "target_files": [".github/workflows/ci.yml"],
+      "risk_reduction": "Catches security issues before merge; supports supply chain security",
+      "affected_control_area": "NIST_SA_11",
+      "effort": "low",
+      "priority": "P1",
+      "evidence_required_to_close": "CI job runs SAST (e.g. semgrep, trivy) on code",
+      "patch_content": "- name: SAST\n  run: semgrep scan --config auto\n"
+    }
+  ]
+}

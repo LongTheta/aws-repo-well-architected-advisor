@@ -1,0 +1,13 @@
+{
+  "detected_profile": "Startup",
+  "profile_name": "Startup",
+  "confidence_score": 0.85,
+  "reasoning": "Low traffic, cost-sensitive, small team, rapid iteration",
+  "app_type": "web",
+  "traffic_pattern": "low",
+  "availability_target": "99.5%",
+  "cost_sensitivity": "high",
+  "compliance_mode": "none",
+  "team_maturity": "small",
+  "scaling_pattern": "serverless"
+}

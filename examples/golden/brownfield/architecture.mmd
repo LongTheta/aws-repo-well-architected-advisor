@@ -1,0 +1,7 @@
+flowchart TB
+    subgraph network["Network"]
+        vpc[VPC]
+        subnet[Subnets]
+    end
+
+    vpc -->|contains| subnet

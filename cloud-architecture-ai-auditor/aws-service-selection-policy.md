@@ -90,6 +90,36 @@ Output MUST include:
 - reason_for_recommendation
 - tradeoffs
 
+### Service Selection Flow
+
+```mermaid
+flowchart TB
+    subgraph Step1["Step 1: Identify"]
+        S1A[Select all relevant AWS-native options]
+    end
+    
+    subgraph Step2["Step 2: Compare"]
+        S2A[estimated_cost_class]
+        S2B[scaling_model]
+        S2C[operational_burden]
+        S2D[security_posture]
+        S2E[availability]
+    end
+    
+    subgraph Step3["Step 3: Select"]
+        S3A[cheapest_viable_option]
+        S3B[recommended_option]
+        S3C[reason_for_recommendation]
+        S3D[tradeoffs]
+    end
+    
+    S1A --> S2A
+    S2A --> S2B
+    S2B --> S2C
+    S2C --> S3A
+    S3A --> S3B
+```
+
 ---
 
 ## 4. Required Comparisons
@@ -213,3 +243,4 @@ Cost optimization must NEVER break:
 
 - `cloud-architecture-ai-auditor-rules.md` — Cost-effective by default, avoid over-engineering
 - `aws-architecture-pattern-review` — Service fit, anti-patterns, right-sizing
+- `docs/aws-finops-decision-optimization.md` — FinOps & Decision Optimization Engine (cost modeling, savings, multi-factor scoring)

@@ -1,0 +1,12 @@
+{
+  "service_name": "startup-saas",
+  "alerts": [
+    { "name": "Lambda errors", "condition": "ErrorRate > 1%", "severity": "high" },
+    { "name": "API latency", "condition": "p99 > 2s", "severity": "medium" }
+  ],
+  "failure_modes": [
+    { "mode": "Lambda throttling", "symptoms": "5xx", "mitigation": "Increase concurrency" },
+    { "mode": "DynamoDB throttling", "symptoms": "ProvisionedThroughputExceeded", "mitigation": "Scale capacity or switch to on-demand" }
+  ],
+  "rollback_steps": ["terraform apply -target=...", "Revert deployment"]
+}

@@ -1,0 +1,147 @@
+{
+  "workload_profile": {
+    "detected_profile": "Data Pipeline",
+    "profile_name": "Data Pipeline",
+    "confidence_score": 0.9,
+    "reasoning": "Async workloads, scheduled jobs, data transformation",
+    "app_type": "data pipeline",
+    "traffic_pattern": "batch",
+    "availability_target": "99%",
+    "cost_sensitivity": "high",
+    "compliance_mode": "standard",
+    "team_maturity": "moderate",
+    "scaling_pattern": "event-driven"
+  },
+  "architecture_model": {
+    "app_type": "data pipeline",
+    "trust_boundary": "private",
+    "traffic_profile": "batch",
+    "availability_target": "99%",
+    "data_classification": "internal",
+    "auth_model": "IAM",
+    "deployment_model": "rolling",
+    "cost_sensitivity": "high",
+    "compliance_mode": "standard",
+    "environments": ["dev", "prod"],
+    "account_strategy": "single",
+    "selected_services": {
+      "compute": "Lambda",
+      "storage": "S3",
+      "orchestration": "Step Functions",
+      "messaging": "SQS",
+      "events": "EventBridge"
+    }
+  },
+  "decision_log": [
+    {
+      "decision_id": "D1",
+      "component": "compute",
+      "context": "Batch processing",
+      "options_considered": ["Lambda", "ECS", "Glue"],
+      "cheapest_option": "Lambda",
+      "optimized_option": "Lambda",
+      "recommended_option": "Lambda",
+      "decision_score": 0.9,
+      "rationale": "Event-driven, pay per invocation",
+      "tradeoffs": "15min timeout limit",
+      "risk_level": "low",
+      "cost_impact": "lower"
+    },
+    {
+      "decision_id": "D2",
+      "component": "orchestration",
+      "options_considered": ["Step Functions", "Lambda orchestration", "Airflow"],
+      "cheapest_option": "Lambda orchestration",
+      "optimized_option": "Step Functions",
+      "recommended_option": "Step Functions",
+      "decision_score": 0.85,
+      "rationale": "Workflow orchestration, retries",
+      "tradeoffs": "Per-state pricing",
+      "risk_level": "low",
+      "cost_impact": "neutral"
+    }
+  ],
+  "cost_analysis": {
+    "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+    "cost_summary": { "total_min": 30, "total_max": 120, "currency": "USD" },
+    "estimated_monthly_cost_range": { "min": 30, "max": 120, "currency": "USD" },
+    "assumptions": ["~50K Lambda invocations/month", "Step Functions ~1K state transitions"],
+    "confidence_score": 0.9,
+    "service_options": [
+      { "component": "compute", "option": "Lambda", "cost_min": 5, "cost_max": 30 },
+      { "component": "orchestration", "option": "Step Functions", "cost_min": 5, "cost_max": 25 }
+    ],
+    "savings_opportunities": ["Reserved concurrency for steady load"],
+    "decision_score": 0.88,
+    "components": [
+      {
+        "component": "compute",
+        "recommended_option": "Lambda",
+        "cost_drivers": ["invocations", "duration"],
+        "savings_opportunities": ["Reserved concurrency for steady load"]
+      }
+    ]
+  },
+  "architecture_graph": {
+    "nodes": [
+      { "id": "s3-in", "label": "S3", "zone": "data", "type": "data", "public_exposure": false },
+      { "id": "lambda", "label": "Lambda", "zone": "compute", "type": "compute", "public_exposure": false },
+      { "id": "stepfn", "label": "Step Functions", "zone": "compute", "type": "network", "public_exposure": false },
+      { "id": "s3-out", "label": "S3", "zone": "data", "type": "data", "public_exposure": false }
+    ],
+    "edges": [
+      { "from": "s3-in", "to": "lambda", "label": "Trigger" },
+      { "from": "stepfn", "to": "lambda", "label": "Invoke" },
+      { "from": "lambda", "to": "s3-out", "label": "PutObject" }
+    ],
+    "zones": [
+      { "id": "compute", "label": "Compute" },
+      { "id": "data", "label": "Data" }
+    ]
+  },
+  "deployment_plan": {
+    "phases": [
+      { "name": "Storage", "apply_order": 1, "resources": ["S3 buckets"] },
+      { "name": "Compute", "apply_order": 2, "resources": ["Lambda", "Step Functions"] }
+    ],
+    "rollback_notes": "Disable Step Functions state machine"
+  },
+  "deployment_model": {
+    "bootstrap_order": ["S3", "Lambda", "Step Functions"],
+    "apply_phases": [
+      { "name": "Storage", "apply_order": 1, "dependencies": [] },
+      { "name": "Compute", "apply_order": 2, "dependencies": ["Storage"] }
+    ],
+    "dependencies": [{ "from": "S3", "to": "Lambda" }, { "from": "Step Functions", "to": "Lambda" }]
+  },
+  "scaling_model": {
+    "scalable_components": [
+      { "component": "Lambda", "scale_type": "serverless", "min_capacity": 0 },
+      { "component": "Step Functions", "scale_type": "queue-based" }
+    ],
+    "triggers": [{ "component": "Lambda", "metric": "Invocations", "threshold": "S3 event" }],
+    "limits": [{ "component": "Lambda", "limit": "15min timeout", "bottleneck": true }],
+    "cost_scaling_impact": "Pay per invocation"
+  },
+  "slo_sli_model": {
+    "availability_target": "99%",
+    "latency_expectations": { "p95_ms": 900000 },
+    "error_thresholds": [{ "metric": "Lambda failures", "threshold": "1%", "severity": "high" }],
+    "monitoring_signals": ["Step Functions failures", "S3 events"]
+  },
+  "runtime_constraints": {
+    "constraints": [
+      { "type": "aws_quota", "description": "Lambda 15min max", "limit": "15 min", "mitigation": "Chunk work" }
+    ]
+  },
+  "verification_checklist": {
+    "checks": [
+      { "id": "V1", "category": "data", "expected_result": "S3 objects processable", "severity_if_failed": "high" }
+    ]
+  },
+  "operations_runbook": {
+    "service_name": "data-pipeline",
+    "alerts": [{ "name": "Lambda failures", "severity": "high" }],
+    "failure_modes": [{ "mode": "S3 throttling", "symptoms": "Slow processing", "mitigation": "Increase concurrency" }]
+  }
+}

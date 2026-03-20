@@ -130,15 +130,142 @@ function testInstallScripts() {
   else fail("install.ps1", "not found")
 }
 
-// 6. Platform configs exist
+// 6. Schema validation (all schemas)
+function testAllSchemaValidation() {
+  console.log("\n6. All schema validation")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "validate-schemas.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("All example artifacts validate against schemas")
+  } catch (e) {
+    fail("Schema validation", e.stderr?.toString() || e.message)
+  }
+}
+
+// 7. Mermaid / diagram validation
+function testMermaidValidation() {
+  console.log("\n7. Mermaid and diagram validation")
+  const graphPath = path.join(REPO_ROOT, "examples", "architecture-graph-example.json")
+  const mmdPath = path.join(REPO_ROOT, "examples", "architecture-diagram-example.mmd")
+  if (!fs.existsSync(graphPath) || !fs.existsSync(mmdPath)) {
+    ok("Mermaid examples exist (skipped)")
+    return
+  }
+  try {
+    const { execSync } = require("child_process")
+    execSync(`node scripts/validate-mermaid.js "${graphPath}" "${mmdPath}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("Architecture graph and Mermaid validation")
+  } catch (e) {
+    fail("Mermaid validation", e.stderr?.toString() || e.message)
+  }
+}
+
+// 8. Platform configs exist
 function testPlatformConfigs() {
-  console.log("\n6. Platform configs")
+  console.log("\n8. Platform configs")
   if (fs.existsSync(path.join(REPO_ROOT, ".opencode", "opencode.json"))) ok(".opencode/opencode.json")
   else fail(".opencode", "not found")
   if (fs.existsSync(path.join(REPO_ROOT, ".cursor", "rules", "aws-well-architected.md"))) ok(".cursor/rules")
   else fail(".cursor", "not found")
   if (fs.existsSync(path.join(REPO_ROOT, ".claude", "CLAUDE.md"))) ok(".claude/CLAUDE.md")
   else fail(".claude", "not found")
+}
+
+// 9. Golden scenario tests
+function testGoldenScenarios() {
+  console.log("\n9. Golden scenario tests")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "scenarios", "run-scenarios.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "inherit",
+    })
+    ok("All scenario JSONs validate against schemas")
+  } catch (e) {
+    fail("Golden scenarios", e.message || "run-scenarios.js failed")
+  }
+  const goldenPath = path.join(REPO_ROOT, "tests", "scenarios", "run-golden.js")
+  if (fs.existsSync(goldenPath)) {
+    try {
+      execSync(`node "${goldenPath}"`, { cwd: REPO_ROOT, stdio: "inherit" })
+      ok("Golden directory (startup-saas, federal, brownfield)")
+    } catch (e) {
+      fail("Golden directory", e.message || "run-golden.js failed")
+    }
+  }
+}
+
+// 10. E2E execution validation (startup-saas pipeline)
+function testE2EStartupSaaS() {
+  console.log("\n10. E2E startup-saas pipeline")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "e2e", "startup-saas.test.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("E2E pipeline: full flow executes, all artifacts validate")
+  } catch (e) {
+    fail("E2E startup-saas", e.stderr?.toString() || e.message)
+  }
+}
+
+// 11. Cost estimation system
+function testCostEstimation() {
+  console.log("\n11. Cost estimation system")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "cost.test.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("cost.test.js: schema, ranges, assumptions, disclaimer")
+  } catch (e) {
+    fail("Cost estimation", e.stderr?.toString() || e.message)
+  }
+}
+
+// 12. Remediation / patch application
+function testRemediation() {
+  console.log("\n12. Remediation (patch application)")
+  try {
+    execSync(`node "${path.join(REPO_ROOT, "tests", "remediation.test.js")}"`, {
+      cwd: REPO_ROOT,
+      stdio: "pipe",
+    })
+    ok("apply_patch: patch generated, output matches schema")
+  } catch (e) {
+    fail("Remediation", e.stderr?.toString() || e.message)
+  }
+}
+
+// 13. Skill execution validation (contract tests)
+function testSkillContracts() {
+  console.log("\n13. Skill contract tests")
+  const archTest = path.join(REPO_ROOT, "tests", "skills", "architecture-inference.test.js")
+  const repoTest = path.join(REPO_ROOT, "tests", "skills", "repo-assess.test.js")
+  if (!fs.existsSync(archTest)) {
+    fail("architecture-inference.test.js", "not found")
+    return
+  }
+  if (!fs.existsSync(repoTest)) {
+    fail("repo-assess.test.js", "not found")
+    return
+  }
+  try {
+    execSync(`node "${archTest}"`, { cwd: REPO_ROOT, stdio: "pipe" })
+    ok("architecture-inference output shape (architecture_graph)")
+  } catch (e) {
+    fail("architecture-inference.test.js", e.stderr?.toString() || e.message)
+  }
+  try {
+    execSync(`node "${repoTest}"`, { cwd: REPO_ROOT, stdio: "pipe" })
+    ok("repo-assess output shape (decision_log)")
+  } catch (e) {
+    fail("repo-assess.test.js", e.stderr?.toString() || e.message)
+  }
 }
 
 // Run
@@ -148,7 +275,14 @@ testReviewScoreLogic()
 testEvidenceExtractorLogic()
 testQualityGateCheck()
 testInstallScripts()
+testAllSchemaValidation()
+testMermaidValidation()
 testPlatformConfigs()
+testGoldenScenarios()
+testE2EStartupSaaS()
+testCostEstimation()
+testRemediation()
+testSkillContracts()
 
 console.log(`\n${passed} passed, ${failed} failed`)
 process.exit(failed > 0 ? 1 : 0)

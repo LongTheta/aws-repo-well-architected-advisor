@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    { "id": "vpc", "label": "VPC", "zone": "network", "type": "network", "public_exposure": false },
+    { "id": "subnet", "label": "Subnets", "zone": "network", "type": "network", "public_exposure": false }
+  ],
+  "edges": [
+    { "from": "vpc", "to": "subnet", "label": "contains", "data_flow": false }
+  ],
+  "zones": [
+    { "id": "network", "label": "Network" }
+  ],
+  "trust_boundaries": [],
+  "public_exposure": []
+}

@@ -1,0 +1,24 @@
+{
+  "mode": "simulation",
+  "live_apply": false,
+  "patches_simulated": 2,
+  "results": [
+    {
+      "issue_id": "R1",
+      "simulation_status": "simulated",
+      "would_apply": "patches/R1.patch",
+      "risk_level": "low",
+      "approval_required": true,
+      "rollback_available": true
+    },
+    {
+      "issue_id": "R2",
+      "simulation_status": "simulated",
+      "would_apply": "patches/R2.patch",
+      "risk_level": "medium",
+      "approval_required": true,
+      "rollback_available": true
+    }
+  ],
+  "summary": "All patches simulated successfully. No live changes made."
+}

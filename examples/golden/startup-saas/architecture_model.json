@@ -1,0 +1,20 @@
+{
+  "app_type": "web",
+  "trust_boundary": "public/private",
+  "traffic_profile": "low",
+  "availability_target": "99.5%",
+  "data_classification": "internal",
+  "auth_model": "Cognito",
+  "deployment_model": "blue-green",
+  "cost_sensitivity": "high",
+  "compliance_mode": "none",
+  "environments": ["dev", "prod"],
+  "account_strategy": "single",
+  "selected_services": {
+    "compute": "Lambda",
+    "api": "API Gateway",
+    "data": "DynamoDB",
+    "storage": "S3",
+    "cdn": "CloudFront"
+  }
+}

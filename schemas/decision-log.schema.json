@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Decision Log",
+  "description": "Architecture decision records with options, rationale, tradeoffs.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "component",
+      "options_considered",
+      "cheapest_option",
+      "optimized_option",
+      "recommended_option",
+      "decision_score",
+      "rationale",
+      "tradeoffs"
+    ],
+    "properties": {
+      "decision_id": { "type": "string" },
+      "component": {
+        "type": "string",
+        "description": "compute, data, networking, security, etc."
+      },
+      "context": { "type": "string" },
+      "options_considered": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "cheapest_option": { "type": "string" },
+      "optimized_option": { "type": "string" },
+      "recommended_option": { "type": "string" },
+      "selected_option": { "type": "string", "description": "Deprecated: use recommended_option" },
+      "rejected_options": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "option": { "type": "string" },
+            "reason_rejected": { "type": "string" }
+          }
+        }
+      },
+      "rationale": { "type": "string" },
+      "tradeoffs": { "type": "string" },
+      "decision_score": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "0.0–1.0 score for this decision"
+      },
+      "risk_level": {
+        "type": "string",
+        "enum": ["low", "medium", "high"]
+      },
+      "cost_impact": {
+        "type": "string",
+        "enum": ["lower", "neutral", "higher"]
+      },
+      "evidence_refs": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "affected_controls_or_principles": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

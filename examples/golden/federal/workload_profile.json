@@ -1,0 +1,12 @@
+{
+  "detected_profile": "Federal",
+  "confidence_score": 0.9,
+  "reasoning": "Compliance-driven, audit requirements, security-first",
+  "app_type": "api",
+  "traffic_pattern": "steady",
+  "availability_target": "99.9%",
+  "cost_sensitivity": "low",
+  "compliance_mode": "federal",
+  "team_maturity": "large",
+  "scaling_pattern": "auto"
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Architecture Graph",
+  "description": "Structured graph for Mermaid generation. Drives diagram rendering.",
+  "type": "object",
+  "required": ["nodes", "edges"],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "zone"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "zone": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["compute", "data", "network", "edge", "external"]
+          },
+          "public_exposure": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "label": { "type": "string" },
+          "data_flow": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "parent": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "trust_boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "zones": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "public_exposure": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Node IDs with public exposure"
+    },
+    "data_flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  }
+}

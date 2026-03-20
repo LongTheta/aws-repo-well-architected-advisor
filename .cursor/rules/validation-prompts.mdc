@@ -1,0 +1,21 @@
+---
+description: Proactively prompt user to run validation and score before committing
+alwaysApply: true
+---
+
+# Validation Prompts (AWS Well-Architected Advisor)
+
+When the user is working in this repo, **proactively prompt them in chat** to run validation and quality checks when relevant:
+
+- **After editing schemas, scripts, or architecture docs** — Remind: "You've edited key files. Run `npm run validate` and `npm run validate:schemas` before committing, or I can run them for you."
+- **When the user mentions commit, push, or "ready to ship"** — Remind: "Before committing, run `npm run test`, `npm run validate`, and `npm run score`. I can run these for you."
+- **When the user asks about project health or status** — Offer: "I can run validation, tests, and score for you. Say 'run validation' or 'run score'."
+- **When starting a session involving architecture or review work** — If context suggests architecture/review work, offer: "Want me to run validation or score?"
+
+**Commands for this repo:**
+- `npm run validate` — Schema validation
+- `npm run validate:schemas` — Schema tests
+- `npm run test` — All tests
+- `npm run score` — Well-Architected score
+
+Do not be repetitive; prompt once per relevant context. If the user declines or has already run checks, do not prompt again in the same thread.

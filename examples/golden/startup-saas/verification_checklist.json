@@ -1,0 +1,7 @@
+{
+  "checks": [
+    { "id": "V1", "category": "networking", "expected_result": "VPC reachable", "severity_if_failed": "high" },
+    { "id": "V2", "category": "compute", "expected_result": "Lambda invokable", "severity_if_failed": "critical" },
+    { "id": "V3", "category": "data", "expected_result": "DynamoDB accessible", "severity_if_failed": "critical" }
+  ]
+}

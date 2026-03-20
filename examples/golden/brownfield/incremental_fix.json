@@ -1,0 +1,28 @@
+{
+  "fixes": [
+    {
+      "id": "F1",
+      "title": "Add subnet configuration to VPC",
+      "patch_type": "terraform",
+      "target_files": ["terraform/vpc.tf"],
+      "risk_reduction": "Enables deployment; VPC has no subnets",
+      "affected_control_area": "AWS_WELL_ARCHITECTED_RELIABILITY",
+      "effort": "medium",
+      "priority": "P1",
+      "evidence_required_to_close": "aws_subnet resources in vpc.tf",
+      "patch_content": "resource \"aws_subnet\" \"private\" { ... }"
+    },
+    {
+      "id": "F2",
+      "title": "Add IAM roles",
+      "patch_type": "iam",
+      "target_files": ["terraform/iam.tf"],
+      "risk_reduction": "Least-privilege execution",
+      "affected_control_area": "NIST_AC_6",
+      "effort": "medium",
+      "priority": "P1",
+      "evidence_required_to_close": "iam.tf with role and policy",
+      "patch_content": "resource \"aws_iam_role\" \"app\" { ... }"
+    }
+  ]
+}

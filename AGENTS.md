@@ -6,7 +6,7 @@ Canonical guidance: `docs/core-ai-guidance.md`. This file documents OpenCode age
 
 ## Purpose
 
-The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a full lifecycle implementation engine (vNext). Agents execute commands and follow skills to produce evidence-based findings, architecture designs, runbooks, and IaC scaffolding.
+The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a full lifecycle implementation engine (v5). Agents execute commands and follow skills to produce evidence-based findings, architecture designs, runbooks, and IaC scaffolding.
 
 ---
 
@@ -18,7 +18,7 @@ The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Ar
 | **product-manager-discovery** | Requirements discovery | /solution-discovery |
 | **cloud-platform-reviewer** | Platform design | /platform-design |
 | **scaffold-implementer** | IaC generation, incremental fixes | /scaffold, /incremental-fix |
-| **design-and-implement-conductor** | End-to-end design-and-implement (vNext lifecycle) | /design-and-implement |
+| **design-and-implement-conductor** | End-to-end design-and-implement (v5 lifecycle) | /design-and-implement |
 | **federal-security-reviewer** | NIST/DoD alignment | /federal-checklist |
 | **gitops-reviewer** | GitOps/DevSecOps audit | /gitops-audit |
 | **documentation-writer** | Architecture doc sync | /doc-sync |
@@ -41,7 +41,8 @@ The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Ar
 - `aws-repo-scaffolder/SKILL.md` — IaC scaffolding
 - `cloud-architecture-ai-auditor/aws-app-platform-questionnaire.md` — Business requirements
 - `cloud-architecture-ai-auditor/infrastructure-governance-questionnaire.md` — Tagging, CIDR, roles
-- `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` — vNext: full lifecycle (Discover → Infer → Model → Decide → Design → Validate → Generate → Verify → Operate → Document → Improve)
+- `docs/AI-CLOUD-ARCHITECT-AGENT-V5.md` — **v5 (primary)**: full lifecycle, Workload Profile Engine, Service Selection, FinOps
+- `docs/workload-type-profiles.md` — Workload classification (Startup, Enterprise, Federal, High-Scale, Internal, Data Pipeline)
 
 ---
 

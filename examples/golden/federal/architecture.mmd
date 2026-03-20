@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph network["Network"]
+        vpc[VPC]
+    end
+
+    subgraph compute["Compute"]
+        alb[ALB]
+        ecs[ECS]
+    end
+
+    subgraph data["Data"]
+        rds[(RDS)]
+    end
+
+    subgraph security["Security"]
+        kms[KMS]
+    end
+
+    alb -->|HTTPS| ecs
+    ecs -->|TLS| rds
+    ecs -->|Encrypt| kms

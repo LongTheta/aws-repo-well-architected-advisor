@@ -1,0 +1,16 @@
+{
+  "fixes": [
+    {
+      "id": "CICD1",
+      "title": "Add SAST step to CI pipeline",
+      "patch_type": "cicd",
+      "target_files": [".github/workflows/ci.yml"],
+      "risk_reduction": "Catches security issues before merge; supply chain security",
+      "affected_control_area": "NIST_SA_11",
+      "effort": "low",
+      "priority": "P1",
+      "evidence_required_to_close": "CI job runs SAST (e.g. semgrep, trivy) on code",
+      "patch_content": "- name: SAST\n  run: semgrep scan --config auto\n"
+    }
+  ]
+}

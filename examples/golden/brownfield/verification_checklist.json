@@ -1,0 +1,5 @@
+{
+  "checks": [
+    { "id": "V1", "category": "networking", "expected_result": "Subnets created", "severity_if_failed": "high" }
+  ]
+}

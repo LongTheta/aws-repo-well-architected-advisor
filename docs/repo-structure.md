@@ -98,6 +98,14 @@ JSON schemas for output validation.
 | `schemas/review-score.schema.json` | Review output (scorecard, findings, verdict) | Schema |
 | `schemas/solution-brief.schema.json` | Solution brief with infrastructure_config | Schema |
 | `schemas/incremental-fix.schema.json` | Patch-style fixes | Schema |
+| `schemas/workload-profile.schema.json` | Workload classification | Schema |
+| `schemas/architecture-model.schema.json` | Normalized architecture model | Schema |
+| `schemas/decision-log.schema.json` | Architecture decisions | Schema |
+| `schemas/cost-analysis.schema.json` | Cost analysis per component | Schema |
+| `schemas/architecture-graph.schema.json` | Graph for Mermaid generation | Schema |
+| `schemas/deployment-plan.schema.json` | Phased deployment | Schema |
+| `schemas/verification-checklist.schema.json` | Post-deploy checks | Schema |
+| `schemas/operations-runbook.schema.json` | Operational procedures | Schema |
 | `schemas/command-routing.schema.json` | Command-to-agent routing | Schema |
 
 ---
@@ -110,8 +118,11 @@ Documentation.
 |------|---------|------|
 | `docs/AI-CLOUD-ARCHITECT-AGENT.md` | v2 agent spec | Docs |
 | `docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md` | v3 NIST/DoD overlay | Docs |
-| `docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md` | vNext: end-to-end implementation engine | Docs |
+| `docs/AI-CLOUD-ARCHITECT-AGENT-V5.md` | v5 agent spec (primary): lifecycle, Workload Profile, Service Selection, FinOps | Docs |
 | `docs/core-ai-guidance.md` | Canonical AI guidance (AGENTS.md, CLAUDE.md, .cursor/rules) | Docs |
+| `docs/workload-type-profiles.md` | Workload classification (Startup, Enterprise, Federal, High-Scale, Internal, Data Pipeline) | Docs |
+| `docs/diagram-conventions.md` | Mermaid diagram standards, templates, schema | Docs |
+| `docs/aws-finops-decision-optimization.md` | FinOps & Decision Optimization Engine (cost model, savings, scoring) | Docs |
 | `docs/architecture.md` | Architecture overview | Docs |
 | `docs/commands.md` | Command reference | Docs |
 | `docs/modes.md` | Mode routing | Docs |
@@ -123,11 +134,15 @@ Documentation.
 | `docs/claude.md` | Claude Code usage | Docs |
 | `docs/ravvix.md` | Ravvix (provisional) | Docs |
 | `docs/development.md` | Development guide | Docs |
+| `docs/schemas.md` | Schema reference | Docs |
+| `docs/testing.md` | Testing guide | Docs |
+| `docs/cost-model.md` | Cost analysis (heuristic) | Docs |
+| `docs/operations.md` | Deployment, verification, runbooks | Docs |
+| `docs/usage.md` | Usage guide | Docs |
 | `docs/repo-structure.md` | This file | Docs |
 | `docs/examples.md` | Example workflows | Docs |
 | `docs/OPERATING-MODEL.md` | Operating model | Docs |
 | `docs/scoring-model.md` | Scoring weights | Docs |
-| `docs/LEGACY-SKILLS.md` | Legacy vs pack | Docs |
 
 ---
 
@@ -139,6 +154,8 @@ Sample output and fixtures.
 |------|---------|------|
 | `examples/validated-review-output.json` | Schema-conformant review output | Example |
 | `examples/quality-gate-result-sample.json` | Quality gate verdict sample | Example |
+| `examples/golden/startup-saas/`, `federal/`, `brownfield/` | Golden scenarios (full artifact sets) | Example |
+| `examples/incremental-fix/` | Incremental fix examples (Terraform, IAM, CI/CD) | Example |
 
 ---
 
@@ -175,4 +192,4 @@ Test suite.
 
 ## Legacy / Other Folders
 
-The repo contains additional folders (e.g., `security-review/`, `networking-review/`, `nist-compliance-evaluator/`, `aws-federal-grade-checklist/`) that may be legacy or referenced by the pack. See `docs/LEGACY-SKILLS.md` for mapping.
+The repo contains additional folders (e.g., `security-review/`, `networking-review/`, `nist-compliance-evaluator/`, `aws-federal-grade-checklist/`) that may be legacy or referenced by the pack. See `docs/archive/LEGACY-SKILLS.md` for mapping.

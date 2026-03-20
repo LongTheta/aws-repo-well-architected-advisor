@@ -40,6 +40,8 @@ flowchart TB
     RA --> IF
 ```
 
+Design flows apply **Service Selection** and **FinOps & Decision Optimization** per [aws-finops-decision-optimization.md](aws-finops-decision-optimization.md).
+
 ---
 
 ## /quick-review
@@ -100,7 +102,7 @@ flowchart TB
 
 ## /scaffold
 
-**What it does**: Generate IaC from architecture per vNext. Uses aws-repo-scaffolder. Produces Terraform, CDK, or CloudFormation plus CI/CD configs. Includes: VPC, subnets, security groups, KMS, IAM/IRSA, observability (logs, metrics, alarms), CI/CD with SAST, dependency scan, image scan, IaC scan, SBOM. Tagging enforced. Preflight validation before generation.
+**What it does**: Generate IaC from architecture per v5. Uses aws-repo-scaffolder. Produces Terraform, CDK, or CloudFormation plus CI/CD configs. Includes: VPC, subnets, security groups, KMS, IAM/IRSA, observability (logs, metrics, alarms), CI/CD with SAST, dependency scan, image scan, IaC scan, SBOM. Tagging enforced. Preflight validation before generation.
 
 **Expected inputs**: Target architecture or review findings; optionally `infrastructure_config`
 
@@ -114,7 +116,7 @@ flowchart TB
 
 ## /design-and-implement
 
-**What it does**: End-to-end flow per vNext lifecycle. (1) Discover repo and inputs, (2) Infer application architecture, (3) Model normalized architecture, (4) Decide (platform selection, data strategy), (5) Design target architecture, (6) Validate preflight, (7) Generate Terraform/CDK + CI/CD. MUST collect: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). Produces runbooks, testing plan, cost estimate, verification checklist.
+**What it does**: End-to-end flow per v5 lifecycle. (1) Discover repo and inputs, (2) Infer application architecture, (3) Model normalized architecture, (4) Decide (platform selection, data strategy), (5) Design target architecture, (6) Validate preflight, (7) Generate Terraform/CDK + CI/CD. MUST collect: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). Produces runbooks, testing plan, cost estimate, verification checklist.
 
 **Expected inputs**: Repo context; user answers to questionnaires
 

@@ -1,9 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Solution Brief",
-  "description": "Output from /solution-discovery",
+  "description": "Output from /solution-discovery and /design-and-implement. Includes structured artifacts. See schemas/*.schema.json for artifact schemas.",
   "type": "object",
   "properties": {
+    "workload_profile": { "type": "object", "description": "See workload-profile.schema.json" },
+    "architecture_model": { "type": "object", "description": "See architecture-model.schema.json" },
+    "decision_log": { "type": "array", "description": "See decision-log.schema.json" },
+    "cost_analysis": { "type": "array", "description": "See cost-analysis.schema.json" },
+    "architecture_graph": { "type": "object", "description": "See architecture-graph.schema.json" },
+    "deployment_plan": { "type": "object", "description": "See deployment-plan.schema.json" },
+    "verification_checklist": { "type": "object", "description": "See verification-checklist.schema.json" },
+    "operations_runbook": { "type": "object", "description": "See operations-runbook.schema.json" },
     "requirements": { "type": "object" },
     "constraints": { "type": "array", "items": { "type": "string" } },
     "compliance_level": { "type": "string" },
@@ -47,6 +55,18 @@
         "region": { "type": "string" },
         "enable_vpc_flow_logs": { "type": "boolean" }
       }
+    },
+    "diagram": {
+      "type": "object",
+      "description": "Target or inferred architecture diagram (Mermaid). See docs/diagram-conventions.md",
+      "properties": {
+        "type": { "type": "string", "enum": ["mermaid"], "default": "mermaid" },
+        "format": { "type": "string", "enum": ["flowchart", "sequenceDiagram", "erDiagram"] },
+        "content": { "type": "string", "description": "Raw Mermaid source" },
+        "caption": { "type": "string", "description": "Human-readable title" },
+        "confidence": { "type": "string", "enum": ["observed", "inferred"] }
+      },
+      "required": ["type", "format", "content", "caption"]
     }
   }
 }

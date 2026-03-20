@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Runtime Constraints",
+  "description": "API rate limits, AWS quotas, CI/CD throughput. Required for every architecture.",
+  "type": "object",
+  "required": ["constraints"],
+  "properties": {
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["api_rate_limit", "aws_quota", "ci_throughput", "other"]
+          },
+          "description": { "type": "string" },
+          "limit": { "type": "string" },
+          "mitigation": { "type": "string" }
+        }
+      }
+    }
+  }
+}

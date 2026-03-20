@@ -1,0 +1,24 @@
+{
+  "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+  "cost_summary": { "total_min": 50, "total_max": 150, "currency": "USD" },
+  "estimated_monthly_cost_range": { "min": 50, "max": 150, "currency": "USD" },
+  "assumptions": ["Pay per request model", "~100K requests/month", "DynamoDB on-demand"],
+  "confidence_score": 0.9,
+  "service_options": [
+    { "component": "compute", "option": "Lambda", "cost_min": 5, "cost_max": 20 },
+    { "component": "data", "option": "DynamoDB", "cost_min": 25, "cost_max": 80 }
+  ],
+  "savings_opportunities": ["Reserved concurrency if steady", "DynamoDB reserved capacity"],
+  "decision_score": 0.85,
+  "components": [
+    {
+      "component": "compute",
+      "service_options": ["Lambda", "ECS", "EC2"],
+      "cheapest_viable_option": "Lambda",
+      "optimized_option": "Lambda",
+      "recommended_option": "Lambda",
+      "cost_drivers": ["requests", "duration"],
+      "savings_opportunities": ["Reserved concurrency if steady"]
+    }
+  ]
+}

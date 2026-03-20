@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    { "id": "users", "label": "Users", "zone": "internet", "type": "external", "public_exposure": true },
+    { "id": "cf", "label": "CloudFront", "zone": "edge", "type": "edge", "public_exposure": true },
+    { "id": "api", "label": "API Gateway", "zone": "compute", "type": "network", "public_exposure": true },
+    { "id": "lambda", "label": "Lambda", "zone": "compute", "type": "compute", "public_exposure": false },
+    { "id": "dynamodb", "label": "DynamoDB", "zone": "data", "type": "data", "public_exposure": false }
+  ],
+  "edges": [
+    { "from": "users", "to": "cf", "label": "HTTPS", "data_flow": true },
+    { "from": "cf", "to": "api", "label": "API", "data_flow": true },
+    { "from": "api", "to": "lambda", "label": "Invoke", "data_flow": true },
+    { "from": "lambda", "to": "dynamodb", "label": "Query", "data_flow": true }
+  ],
+  "zones": [
+    { "id": "internet", "label": "Internet", "parent": null },
+    { "id": "edge", "label": "Edge", "parent": "internet" },
+    { "id": "compute", "label": "Compute", "parent": "vpc" },
+    { "id": "data", "label": "Data", "parent": "vpc" }
+  ],
+  "trust_boundaries": [{ "name": "VPC", "zones": ["compute", "data"] }],
+  "public_exposure": ["users", "cf", "api"]
+}

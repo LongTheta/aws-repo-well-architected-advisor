@@ -1,0 +1,14 @@
+{
+  "app_type": "infrastructure",
+  "traffic_profile": "moderate",
+  "availability_target": "99.9%",
+  "data_classification": "internal",
+  "cost_sensitivity": "medium",
+  "compliance_mode": "standard",
+  "environments": ["dev", "prod"],
+  "selected_services": {
+    "networking": "VPC",
+    "compute": "unknown",
+    "data": "unknown"
+  }
+}

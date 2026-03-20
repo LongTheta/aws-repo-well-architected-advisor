@@ -1,0 +1,16 @@
+{
+  "fixes": [
+    {
+      "id": "TF1",
+      "title": "Add cost allocation tags to all resources",
+      "patch_type": "terraform",
+      "target_files": ["main.tf", "modules/*/main.tf"],
+      "risk_reduction": "Enables cost allocation; Cost Optimization pillar",
+      "affected_control_area": "AWS_WELL_ARCHITECTED_COST",
+      "effort": "low",
+      "priority": "P2",
+      "evidence_required_to_close": "Tags: Environment, Project, CostCenter on all resources",
+      "patch_content": "tags = {\n  Environment = var.environment\n  Project    = var.project\n  CostCenter = var.cost_center\n}"
+    }
+  ]
+}

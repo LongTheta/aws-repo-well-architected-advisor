@@ -1,0 +1,6 @@
+{
+  "checks": [
+    { "id": "V1", "category": "security", "expected_result": "Encryption at rest", "severity_if_failed": "critical" },
+    { "id": "V2", "category": "observability", "expected_result": "CloudTrail enabled", "severity_if_failed": "critical" }
+  ]
+}

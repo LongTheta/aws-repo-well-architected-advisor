@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Architecture Output",
+  "description": "Master output linking all architecture artifacts. New artifacts (pricing_input, pricing_estimate, drift_report, org_topology, remediation_plan) are optional.",
+  "type": "object",
+  "required": ["architecture_model"],
+  "properties": {
+    "architecture_model": { "type": "object" },
+    "workload_profile": { "type": "object" },
+    "decision_log": { "type": "array" },
+    "cost_analysis": { "type": "object" },
+    "deployment_plan": { "type": "object" },
+    "verification_checklist": { "type": "object" },
+    "pricing_input": { "type": "object", "description": "Optional; links to pricing-input.schema.json" },
+    "pricing_estimate": { "type": "object", "description": "Optional; links to pricing-estimate.schema.json" },
+    "drift_report": { "type": "object", "description": "Optional; links to drift-report.schema.json" },
+    "org_topology": { "type": "object", "description": "Optional; links to org-topology.schema.json" },
+    "remediation_plan": { "type": "object", "description": "Optional; links to remediation-plan.schema.json" }
+  }
+}

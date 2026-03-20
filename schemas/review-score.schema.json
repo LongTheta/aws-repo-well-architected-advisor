@@ -68,6 +68,18 @@
         "unverifiable_areas": { "type": "array", "items": { "type": "string" } },
         "inherited_control_dependencies": { "type": "array", "items": { "type": "string" } }
       }
+    },
+    "diagram": {
+      "type": "object",
+      "description": "Inferred or target architecture diagram (Mermaid). See docs/diagram-conventions.md",
+      "properties": {
+        "type": { "type": "string", "enum": ["mermaid"], "default": "mermaid" },
+        "format": { "type": "string", "enum": ["flowchart", "sequenceDiagram", "erDiagram"] },
+        "content": { "type": "string", "description": "Raw Mermaid source" },
+        "caption": { "type": "string", "description": "Human-readable title" },
+        "confidence": { "type": "string", "enum": ["observed", "inferred"] }
+      },
+      "required": ["type", "format", "content", "caption"]
     }
   }
 }

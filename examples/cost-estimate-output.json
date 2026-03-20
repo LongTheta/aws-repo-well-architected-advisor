@@ -1,0 +1,155 @@
+{
+  "cost_summary": {
+    "total_min": 30.89,
+    "total_max": 46.39,
+    "currency": "USD"
+  },
+  "estimated_monthly_cost_range": {
+    "min": 30.89,
+    "max": 46.39,
+    "currency": "USD"
+  },
+  "assumptions": [
+    "Monthly requests: 100,000",
+    "Storage: 50.0 GB",
+    "Compute: lambda",
+    "Lambda: 256MB, 200ms avg"
+  ],
+  "confidence_score": 0.65,
+  "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+  "missing_inputs": [],
+  "notes": "Estimates use heuristic rates. Provide --config with detailed inputs for higher confidence.",
+  "components": [
+    {
+      "component": "compute",
+      "service_name": "Lambda",
+      "usage_assumptions": [
+        "256MB",
+        "200ms avg"
+      ],
+      "estimated_monthly_cost_min": 0.08,
+      "estimated_monthly_cost_max": 0.16,
+      "cost_drivers": [
+        "requests",
+        "duration",
+        "memory"
+      ],
+      "savings_opportunities": [
+        "Reserved concurrency if steady"
+      ],
+      "cost_classification": "low"
+    },
+    {
+      "component": "api",
+      "service_name": "API Gateway",
+      "usage_assumptions": [
+        "100,000 requests"
+      ],
+      "estimated_monthly_cost_min": 0.28,
+      "estimated_monthly_cost_max": 0.42,
+      "cost_drivers": [
+        "requests"
+      ],
+      "savings_opportunities": [
+        "HTTP API for lower cost"
+      ],
+      "cost_classification": "low"
+    },
+    {
+      "component": "data",
+      "service_name": "DynamoDB",
+      "usage_assumptions": [
+        "100,000 requests",
+        "50.0 GB"
+      ],
+      "estimated_monthly_cost_min": 10.14,
+      "estimated_monthly_cost_max": 16.48,
+      "cost_drivers": [
+        "read/write units",
+        "storage"
+      ],
+      "savings_opportunities": [
+        "Reserved capacity",
+        "On-demand for variable"
+      ],
+      "cost_classification": "low"
+    },
+    {
+      "component": "storage",
+      "service_name": "S3",
+      "usage_assumptions": [
+        "50.0 GB"
+      ],
+      "estimated_monthly_cost_min": 1.11,
+      "estimated_monthly_cost_max": 1.48,
+      "cost_drivers": [
+        "storage",
+        "requests"
+      ],
+      "savings_opportunities": [
+        "S3 Intelligent-Tiering",
+        "Lifecycle policies"
+      ],
+      "cost_classification": "low"
+    },
+    {
+      "component": "networking",
+      "service_name": "ALB",
+      "usage_assumptions": [
+        "730 hrs/month"
+      ],
+      "estimated_monthly_cost_min": 19.28,
+      "estimated_monthly_cost_max": 27.85,
+      "cost_drivers": [
+        "hours",
+        "LCU"
+      ],
+      "savings_opportunities": [
+        "NLB for high throughput"
+      ],
+      "cost_classification": "low"
+    }
+  ],
+  "savings_opportunities": [
+    "NLB for high throughput",
+    "HTTP API for lower cost",
+    "Reserved capacity",
+    "S3 Intelligent-Tiering",
+    "Lifecycle policies",
+    "Reserved concurrency if steady",
+    "On-demand for variable"
+  ],
+  "decision_score": 0.65,
+  "service_options": [
+    {
+      "component": "compute",
+      "option": "Lambda",
+      "cost_min": 0.08,
+      "cost_max": 0.16
+    },
+    {
+      "component": "api",
+      "option": "API Gateway",
+      "cost_min": 0.28,
+      "cost_max": 0.42
+    },
+    {
+      "component": "data",
+      "option": "DynamoDB",
+      "cost_min": 10.14,
+      "cost_max": 16.48
+    },
+    {
+      "component": "storage",
+      "option": "S3",
+      "cost_min": 1.11,
+      "cost_max": 1.48
+    },
+    {
+      "component": "networking",
+      "option": "ALB",
+      "cost_min": 19.28,
+      "cost_max": 27.85
+    }
+  ]
+}

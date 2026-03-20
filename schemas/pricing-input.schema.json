@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pricing Input",
+  "description": "Input for AWS pricing estimation. Supports Price List API, bulk catalog, optional Cost Explorer.",
+  "type": "object",
+  "required": ["region", "currency", "workload_profile", "usage_assumptions", "selected_services"],
+  "properties": {
+    "region": {
+      "type": "string",
+      "description": "AWS region (e.g. us-east-1)"
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["USD", "EUR", "GBP", "JPY"],
+      "default": "USD"
+    },
+    "workload_profile": {
+      "type": "object",
+      "description": "Reference to workload profile for context",
+      "properties": {
+        "detected_profile": { "type": "string" },
+        "traffic_pattern": { "type": "string" },
+        "availability_target": { "type": "string" }
+      }
+    },
+    "usage_assumptions": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "monthly_requests": { "type": "number" },
+        "storage_gb": { "type": "number" },
+        "compute_hours": { "type": "number" },
+        "lambda_memory_mb": { "type": "integer" },
+        "lambda_avg_duration_ms": { "type": "integer" },
+        "ecs_vcpu": { "type": "number" },
+        "ecs_memory_gb": { "type": "number" },
+        "rds_instance_class": { "type": "string" },
+        "data_transfer_gb": { "type": "number" }
+      }
+    },
+    "selected_services": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Component -> AWS service mapping"
+    },
+    "optional_account_context": {
+      "type": "object",
+      "properties": {
+        "account_id": { "type": "string" },
+        "use_cost_explorer": { "type": "boolean", "default": false }
+      }
+    }
+  }
+}

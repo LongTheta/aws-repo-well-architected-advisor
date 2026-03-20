@@ -1,0 +1,15 @@
+[
+  {
+    "decision_id": "D1",
+    "component": "compute",
+    "options_considered": ["ECS Fargate", "EC2", "Lambda"],
+    "cheapest_option": "Lambda",
+    "optimized_option": "ECS Fargate",
+    "recommended_option": "ECS Fargate",
+    "decision_score": 0.88,
+    "rationale": "Private networking, KMS, audit trail",
+    "tradeoffs": "Higher cost for compliance",
+    "risk_level": "low",
+    "cost_impact": "higher"
+  }
+]

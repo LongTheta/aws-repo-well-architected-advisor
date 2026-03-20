@@ -44,7 +44,7 @@ Realistic examples for common workflows.
 
 ---
 
-## Example 2: Designing Infrastructure for a New App (vNext Lifecycle)
+## Example 2: Designing Infrastructure for a New App (v5 Lifecycle)
 
 **Scenario**: New app; need architecture and Terraform from requirements.
 
@@ -55,7 +55,7 @@ Realistic examples for common workflows.
    ```
    /design-and-implement
    ```
-3. Advisor follows vNext lifecycle: Discover → Infer (app type, runtime, data patterns) → Model (normalized architecture) → Decide (platform selection, data strategy) → Design → Validate (preflight) → Generate.
+3. Advisor follows v5 lifecycle: Discover → Infer (app type, runtime, data patterns) → Model (normalized architecture) → Decide (platform selection, data strategy) → Design → Validate (preflight) → Generate.
 4. Answer questionnaires:
    - Project name, environment, owner, cost_center
    - vpc_cidr (e.g., 10.0.0.0/16)

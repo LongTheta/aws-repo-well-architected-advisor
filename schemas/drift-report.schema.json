@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Drift Report",
+  "description": "Configuration drift between repo intent and deployed state.",
+  "type": "object",
+  "required": ["drift_type", "scope", "detected_at", "resources_checked", "drifted_resources", "missing_resources", "unexpected_resources", "severity", "evidence", "recommended_action"],
+  "properties": {
+    "drift_type": {
+      "type": "string",
+      "enum": ["iac_vs_deployed", "cloudformation_drift", "governance_drift"]
+    },
+    "scope": {
+      "type": "string",
+      "description": "Account, region, stack, or resource scope"
+    },
+    "detected_at": {
+      "type": "string",
+      "description": "ISO 8601 date-time"
+    },
+    "resources_checked": {
+      "type": "integer"
+    },
+    "drifted_resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource_id": { "type": "string" },
+          "resource_type": { "type": "string" },
+          "drift_details": { "type": "string" }
+        }
+      }
+    },
+    "missing_resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource_id": { "type": "string" },
+          "expected_from": { "type": "string" }
+        }
+      }
+    },
+    "unexpected_resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource_id": { "type": "string" },
+          "resource_type": { "type": "string" }
+        }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommended_action": {
+      "type": "string"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["cannot_verify", "no_drift_observed", "drift_detected"]
+    }
+  }
+}

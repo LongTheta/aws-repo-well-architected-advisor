@@ -1,0 +1,16 @@
+{
+  "fixes": [
+    {
+      "id": "IAM1",
+      "title": "Replace wildcard IAM policy with least-privilege",
+      "patch_type": "iam",
+      "target_files": ["terraform/iam.tf"],
+      "risk_reduction": "Reduces overprivileged execution; NIST AC-6",
+      "affected_control_area": "NIST_AC_6",
+      "effort": "medium",
+      "priority": "P1",
+      "evidence_required_to_close": "IAM policy with specific actions only; no s3:* or dynamodb:*",
+      "patch_content": "Replace Effect = Allow, Action = [\"*\"] with specific actions for S3 GetObject, PutObject, DynamoDB Query, etc."
+    }
+  ]
+}

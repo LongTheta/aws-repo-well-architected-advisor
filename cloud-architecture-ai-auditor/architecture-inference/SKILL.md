@@ -35,18 +35,18 @@ Infers current-state AWS architecture from discovered repository artifacts.
 
 ## Output Format
 
-```markdown
-## Inferred Architecture
+Produce a Mermaid diagram per `docs/diagram-conventions.md`. Prefer `flowchart TB` with `subgraph` for VPC, compute, and data layers.
 
-[ASCII or Mermaid diagram]
+**Markdown output:**
+- Section "## Inferred Architecture"
+- Mermaid flowchart (subgraph for VPC, compute, data)
+- Assumptions list with evidence tags
 
-**Assumptions**:
-- [Assumption 1] (Observed / Inferred / Missing Evidence)
-- [Assumption 2] (Observed / Inferred / Missing Evidence)
-```
+**Schema output:** Include `diagram` object with `type`, `format`, `content`, `caption`, `confidence` per `docs/diagram-conventions.md`.
 
 ## Rules
 
+- Follow `docs/diagram-conventions.md` for diagram structure and quality
 - Tag assumptions as Observed / Inferred / Missing Evidence
 - Call out unknowns clearly
 - Do not fabricate components without evidence

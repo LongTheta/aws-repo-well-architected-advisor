@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Deployment Plan",
+  "description": "Phased deployment plan with apply order and rollback.",
+  "type": "object",
+  "required": ["phases"],
+  "properties": {
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "apply_order"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "apply_order": { "type": "integer" },
+          "resources": { "type": "array", "items": { "type": "string" } },
+          "validation_gates": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "apply_order": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Ordered list of phases or resources"
+    },
+    "rollback_notes": { "type": "string" },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" }
+        }
+      }
+    },
+    "validation_gates": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -67,7 +67,7 @@ echo "  - schemas/"
 
 # Docs
 mkdir -p "$DEST_ABS/docs"
-for f in RULES.md docs/OPERATING-MODEL.md docs/scoring-model.md docs/command-to-skill-mapping.md docs/LEGACY-SKILLS.md; do
+for f in RULES.md docs/OPERATING-MODEL.md docs/scoring-model.md docs/command-to-skill-mapping.md; do
   [ -f "$REPO_ROOT/$f" ] && cp "$REPO_ROOT/$f" "$DEST_ABS/$(dirname $f)/" 2>/dev/null || true
 done
 [ -f "$REPO_ROOT/RULES.md" ] && cp "$REPO_ROOT/RULES.md" "$DEST_ABS/" 2>/dev/null || true

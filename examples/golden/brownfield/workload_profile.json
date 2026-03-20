@@ -1,0 +1,12 @@
+{
+  "detected_profile": "Enterprise",
+  "confidence_score": 0.75,
+  "reasoning": "Existing repo with VPC, partial config; inferred from IaC",
+  "app_type": "infrastructure",
+  "traffic_pattern": "moderate",
+  "availability_target": "99.9%",
+  "cost_sensitivity": "medium",
+  "compliance_mode": "standard",
+  "team_maturity": "moderate",
+  "scaling_pattern": "auto"
+}

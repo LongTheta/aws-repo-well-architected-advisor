@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Remediation Plan",
+  "description": "Safe remediation plans and patch artifacts. No auto-apply; simulation-only by default.",
+  "type": "object",
+  "required": ["patches"],
+  "properties": {
+    "patches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["issue_id", "issue_type", "affected_resource", "patch_type", "patch_artifact", "risk_level", "approval_required", "rollback_strategy", "validation_steps", "simulation_status"],
+        "properties": {
+          "issue_id": { "type": "string" },
+          "issue_type": { "type": "string" },
+          "affected_resource": { "type": "string" },
+          "patch_type": {
+            "type": "string",
+            "enum": ["terraform_patch", "iam_policy_tightening", "cicd_policy_gate", "tagging_remediation"]
+          },
+          "patch_artifact": { "type": "string" },
+          "risk_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "approval_required": { "type": "boolean" },
+          "rollback_strategy": { "type": "string" },
+          "validation_steps": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "simulation_status": {
+            "type": "string",
+            "enum": ["pending", "simulated", "approved", "applied"]
+          }
+        }
+      }
+    }
+  }
+}

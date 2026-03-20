@@ -1,0 +1,16 @@
+[
+  {
+    "decision_id": "D1",
+    "component": "networking",
+    "context": "Brownfield - VPC exists, no subnets",
+    "options_considered": ["Add subnets", "Use default VPC"],
+    "cheapest_option": "Add subnets",
+    "optimized_option": "Add subnets",
+    "recommended_option": "Add subnets",
+    "decision_score": 0.9,
+    "rationale": "VPC has no subnet configuration; deployment will fail",
+    "tradeoffs": "Requires Terraform changes",
+    "risk_level": "high",
+    "evidence_refs": ["terraform/vpc.tf"]
+  }
+]

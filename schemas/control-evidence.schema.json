@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Control Evidence",
+  "description": "Federal/NIST/DoD control-to-evidence mapping. Enforceable; /federal-checklist must produce this.",
+  "type": "object",
+  "required": ["controls"],
+  "properties": {
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["control_id", "evidence_status"],
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "description": "NIST 800-53 (e.g. AC-2) or DoD control identifier"
+          },
+          "implementation_mapping": {
+            "type": "string",
+            "description": "How repo implements or fails to implement this control"
+          },
+          "required_evidence": {
+            "type": "string",
+            "description": "What evidence would satisfy this control"
+          },
+          "validation_method": {
+            "type": "string",
+            "enum": ["repo_scan", "runtime_check", "manual_review", "not_applicable"]
+          },
+          "evidence_status": {
+            "type": "string",
+            "enum": ["observed", "inferred", "missing", "contradictory", "unverifiable"]
+          },
+          "source_reference": {
+            "type": "string",
+            "description": "File, path, or explicit absence"
+          }
+        }
+      }
+    }
+  }
+}

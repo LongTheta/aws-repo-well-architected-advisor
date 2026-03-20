@@ -1,0 +1,121 @@
+{
+  "workload_profile": {
+    "detected_profile": "Enterprise",
+    "profile_name": "Enterprise",
+    "confidence_score": 0.75,
+    "reasoning": "Existing repo with VPC, partial config; inferred from IaC",
+    "app_type": "infrastructure",
+    "traffic_pattern": "moderate",
+    "availability_target": "99.9%",
+    "cost_sensitivity": "medium",
+    "compliance_mode": "standard",
+    "team_maturity": "moderate",
+    "scaling_pattern": "auto"
+  },
+  "architecture_model": {
+    "app_type": "infrastructure",
+    "traffic_profile": "moderate",
+    "availability_target": "99.9%",
+    "data_classification": "internal",
+    "cost_sensitivity": "medium",
+    "compliance_mode": "standard",
+    "environments": ["dev", "prod"],
+    "selected_services": {
+      "networking": "VPC",
+      "compute": "unknown",
+      "data": "unknown"
+    }
+  },
+  "decision_log": [
+    {
+      "decision_id": "D1",
+      "component": "networking",
+      "context": "Brownfield - VPC exists, no subnets",
+      "options_considered": ["Add subnets", "New VPC", "VPC Peering"],
+      "cheapest_option": "Add subnets",
+      "optimized_option": "Add subnets",
+      "recommended_option": "Add subnets",
+      "decision_score": 0.85,
+      "rationale": "VPC has no subnet configuration; add subnets to existing VPC avoids full rebuild",
+      "tradeoffs": "Add subnets is lowest risk; new VPC would require migration",
+      "risk_level": "high",
+      "evidence_refs": ["terraform/vpc.tf"]
+    }
+  ],
+  "cost_analysis": {
+    "disclaimer": "This is an estimate based on assumed usage patterns and typical AWS pricing behavior. Actual costs may vary based on real usage, region, and AWS pricing changes.",
+    "cost_summary": { "total_min": 50, "total_max": 150, "currency": "USD" },
+    "estimated_monthly_cost_range": { "min": 50, "max": 150, "currency": "USD" },
+    "assumptions": ["NAT Gateway", "VPC endpoints optional"],
+    "confidence_score": 0.7,
+    "service_options": [
+      { "component": "networking", "option": "VPC with private subnets", "cost_min": 35, "cost_max": 100 }
+    ],
+    "savings_opportunities": ["VPC endpoints for AWS services"],
+    "decision_score": 0.75,
+    "components": [
+      {
+        "component": "networking",
+        "recommended_option": "VPC with private subnets",
+        "cost_drivers": ["NAT Gateway", "data transfer"],
+        "savings_opportunities": ["VPC endpoints for AWS services"]
+      }
+    ]
+  },
+  "architecture_graph": {
+    "nodes": [
+      { "id": "vpc", "label": "VPC", "zone": "network", "type": "network", "public_exposure": false },
+      { "id": "subnet", "label": "Subnets", "zone": "network", "type": "network", "public_exposure": false }
+    ],
+    "edges": [
+      { "from": "vpc", "to": "subnet", "label": "contains" }
+    ],
+    "zones": [
+      { "id": "network", "label": "Network" }
+    ]
+  },
+  "deployment_plan": {
+    "phases": [
+      { "name": "Subnets", "apply_order": 1, "resources": ["aws_subnet"] },
+      { "name": "IAM", "apply_order": 2, "resources": ["iam.tf"] }
+    ],
+    "rollback_notes": "Revert Terraform"
+  },
+  "deployment_model": {
+    "bootstrap_order": ["VPC", "Subnets", "IAM"],
+    "apply_phases": [
+      { "name": "Subnets", "apply_order": 1, "dependencies": [] },
+      { "name": "IAM", "apply_order": 2, "dependencies": ["Subnets"] }
+    ],
+    "dependencies": [{ "from": "VPC", "to": "Subnets" }]
+  },
+  "scaling_model": {
+    "scalable_components": [{ "component": "VPC", "scale_type": "none" }],
+    "triggers": [],
+    "limits": []
+  },
+  "slo_sli_model": {
+    "availability_target": "99.9%",
+    "latency_expectations": {},
+    "error_thresholds": []
+  },
+  "runtime_constraints": {
+    "constraints": [{ "type": "other", "description": "Brownfield constraints", "limit": "Existing VPC" }]
+  },
+  "findings": [
+    {
+      "id": "B1",
+      "title": "VPC has no subnet configuration",
+      "severity": "HIGH",
+      "evidence_type": "missing",
+      "recommendation": "Add aws_subnet resources"
+    },
+    {
+      "id": "B2",
+      "title": "No IAM roles defined",
+      "severity": "HIGH",
+      "evidence_type": "missing",
+      "recommendation": "Add iam.tf with least-privilege roles"
+    }
+  ]
+}

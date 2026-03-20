@@ -3,7 +3,8 @@
   "instructions": [
     "docs/AI-CLOUD-ARCHITECT-AGENT.md",
     "docs/AI-CLOUD-ARCHITECT-AGENT-NIST-DOD.md",
-    "docs/AI-CLOUD-ARCHITECT-AGENT-VNEXT.md",
+    "docs/AI-CLOUD-ARCHITECT-AGENT-V5.md",
+    "docs/workload-type-profiles.md",
     "docs/modes.md",
     "skills/aws-well-architected-pack/SKILL.md",
     "aws-repo-scaffolder/SKILL.md",
@@ -32,7 +33,7 @@
       "agent": "product-manager-discovery"
     },
     "/platform-design": {
-      "template": "Platform design from discovery. Execute: discovery → constraints synthesis → reference architecture → decision log. Produce target architecture and rationale.",
+      "template": "Platform design from discovery. Execute: discovery → constraints synthesis → reference architecture → decision log. Produce target architecture and rationale. REQUIRED artifacts (all must be present or FAIL): workload_profile, architecture_model, decision_log, cost_analysis, architecture_graph, deployment_plan, verification_checklist, operations_runbook. Output per schemas/.",
       "description": "Platform design and reference architecture",
       "agent": "cloud-platform-reviewer"
     },
@@ -42,17 +43,17 @@
       "agent": "scaffold-implementer"
     },
     "/design-and-implement": {
-      "template": "End-to-end: read repo → ask requirements → recommend → generate IaC. Flow: (1) repo-discovery, (2) solution-discovery: aws-app-platform-questionnaire + infrastructure-governance-questionnaire (tagging, CIDR, roles), (3) platform-design, (4) scaffold. MUST ask: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). Produce solution brief with infrastructure_config, target architecture, IaC files.",
+      "template": "End-to-end: read repo → ask requirements → recommend → generate IaC. Flow: (1) repo-discovery, (2) solution-discovery: aws-app-platform-questionnaire + infrastructure-governance-questionnaire (tagging, CIDR, roles), (3) platform-design, (4) scaffold. MUST ask: project, environment, owner, cost_center, vpc_cidr, roles (CI, developer, auditor). REQUIRED artifacts (all must be present or FAIL): workload_profile, architecture_model, decision_log, cost_analysis, architecture_graph, deployment_plan, verification_checklist, operations_runbook. Render Mermaid from architecture_graph. Output per schemas/.",
       "description": "Read repo, gather requirements, recommend, and code",
       "agent": "design-and-implement-conductor"
     },
     "/incremental-fix": {
-      "template": "Incremental fix mode for existing repos. DO NOT rebuild. (1) Run repo-discovery or use prior /repo-assess findings. (2) Identify top gaps. (3) Generate patch-style fixes: Terraform patches, IAM corrections, CI/CD updates, security fixes. Each fix MUST include: risk_reduction, affected_control_area, effort, priority, evidence_required_to_close. Output per schemas/incremental-fix.schema.json.",
+      "template": "Incremental fix mode for existing repos. DO NOT rebuild. (1) Run repo-discovery or use prior /repo-assess findings. (2) Identify top gaps. (3) Generate patch-style fixes per schemas/incremental-fix.schema.json. Each fix MUST include: id, title, patch_type, target_files (for terraform/iam/cicd/security/config), risk_reduction, affected_control_area, effort, priority, evidence_required_to_close, patch_content. Output validates against incremental-fix.schema.json.",
       "description": "Targeted patch-style fixes for existing repos",
       "agent": "scaffold-implementer"
     },
     "/federal-checklist": {
-      "template": "Federal-grade review per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD. Execute: discovery → standards mapping (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps) → control alignment → readiness. Output NIST_ALIGNMENT and DOD_ALIGNMENT. Never claim compliance; use allowed claims only. Stop for missing evidence on critical controls.",
+      "template": "Federal-grade review per AI-CLOUD-ARCHITECT-AGENT-NIST-DOD. Execute: discovery → standards mapping (NIST 800-53, 800-37, 800-190, 800-204; DoD Zero Trust, DevSecOps) → control alignment → readiness. MUST produce control_evidence per schemas/control-evidence.schema.json (control_id, evidence_status, required_evidence). Output NIST_ALIGNMENT and DOD_ALIGNMENT. Never claim compliance; use allowed claims only. If control_evidence missing → FAIL.",
       "description": "Federal compliance checklist (NIST/DoD mode)",
       "agent": "federal-security-reviewer"
     },
