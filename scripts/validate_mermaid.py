@@ -42,10 +42,21 @@ def validate_mermaid_against_graph(content: str, graph: dict) -> tuple[bool, lis
     """Ensure all nodes referenced in Mermaid exist in graph."""
     errors = []
     node_ids = {n["id"] for n in graph.get("nodes", []) if "id" in n}
-    # Extract node refs from Mermaid: id[...] or id(...) or id --> id
-    refs = set(re.findall(r"(\w+)\s*[\[\(]", content))
-    refs.update(re.findall(r"-->\s*(\w+)\s*[\[\(]?", content))
-    refs.update(re.findall(r"(\w+)\s+-->", content))
+    # Extract node refs: only node IDs, not label text inside brackets.
+    # Node defs: id[label] or id[(label)] — capture id (first \w+ before [ or ().
+    # Per-line: first match is the node ID; later matches may be label text.
+    refs = set()
+    for line in content.split("\n"):
+        # Node definition: id[...] or id(...) — take first \w+ before [ or (
+        m = re.search(r"(\w+)\s*[\[\(]", line)
+        if m:
+            refs.add(m.group(1))
+        # Arrow targets: --> id or --> id[...]
+        for m in re.finditer(r"-->\s*\|[^|]*\|\s*(\w+)|-->\s*(\w+)", line):
+            refs.add(m.group(1) or m.group(2))
+        # Arrow sources: id -->
+        for m in re.finditer(r"(\w+)\s+-->", line):
+            refs.add(m.group(1))
     for ref in refs:
         if ref and ref not in ("flowchart", "graph", "TB", "LR", "subgraph", "end"):
             if ref not in node_ids and not ref.startswith("subgraph"):

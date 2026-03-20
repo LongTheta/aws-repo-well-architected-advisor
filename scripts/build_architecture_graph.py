@@ -219,7 +219,10 @@ def main() -> int:
             print("Error: Invalid input; need architecture_model with selected_services or architecture_graph", file=sys.stderr)
             return 1
 
-    out_path = Path(args[-1]) if len(args) >= 2 and not args[-1].startswith("--") and Path(args[-1]).suffix in (".json",) else None
+    # Output path: explicit arg only for non-flag invocations; never overwrite --scenario/--terraform input
+    out_path = None
+    if args[0] not in ("--scenario", "--terraform") and len(args) >= 2 and not args[-1].startswith("--") and Path(args[-1]).suffix == ".json":
+        out_path = Path(args[-1])
     if not out_path:
         out_path = base / "examples" / "architecture-graph-built.json"
 

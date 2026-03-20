@@ -237,3 +237,14 @@ Design flows apply **Service Selection** and **FinOps & Decision Optimization** 
 **When to use**: Explicit multi-phase orchestration
 
 **Example prompt**: "Run /orchestrate"
+
+---
+
+## Generic Prompts
+
+Reusable prompts for common workflows. See `prompt-template.md` for full template.
+
+**Multi-repo assessment (TaskForge stack)** — run from taskforge-platform-infra:
+```
+Assess the TaskForge stack: read taskforge-backend and taskforge-security, infer the full architecture, produce recommendations, and update this repo with assessments and Terraform patches.
+```

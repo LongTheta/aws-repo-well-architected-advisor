@@ -27,6 +27,7 @@ This is the AWS Repo Well-Architected Advisor. It evaluates repositories against
 1. Update `docs/core-ai-guidance.md` first
 2. Sync AGENTS.md, .claude/CLAUDE.md, .cursor/rules/aws-well-architected.md to match
 3. Preserve tool-specific conventions (OpenCode agents, Claude project instructions, Cursor globs)
+4. OpenCode loads `docs/core-ai-guidance.md` via opencode.json / .opencode/opencode.json instructions
 
 ## Evidence and Federal Mode
 

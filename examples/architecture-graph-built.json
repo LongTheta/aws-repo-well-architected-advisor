@@ -4,110 +4,71 @@
       "id": "users",
       "label": "Users",
       "zone": "internet",
-      "type": "external",
-      "public_exposure": true
+      "type": "external"
     },
     {
-      "id": "aws_lb_app",
-      "label": "ALB (app)",
+      "id": "cf",
+      "label": "CloudFront",
+      "zone": "edge",
+      "type": "edge"
+    },
+    {
+      "id": "api",
+      "label": "API Gateway",
       "zone": "compute",
-      "type": "network",
-      "public_exposure": true
+      "type": "network"
     },
     {
-      "id": "aws_lambda_function_api",
-      "label": "Lambda (api)",
+      "id": "lambda",
+      "label": "Lambda",
       "zone": "compute",
-      "type": "compute",
-      "public_exposure": false
+      "type": "compute"
     },
     {
-      "id": "aws_db_instance_main",
-      "label": "RDS (main)",
+      "id": "dynamodb",
+      "label": "DynamoDB",
       "zone": "data",
-      "type": "data",
-      "public_exposure": false
-    },
-    {
-      "id": "aws_dynamodb_table_cache",
-      "label": "DynamoDB (cache)",
-      "zone": "data",
-      "type": "data",
-      "public_exposure": false
-    },
-    {
-      "id": "aws_s3_bucket_assets",
-      "label": "S3 (assets)",
-      "zone": "data",
-      "type": "data",
-      "public_exposure": false
+      "type": "data"
     }
   ],
   "edges": [
     {
       "from": "users",
-      "to": "aws_lb_app",
-      "label": "HTTPS",
-      "data_flow": true
+      "to": "cf",
+      "label": "HTTPS"
     },
     {
-      "from": "aws_lb_app",
-      "to": "aws_lambda_function_api",
-      "label": "Invoke",
-      "data_flow": true
+      "from": "cf",
+      "to": "api",
+      "label": "API"
     },
     {
-      "from": "aws_lambda_function_api",
-      "to": "aws_db_instance_main",
-      "label": "Query",
-      "data_flow": true
+      "from": "api",
+      "to": "lambda",
+      "label": "Invoke"
     },
     {
-      "from": "aws_lambda_function_api",
-      "to": "aws_dynamodb_table_cache",
-      "label": "Query",
-      "data_flow": true
-    },
-    {
-      "from": "aws_lambda_function_api",
-      "to": "aws_s3_bucket_assets",
-      "label": "Query",
-      "data_flow": true
+      "from": "lambda",
+      "to": "dynamodb",
+      "label": "Query"
     }
   ],
   "zones": [
     {
       "id": "internet",
-      "label": "Internet",
-      "parent": null
+      "label": "Internet"
     },
     {
       "id": "edge",
-      "label": "Edge",
-      "parent": "internet"
+      "label": "Edge"
     },
     {
       "id": "compute",
-      "label": "Compute",
-      "parent": "vpc"
+      "label": "Compute"
     },
     {
       "id": "data",
-      "label": "Data",
-      "parent": "vpc"
+      "label": "Data"
     }
-  ],
-  "trust_boundaries": [
-    {
-      "name": "VPC",
-      "zones": [
-        "compute",
-        "data"
-      ]
-    }
-  ],
-  "public_exposure": [
-    "users",
-    "aws_lb_app"
   ]
 }

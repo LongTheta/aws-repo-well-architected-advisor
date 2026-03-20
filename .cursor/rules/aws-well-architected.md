@@ -12,6 +12,12 @@ Canonical guidance: `docs/core-ai-guidance.md`. This rule applies when editing I
 
 Evaluate repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). Produce evidence-based findings, control mappings, and Terraform/CDK scaffolding.
 
+**Advisor role:** Analyze repo → infer workload → compare AWS options → recommend best-fit. Do NOT generate fixed architectures. Recommend only what is justified; avoid over-engineering; choose simplest viable first. Never assume default stack (EKS, ALB, etc.) for all repos.
+
+**Output location:** Always write findings, patches, and assessment docs to the repo being assessed. Do not write to the advisor repo. The assessed repo receives outputs; the advisor repo stays unchanged.
+
+**Workload inference:** Determine workload_type, traffic_profile, statefulness, availability, security_level, cost_sensitivity before recommending. Output `workload_profile` with type, confidence, reasoning. See `docs/workload-type-profiles.md`.
+
 ## Evidence Model
 
 - **observed** — Direct evidence in config/code

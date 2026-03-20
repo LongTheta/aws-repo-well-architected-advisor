@@ -63,6 +63,14 @@ The advisor should explain:
 
 ---
 
+## Observability and Runbooks
+
+- **[docs/observability.md](observability.md)** — CloudWatch log groups, alarms (RDS, Lambda, ALB), naming patterns
+- **[docs/runbook.md](runbook.md)** — Alarm response, deployment checks, rollback, troubleshooting
+- **[docs/compliance-mapping.md](compliance-mapping.md)** — Evidence-based NIST/DoD alignment (not certification)
+
+---
+
 ## See Also
 
 - [docs/schemas.md](schemas.md)

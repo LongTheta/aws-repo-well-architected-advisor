@@ -24,6 +24,10 @@ OpenCode operating system for repository architecture reviews, solution architec
 - Do not read .env, secrets, .pem, .key
 - All review output must conform to schemas/review-score.schema.json
 
+## Generic Prompts
+
+**TaskForge multi-repo** (run from taskforge-platform-infra): *Assess the TaskForge stack: read taskforge-backend and taskforge-security, infer the full architecture, produce recommendations, and update this repo with assessments and Terraform patches.*
+
 ## Ideal Use Cases
 
 - Repo onboarding assessment

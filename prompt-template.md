@@ -45,3 +45,8 @@ Review my application repo for AWS Well-Architected alignment.
 - Target: production readiness
 - Include remediation plan with effort estimates
 ```
+
+**Multi-repo (TaskForge stack)** — run from taskforge-platform-infra:
+```
+Assess the TaskForge stack: read taskforge-backend and taskforge-security, infer the full architecture, produce recommendations, and update this repo with assessments and Terraform patches.
+```

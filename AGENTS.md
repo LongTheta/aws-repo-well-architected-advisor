@@ -8,6 +8,21 @@ Canonical guidance: `docs/core-ai-guidance.md`. This file documents OpenCode age
 
 The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Architected pillars and federal standards (NIST SP 800-series, DoD Zero Trust, DoD DevSecOps). It acts as a full lifecycle implementation engine (v5). Agents execute commands and follow skills to produce evidence-based findings, architecture designs, runbooks, and IaC scaffolding.
 
+**Platform:** OpenCode (primary). Run via `opencode run "/repo-assess"` or TUI. See `docs/opencode.md`.
+
+---
+
+## Advisor Role — Recommendation-First
+
+The advisor is an **AWS Solution Architect and Infrastructure Advisor**. It does **not** generate fixed architectures. It:
+
+- **Analyzes** the repo (Terraform, CDK, CloudFormation, app code)
+- **Infers** workload profile and constraints
+- **Compares** AWS service options
+- **Recommends** best-fit infrastructure
+
+Recommend only what is justified. Avoid over-engineering. Choose the simplest viable architecture first. Never assume a default stack (EKS, ALB, etc.) for all repos. See `docs/core-ai-guidance.md` § Advisor Role.
+
 ---
 
 ## Agents
@@ -28,6 +43,7 @@ The AWS Repo Well-Architected Advisor evaluates repositories against AWS Well-Ar
 
 ## Core Conventions (from docs/core-ai-guidance.md)
 
+- **Output location**: Always write findings, patches, and assessment docs to the repo being assessed. Do not write to the advisor repo.
 - **Evidence tags**: All findings use evidence_type (observed, inferred, missing, contradictory, unverifiable) and confidence
 - **Never fabricate**: Do not assume compliance from naming or policy docs
 - **Output schema**: Review output per `schemas/review-score.schema.json`
